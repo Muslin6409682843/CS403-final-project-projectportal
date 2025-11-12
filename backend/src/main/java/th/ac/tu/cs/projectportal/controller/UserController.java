@@ -55,6 +55,8 @@ public class UserController {
         newUser.setApprovalExpireAt(LocalDateTime.now().plusDays(5));
         newUser.setApproved(false); // ยังไม่อนุมัติ
 
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+
         userRepository.save(newUser);
 
         return ResponseEntity.ok("✅ สมัครสมาชิกสำเร็จ! รอแอดมินอนุมัติภายใน 5 วัน");
@@ -80,6 +82,8 @@ public class UserController {
 
         // ✅ ตั้งวันหมดอายุการรออนุมัติภายใน 5 วัน
         newGuest.setApprovalExpireAt(LocalDateTime.now().plusDays(5));
+
+        newGuest.setPassword(passwordEncoder.encode(newGuest.getPassword()));
 
         userRepository.save(newGuest);
 
@@ -107,45 +111,108 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser, HttpSession session) {
         Optional<User> optionalUser = userRepository.findByUsername(loginUser.getUsername());
-        if(optionalUser.isEmpty()) {
-            Map<String, Object> resp = new HashMap<>();
+
+        Map<String, Object> resp = new HashMap<>();
+
+        if (optionalUser.isEmpty()) {
             resp.put("status", false);
-            resp.put("error", "Username หรือ Password ไม่ถูกต้อง");
+            resp.put("error", "ยังไม่ได้สมัครสมาชิก");
             return ResponseEntity.status(401).body(resp);
         }
 
         User user = optionalUser.get();
-        if(!passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
-            Map<String, Object> resp = new HashMap<>();
+
+        // ตรวจสอบรหัสผ่าน
+        if (!passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
             resp.put("status", false);
             resp.put("error", "Username หรือ Password ไม่ถูกต้อง");
             return ResponseEntity.status(401).body(resp);
         }
 
-        // ✅ สร้าง authentication object ให้ Spring Security รู้จัก user
+        // เงื่อนไขเฉพาะ Guest
+        if (user.getRole() == Role.Guest) {
+            resp.put("status", false);
+            resp.put("error", "บัญชีนี้เป็น Guest โปรดสมัครผ่านหน้า Guest");
+            return ResponseEntity.status(401).body(resp);
+        }
+
+        // ตรวจสอบการอนุมัติ Student/Staff
+        if ((user.getRole() == Role.Student || user.getRole() == Role.Staff) && !user.getApproved()) {
+            resp.put("status", true);
+            resp.put("redirect", "/pending-approval");
+            return ResponseEntity.ok(resp);
+        }
+
+        // ✅ สร้าง authentication object ให้ Spring Security
         List<SimpleGrantedAuthority> authorities = List.of(
-            new SimpleGrantedAuthority("ROLE_" + user.getRole())
-        );
+                new SimpleGrantedAuthority("ROLE_" + user.getRole()));
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-            user.getUsername(), null, authorities
-        );
-
-        // ✅ เก็บใน SecurityContext
+                user.getUsername(), null, authorities);
         SecurityContextHolder.getContext().setAuthentication(auth);
-
-        // ✅ เก็บ session ให้ Spring Security ใช้
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
         // ส่ง response กลับ frontend
-        Map<String, Object> resp = new HashMap<>();
         resp.put("status", true);
         resp.put("role", user.getRole());
-        switch(user.getRole()) {
-            case Admin -> resp.put("redirect", "/admin");
-            case Staff, Student -> resp.put("redirect", "/student");
-            case Guest -> resp.put("redirect", "/guest");
+
+        switch (user.getRole()) {
+            case Admin -> {
+                // Admin ใช้เหมือนเดิม
+                resp.put("redirect", "/admin");
+            }
+            case Student, Staff -> {
+                // Student/Staff login สำเร็จ → redirect ไปหน้า Home
+                resp.put("redirect", "/");
+            }
+            default -> resp.put("redirect", "/"); // fallback
         }
 
+        return ResponseEntity.ok(resp);
+    }
+
+    @PostMapping("/guest-login")
+    public ResponseEntity<?> guestLogin(@RequestBody User loginUser, HttpSession session) {
+        Map<String, Object> resp = new HashMap<>();
+
+        Optional<User> optionalUser = userRepository.findByUsername(loginUser.getUsername());
+
+        if (optionalUser.isEmpty()) {
+            resp.put("status", false);
+            resp.put("error", "ยังไม่ได้สมัครสมาชิก");
+            return ResponseEntity.status(401).body(resp);
+        }
+
+        User user = optionalUser.get();
+
+        if (!passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
+            resp.put("status", false);
+            resp.put("error", "Username หรือ Password ไม่ถูกต้อง");
+            return ResponseEntity.status(401).body(resp);
+        }
+
+        if (user.getRole() != Role.Guest) {
+            resp.put("status", false);
+            resp.put("error", "บัญชีนี้ไม่ใช่ Guest โปรดสมัครผ่านหน้า นักศึกษา/บุคลากร");
+            return ResponseEntity.status(401).body(resp);
+        }
+
+        if (!user.getApproved()) {
+            resp.put("status", true);
+            resp.put("redirect", "/pending-approval");
+            return ResponseEntity.ok(resp);
+        }
+
+        // login สำเร็จ
+        List<SimpleGrantedAuthority> authorities = List.of(
+                new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), null,
+                authorities);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+        resp.put("status", true);
+        resp.put("role", user.getRole());
+        resp.put("redirect", "/");
         return ResponseEntity.ok(resp);
     }
 

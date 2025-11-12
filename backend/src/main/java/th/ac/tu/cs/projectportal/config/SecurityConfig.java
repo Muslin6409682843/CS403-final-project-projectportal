@@ -41,11 +41,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(withDefaults()) // ✅ ใช้ configuration ด้านบน
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/register", "/api/users/register-guest").permitAll()
+                        .requestMatchers("/api/login", "/api/register", "/api/users/register-guest", "/api/guest-login")
+                        .permitAll()
                         .requestMatchers("/api/admin/**").hasRole("Admin")
-                        .anyRequest().authenticated())
-                .formLogin(withDefaults())
-                .httpBasic(withDefaults());
+                        .anyRequest().authenticated());
         return http.build();
     }
 }
