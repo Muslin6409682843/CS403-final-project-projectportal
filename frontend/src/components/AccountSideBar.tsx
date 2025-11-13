@@ -7,7 +7,7 @@ const AccountSideBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const { logout, setAuth } = useAuth();
+  const { logout } = useAuth();
 
   const menuItems = [
     { label: "รายการโปรด", path: "/favorite" },
@@ -32,26 +32,17 @@ const AccountSideBar = () => {
   };
 
   const handleLogoutConfirm = async () => {
-    try {
-      await fetch("http://localhost:8081/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (err) {
-      console.error("Logout request failed:", err);
-    }
-
-    setAuth(false, null, null);
-    localStorage.clear();
-    navigate("/login");
+    setShowLogoutModal(false);
+    await logout(); // ✅ context จะ reset state ให้เอง
+    navigate("/login"); // เปลี่ยนหน้าไป login
   };
 
   return (
     <div
       style={{
-        width: "400px",
+        width: 400,
         padding: "2rem 1rem",
-        backgroundColor: "#ffffff",
+        backgroundColor: "#fff",
         minHeight: "100%",
         display: "flex",
         flexDirection: "column",
@@ -79,7 +70,7 @@ const AccountSideBar = () => {
                 style={{
                   width: "100%",
                   backgroundColor: isActive ? "#FD7521" : "transparent",
-                  color: isActive ? "#ffffff" : "#333",
+                  color: isActive ? "#fff" : "#333",
                   border: "1px solid #ddd",
                   textAlign: "left",
                   padding: "14px 18px",
@@ -105,7 +96,6 @@ const AccountSideBar = () => {
         })}
       </ul>
 
-      {/* Modal Logout via Portal */}
       {showLogoutModal &&
         createPortal(
           <div
@@ -128,7 +118,7 @@ const AccountSideBar = () => {
                 padding: "3rem 2rem",
                 borderRadius: "16px",
                 textAlign: "center",
-                maxWidth: "400px",
+                maxWidth: 400,
                 width: "90%",
                 boxShadow: "0 0 15px rgba(0,0,0,0.3)",
               }}
@@ -153,7 +143,7 @@ const AccountSideBar = () => {
                 ยืนยัน
               </button>
               <button
-                onClick={() => setShowLogoutModal(false)} // แค่ปิด modal
+                onClick={() => setShowLogoutModal(false)}
                 style={{
                   padding: "12px 24px",
                   backgroundColor: "#ddd",
@@ -165,12 +155,6 @@ const AccountSideBar = () => {
                   cursor: "pointer",
                   transition: "all 0.2s ease",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#ccc")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#ddd")
-                }
               >
                 ยกเลิก
               </button>

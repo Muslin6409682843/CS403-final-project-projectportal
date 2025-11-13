@@ -2,34 +2,17 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Box, Typography, Stack } from "@mui/material";
 import { createPortal } from "react-dom";
-import { useAuth } from "../../context/AuthContext"
-
+import { useAuth } from "../../context/AuthContext";
 
 const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const { logout, setAuth } = useAuth();
+  const { logout } = useAuth();
 
   const handleLogoutConfirm = async () => {
-  setShowLogoutModal(false);
-  
-  // เรียก logout API backend
-  try {
-    await fetch("http://localhost:8081/api/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-  } catch (err) {
-    console.error("Logout failed:", err);
-  }
-
-  setAuth(false, null, null); 
-  localStorage.clear(); 
-  navigate("/login");
-};
-
-  const handleLogoutClick = () => {
-    setShowLogoutModal(true);
+    setShowLogoutModal(false);
+    await logout();
+    navigate("/login");
   };
 
   return (
@@ -42,29 +25,24 @@ const AdminPanel: React.FC = () => {
         <Stack spacing={2}>
           <Button
             variant="contained"
-            color="primary"
             onClick={() => navigate("/admin/pending-users")}
           >
             ดูรายการผู้สมัครที่รออนุมัติ
           </Button>
-
           <Button
             variant="contained"
-            color="secondary"
             onClick={() => navigate("/admin/approved-users")}
           >
             จัดการผู้ใช้งานทั้งหมด
           </Button>
-
-          <Button
-            variant="outlined"
-            color="info"
-            onClick={() => navigate("/admin/reports")}
-          >
+          <Button variant="outlined" onClick={() => navigate("/admin/reports")}>
             ดูรายงานระบบ
           </Button>
-
-          <Button variant="outlined" color="error" onClick={handleLogoutClick}>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => setShowLogoutModal(true)}
+          >
             Logout
           </Button>
         </Stack>
@@ -83,7 +61,6 @@ const AdminPanel: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              zIndex: 999999,
             }}
           >
             <div
@@ -91,15 +68,12 @@ const AdminPanel: React.FC = () => {
                 backgroundColor: "#fff",
                 padding: "3rem 2rem",
                 borderRadius: "16px",
-                textAlign: "center",
                 maxWidth: "400px",
                 width: "90%",
-                boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+                textAlign: "center",
               }}
             >
-              <h2 style={{ marginBottom: "1.5rem" }}>
-                คุณต้องการออกจากระบบใช่ไหม?
-              </h2>
+              <h2>คุณต้องการออกจากระบบใช่ไหม?</h2>
               <Button
                 onClick={handleLogoutConfirm}
                 variant="contained"
@@ -111,7 +85,6 @@ const AdminPanel: React.FC = () => {
               <Button
                 onClick={() => setShowLogoutModal(false)}
                 variant="outlined"
-                color="inherit"
               >
                 ยกเลิก
               </Button>

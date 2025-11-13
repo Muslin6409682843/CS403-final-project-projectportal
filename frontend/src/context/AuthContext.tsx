@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   role: null,
   guestExpireAt: null,
   setAuth: () => {},
-  logout: () => {},
+  logout: async () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -60,7 +60,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setGuestExpireAt(guestExpireAt || null);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8081/api/logout",
+        {},
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.error("Logout API failed:", err);
+    }
+
     setIsLoggedIn(false);
     setRole(null);
     setGuestExpireAt(null);
