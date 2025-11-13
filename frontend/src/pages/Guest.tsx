@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../assets/background.css";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const Guest: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const Guest: React.FC = () => {
     password?: string;
   }>({});
   const [apiError, setApiError] = useState("");
+  const { setAuth } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +37,7 @@ const Guest: React.FC = () => {
 
       if (res.data.status) {
         localStorage.setItem("role", res.data.role); // เก็บ role
+        setAuth(true, res.data.role);
         navigate(res.data.redirect); // redirect ตาม backend
       } else {
         setApiError(res.data.error);

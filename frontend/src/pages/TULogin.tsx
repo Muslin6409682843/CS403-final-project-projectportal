@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../assets/background.css";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 function TULogin() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ function TULogin() {
     password?: string;
   }>({});
   const [apiError, setApiError] = useState("");
+  const { setAuth } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +38,7 @@ function TULogin() {
 
           // ✅ เก็บ role ลง localStorage สำหรับทุก role
           localStorage.setItem("role", res.data.role);
-
+          setAuth(true, res.data.role);
           // navigate ตาม backend
           navigate(res.data.redirect);
         } else {

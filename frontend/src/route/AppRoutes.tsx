@@ -16,7 +16,6 @@ import GuestRegister from "../pages/GuestRegister";
 import AdminPanel from "../pages/admin/AdminPanel";
 import PendingUsers from "../pages/admin/PendingUsers";
 import ApprovedUsers from "../pages/admin/ApprovedUsers";
-import AdminRoute from "../route/AdminRoute";
 import PendingApproval from "../pages/PendingApproval";
 import ProtectedRoute from "../route/ProtectedRoute";
 
@@ -28,7 +27,7 @@ function AppRoutes() {
       <Route
         path="/favorite"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["Student", "Staff", "Guest"]}>
             <Favorite />
           </ProtectedRoute>
         }
@@ -46,29 +45,29 @@ function AppRoutes() {
       <Route path="/guest-register" element={<GuestRegister />} />
       <Route path="/pending-approval" element={<PendingApproval />} />
 
-      {/* Admin pages → ห่อด้วย AdminRoute */}
+      {/* 🔹 Admin Routes */}
       <Route
         path="/admin"
         element={
-          <AdminRoute>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <AdminPanel />
-          </AdminRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/admin/pending-users"
         element={
-          <AdminRoute>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <PendingUsers />
-          </AdminRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/admin/approved-users"
         element={
-          <AdminRoute>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <ApprovedUsers />
-          </AdminRoute>
+          </ProtectedRoute>
         }
       />
     </Routes>
