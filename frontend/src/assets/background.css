@@ -1,0 +1,7 @@
+.main-background {
+  background: linear-gradient(to bottom, #ffffff, #fff39e, #fd7521);
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 1rem;
+}

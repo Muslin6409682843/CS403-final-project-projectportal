@@ -1,0 +1,12 @@
+/* src/index.css */
+
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* คุณจะเพิ่ม custom style เองตรงนี้ก็ได้ */
+body {
+  font-family: "Inter", sans-serif;
+}
