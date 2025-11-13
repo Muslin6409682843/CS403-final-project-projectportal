@@ -35,7 +35,7 @@ const AdminPanel: React.FC = () => {
           >
             จัดการผู้ใช้งานทั้งหมด
           </Button>
-          <Button variant="outlined" onClick={() => navigate("/admin/reports")}>
+          <Button variant="outlined" onClick={() => navigate("/admin/projects")}>
             ดูรายงานระบบ
           </Button>
           <Button

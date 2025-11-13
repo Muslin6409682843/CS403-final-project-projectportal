@@ -17,6 +17,7 @@ import PendingUsers from "../pages/admin/PendingUsers";
 import ApprovedUsers from "../pages/admin/ApprovedUsers";
 import PendingApproval from "../pages/PendingApproval";
 import ProtectedRoute from "../route/ProtectedRoute";
+import ProjectList from "../pages/admin/ProjectList";
 
 function AppRoutes() {
   return (
@@ -33,7 +34,7 @@ function AppRoutes() {
       />
       <Route path="/change-password" element={<ChangePassword />} />
       <Route path="/history" element={<History />} />
-      <Route path="/add-project" element={<AddProject />} />
+      
       <Route path="/edit-project/:id" element={<EditProject />} />
       <Route path="/tu-login" element={<TULogin />} />
       <Route path="/login" element={<Login />} />
@@ -68,7 +69,19 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/admin/projects"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <ProjectList />
+          </ProtectedRoute>
+        }
+      />
+    <Route path="/admin/add-project" element={<AddProject />} />
     </Routes>
+
+    
   );
 }
 

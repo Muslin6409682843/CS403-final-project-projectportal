@@ -5,17 +5,20 @@ export interface ProjectData {
   projectNameTH: string;
   projectNameEN: string;
   members: string[];
-  advisor: string; // "ตำแหน่ง ชื่อ"
-  coAdvisors?: string[]; // ["ตำแหน่ง ชื่อ", ...]
+  advisor: string;
+  coAdvisors?: string[];
   year: string;
   abstract: string;
-  abstractEN?: string; // เพิ่มบทคัดย่อภาษาอังกฤษ (ไม่บังคับ)
-  slideFile?: string; // ชื่อไฟล์สไลด์ (ไม่บังคับ)
-  githubLink?: string; // GitHub Link (ไม่บังคับ)
-  zipFile?: string; // Zip File (ไม่บังคับ)
-  uploadedAt?: string;
-  keywordsTH?: string; // เพิ่ม
+  abstractEN?: string;
+  slideFile?: string;
+  githubLink?: string;
+  zipFile?: string;
+  keywordsTH?: string;
   keywordsEN?: string;
+
+  titleFile?: File | null;
+  slideFileObj?: File | null;
+  zipFileObj?: File | null;
 }
 
 interface ProjectFormProps {
@@ -44,9 +47,15 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     slideFile: initialData?.slideFile || "",
     githubLink: initialData?.githubLink || "",
     zipFile: initialData?.zipFile || "",
+    titleFile: null,
+    slideFileObj: null,
+    zipFileObj: null,
   });
 
-  // Advisor หลัก
+  const [titleFile, setTitleFile] = useState<File | null>(null);
+  const [slideFileObj, setSlideFileObj] = useState<File | null>(null);
+  const [zipFileObj, setZipFileObj] = useState<File | null>(null);
+
   const [advisorPosition, setAdvisorPosition] = useState(
     initialData?.advisor ? initialData.advisor.split(" ")[0] : ""
   );
@@ -57,30 +66,20 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   );
   const [customAdvisorPosition, setCustomAdvisorPosition] = useState("");
 
-  // Advisor ร่วม
   const [coAdvisors, setCoAdvisors] = useState(
     initialData?.coAdvisors
       ? initialData.coAdvisors.map((c) => {
           const [pos, ...nameParts] = c.split(" ");
-          return {
-            position: pos,
-            customPosition: "",
-            name: nameParts.join(" "),
-          };
+          return { position: pos, customPosition: "", name: nameParts.join(" ") };
         })
       : [{ position: "", customPosition: "", name: "" }]
   );
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
   const [keywordsTH, setKeywordsTH] = useState(initialData?.keywordsTH || "");
   const [keywordsEN, setKeywordsEN] = useState(initialData?.keywordsEN || "");
-
+  const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">("");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSubmitAlertModal, setShowSubmitAlertModal] = useState(false);
-
-  const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">(
-    ""
-  );
 
   const positions = [
     "",
@@ -92,26 +91,20 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     "อื่นๆ (ระบุ)",
   ];
 
-  // ปี พ.ศ.
   const currentYear = new Date().getFullYear();
   const thaiYears: number[] = [];
-  for (let y = currentYear + 543; y >= 2543; y--) {
-    thaiYears.push(y);
-  }
+  for (let y = currentYear + 543; y >= 2543; y--) thaiYears.push(y);
 
-  // Validate
+  // Validation
   useEffect(() => {
     const newErrors: { [key: string]: string } = {};
     if (!form.title) newErrors.title = "กรุณาอัปโหลดไฟล์ PDF ของโครงงาน";
-
     if (!form.projectNameTH)
       newErrors.projectNameTH = "กรุณากรอกชื่อโครงงาน (ภาษาไทย)";
     else if (/[a-zA-Z]/.test(form.projectNameTH))
       newErrors.projectNameTH = "ชื่อโครงงาน (ไทย) ห้ามมีตัวอักษรภาษาอังกฤษ";
-
     if (!form.projectNameEN)
       newErrors.projectNameEN = "กรุณากรอกชื่อโครงงาน (ภาษาอังกฤษ)";
-
     const memberErrors = form.members.filter((m) => !m.trim());
     if (memberErrors.length === form.members.length)
       newErrors.members = "กรุณากรอกชื่อผู้จัดทำอย่างน้อย 1 คน";
@@ -122,67 +115,45 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       !customAdvisorPosition.trim()
     ) {
       newErrors.advisor = "กรุณากรอกตำแหน่งและชื่ออาจารย์";
-    } else if (!advisorPosition) {
-      newErrors.advisor = "กรุณาเลือกตำแหน่งอาจารย์";
-    } else if (
-      advisorPosition === "อื่นๆ (ระบุ)" &&
-      !customAdvisorPosition.trim()
-    ) {
+    } else if (!advisorPosition) newErrors.advisor = "กรุณาเลือกตำแหน่งอาจารย์";
+    else if (advisorPosition === "อื่นๆ (ระบุ)" && !customAdvisorPosition.trim())
       newErrors.advisor = "กรุณากรอกตำแหน่งอาจารย์";
-    } else if (!advisorName.trim()) {
-      newErrors.advisor = "กรุณากรอกชื่ออาจารย์";
-    }
+    else if (!advisorName.trim()) newErrors.advisor = "กรุณากรอกชื่ออาจารย์";
 
     coAdvisors.forEach((c, idx) => {
-      if (c.position === "" && c.name.trim() === "") return; // ไม่บังคับถ้าว่างทั้งคู่
-
-      if (c.position === "") {
-        newErrors[`coAdvisor-${idx}`] = "กรุณาเลือกตำแหน่งอาจารย์ที่ปรึกษาร่วม";
-      } else if (c.position === "อื่นๆ (ระบุ)" && !c.customPosition.trim()) {
+      if (c.position === "" && c.name.trim() === "") return;
+      if (c.position === "") newErrors[`coAdvisor-${idx}`] = "กรุณาเลือกตำแหน่งอาจารย์ที่ปรึกษาร่วม";
+      else if (c.position === "อื่นๆ (ระบุ)" && !c.customPosition.trim())
         newErrors[`coAdvisor-${idx}`] = "กรุณากรอกตำแหน่งอาจารย์ที่ปรึกษาร่วม";
-      } else if (!c.name.trim()) {
+      else if (!c.name.trim())
         newErrors[`coAdvisor-${idx}`] = "กรุณากรอกชื่ออาจารย์ที่ปรึกษาร่วม";
-      }
     });
 
     if (!form.year) newErrors.year = "กรุณาเลือกปีการศึกษา";
-
     if (!form.abstract.trim()) newErrors.abstract = "กรุณากรอกบทคัดย่อ";
-
-    if (!keywordsTH.trim()) {
-      newErrors.keywordsTH = "กรุณากรอกคำสำคัญ";
-    }
+    if (!keywordsTH.trim()) newErrors.keywordsTH = "กรุณากรอกคำสำคัญ";
 
     setErrors(newErrors);
-  }, [
-    form,
-    advisorPosition,
-    advisorName,
-    customAdvisorPosition,
-    coAdvisors,
-    keywordsTH,
-  ]);
+  }, [form, advisorPosition, advisorName, customAdvisorPosition, coAdvisors, keywordsTH]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
     index?: number
   ) => {
     const { name, value } = e.target;
     if (name === "members" && index !== undefined) {
       const newMembers = [...form.members];
       newMembers[index] = value;
-      setForm((prev) => ({ ...prev, members: newMembers }));
+      setForm({ ...form, members: newMembers });
     } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
+      setForm({ ...form, [name]: value });
     }
     if (onChangeDirty) onChangeDirty();
   };
 
   const handleAddMember = () => {
     if (form.members.length < 2)
-      setForm((prev) => ({ ...prev, members: [...prev.members, ""] }));
+      setForm({ ...form, members: [...form.members, ""] });
   };
 
   const handleFileUpload = (
@@ -190,50 +161,29 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     type: "project" | "slide" | "zip"
   ) => {
     const file = e.target.files?.[0];
-
     if (!file) {
-      // ถ้ายกเลิกการเลือกไฟล์ — เคลียร์ค่าใน form
-      if (type === "project") setForm((prev) => ({ ...prev, title: "" }));
-      if (type === "slide") setForm((prev) => ({ ...prev, slideFile: "" }));
-      if (type === "zip") setForm((prev) => ({ ...prev, zipFile: "" }));
+      if (type === "project") { setForm({ ...form, title: "" }); setTitleFile(null); }
+      if (type === "slide") { setForm({ ...form, slideFile: "" }); setSlideFileObj(null); }
+      if (type === "zip") { setForm({ ...form, zipFile: "" }); setZipFileObj(null); }
       return;
     }
 
-    // ตรวจสอบว่าเป็น PDF เท่านั้นสำหรับโครงงานและสไลด์
-    if (
-      (type === "project" || type === "slide") &&
-      file.type !== "application/pdf"
-    ) {
-      alert("กรุณาเลือกไฟล์ PDF เท่านั้น");
-      return;
+    if ((type === "project" || type === "slide") && file.type !== "application/pdf") {
+      alert("กรุณาเลือกไฟล์ PDF เท่านั้น"); return;
     }
 
-    if (type === "project") {
-      setForm((prev) => ({ ...prev, title: file.name }));
-    } else if (type === "slide") {
-      setForm((prev) => ({ ...prev, slideFile: file.name }));
-    } else if (type === "zip") {
-      setForm((prev) => ({ ...prev, zipFile: file.name }));
-    }
+    if (type === "project") { setForm({ ...form, title: file.name }); setTitleFile(file); }
+    else if (type === "slide") { setForm({ ...form, slideFile: file.name }); setSlideFileObj(file); }
+    else if (type === "zip") { setForm({ ...form, zipFile: file.name }); setZipFileObj(file); }
 
     if (onChangeDirty) onChangeDirty();
   };
 
-  // Co-Advisors
   const handleAddCoAdvisor = () => {
-    if (coAdvisors.length < 5) {
-      setCoAdvisors((prev) => [
-        ...prev,
-        { position: "", customPosition: "", name: "" },
-      ]);
-    }
+    if (coAdvisors.length < 5) setCoAdvisors([...coAdvisors, { position: "", customPosition: "", name: "" }]);
   };
 
-  const handleCoAdvisorChange = (
-    idx: number,
-    field: "position" | "name" | "customPosition",
-    value: string
-  ) => {
+  const handleCoAdvisorChange = (idx: number, field: "position" | "name" | "customPosition", value: string) => {
     const newCoAdvisors = [...coAdvisors];
     newCoAdvisors[idx][field] = value;
     setCoAdvisors(newCoAdvisors);
@@ -242,16 +192,20 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errors).length === 0) {
-      const advisorFull = advisorPosition + " " + advisorName.trim();
+      const advisorFull = advisorPosition === "อื่นๆ (ระบุ)" ? customAdvisorPosition + " " + advisorName.trim() : advisorPosition + " " + advisorName.trim();
       const coAdvisorFull = coAdvisors
-        .filter((c) => c.name.trim() !== "")
-        .map((c) => c.position + " " + c.name.trim());
+        .filter(c => c.name.trim() !== "")
+        .map(c => (c.position === "อื่นๆ (ระบุ)" ? c.customPosition + " " + c.name.trim() : c.position + " " + c.name.trim()));
+
       onSubmit({
         ...form,
         advisor: advisorFull,
         coAdvisors: coAdvisorFull,
         keywordsTH: keywordsTH.trim(),
         keywordsEN: keywordsEN.trim(),
+        titleFile,
+        slideFileObj,
+        zipFileObj,
       });
     } else {
       setShowSubmitAlertModal(true);
