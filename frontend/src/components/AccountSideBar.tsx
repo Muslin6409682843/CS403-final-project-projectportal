@@ -31,7 +31,7 @@ const AccountSideBar = () => {
 
   const handleLogoutConfirm = async () => {
     try {
-      await fetch("http://localhost:8080/api/logout", {
+      await fetch("http://localhost:8081/api/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -39,7 +39,7 @@ const AccountSideBar = () => {
       console.error("Logout request failed:", err);
     }
 
-    localStorage.clear();
+    localStorage.clear(); // หรือ context.clear()
     setShowLogoutModal(false);
     navigate("/login");
   };
@@ -151,7 +151,7 @@ const AccountSideBar = () => {
                 ยืนยัน
               </button>
               <button
-                onClick={() => setShowLogoutModal(false)}
+                onClick={() => setShowLogoutModal(false)} // แค่ปิด modal
                 style={{
                   padding: "12px 24px",
                   backgroundColor: "#ddd",
@@ -161,7 +161,14 @@ const AccountSideBar = () => {
                   fontSize: "16px",
                   fontWeight: 500,
                   cursor: "pointer",
+                  transition: "all 0.2s ease",
                 }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#ccc")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#ddd")
+                }
               >
                 ยกเลิก
               </button>

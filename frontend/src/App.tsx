@@ -13,7 +13,7 @@ function AppContent() {
   // 🧩 ฟังก์ชัน Logout (ใช้ร่วมกันทุกกรณี)
   const logout = async () => {
     try {
-      await fetch("http://localhost:8080/api/logout", {
+      await fetch("http://localhost:8081/api/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -34,28 +34,23 @@ function AppContent() {
   };
 
   useEffect(() => {
-    const activityEvents = ["mousemove", "keydown", "click", "scroll"];
-    activityEvents.forEach((event) =>
-      window.addEventListener(event, resetTimer)
-    );
-    resetTimer();
+  const activityEvents = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+  activityEvents.forEach((event) => window.addEventListener(event, resetTimer));
+  resetTimer();
 
-    // 🧱 ปิดแท็บหรือปิดเบราว์เซอร์ -> logout
-    const handleUnload = () => {
-      const url = "http://localhost:8080/api/logout";
-      navigator.sendBeacon(url);
-      localStorage.clear();
-    };
-    window.addEventListener("beforeunload", handleUnload);
+    // logout เมื่อปิด tab/browser
+  const handleUnload = () => {
+    const url = "http://localhost:8081/api/logout";
+    navigator.sendBeacon(url); // ส่ง logout request
+  };
+  window.addEventListener("beforeunload", handleUnload);
 
-    return () => {
-      activityEvents.forEach((event) =>
-        window.removeEventListener(event, resetTimer)
-      );
-      window.removeEventListener("beforeunload", handleUnload);
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, []);
+  return () => {
+    activityEvents.forEach((event) => window.removeEventListener(event, resetTimer));
+    window.removeEventListener("beforeunload", handleUnload);
+    if (timer.current) clearTimeout(timer.current);
+  };
+}, []);
 
   return (
     <>

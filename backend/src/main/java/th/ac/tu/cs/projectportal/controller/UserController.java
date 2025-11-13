@@ -293,4 +293,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        try {
+            session.invalidate(); // ลบ session ทิ้ง
+            SecurityContextHolder.clearContext(); // ล้าง context ของ Spring Security
+            return ResponseEntity.ok(Map.of("status", true, "message", "Logout สำเร็จ"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("status", false, "message", "Logout ล้มเหลว"));
+        }
+    }
+
 }
