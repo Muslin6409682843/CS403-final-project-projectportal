@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
 function NavBar({ logoSrcPath }: NavBarProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const navigate = useNavigate();
-  const { isLoggedIn, role } = useAuth();
+  const { isLoggedIn, role, guestExpireAt } = useAuth();
 
   const handleAccountClick = () => {
     if (!isLoggedIn) {
@@ -85,6 +85,21 @@ function NavBar({ logoSrcPath }: NavBarProps) {
             </li>
           ))}
         </ul>
+
+        {/* ✅ ส่วนแสดงวันหมดอายุ Guest */}
+        {role === "Guest" && guestExpireAt && (
+          <div
+            style={{
+              fontSize: "0.9rem",
+              color: "#555",
+              marginLeft: "auto",
+              marginRight: "1rem",
+              whiteSpace: "nowrap",
+            }}
+          >
+            🕒 หมดอายุ: {new Date(guestExpireAt).toLocaleString("th-TH")}
+          </div>
+        )}
 
         {/* ปุ่ม Log in */}
         <button

@@ -213,6 +213,8 @@ public class UserController {
         resp.put("status", true);
         resp.put("role", user.getRole());
         resp.put("redirect", "/");
+
+        resp.put("guestExpireAt", user.getGuestExpireAt());
         return ResponseEntity.ok(resp);
     }
 
@@ -284,6 +286,9 @@ public class UserController {
                     response.put("status", true);
                     response.put("username", user.getUsername());
                     response.put("role", user.getRole());
+                    if (user.getRole() == Role.Guest) {
+                        response.put("guestExpireAt", user.getGuestExpireAt()); // ✅ เพิ่ม
+                    }
                     return ResponseEntity.ok(response);
                 }
             }

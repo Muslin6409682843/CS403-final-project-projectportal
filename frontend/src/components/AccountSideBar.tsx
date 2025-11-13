@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
+import { useAuth } from "../context/AuthContext";
 
 const AccountSideBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { logout, setAuth } = useAuth();
 
   const menuItems = [
     { label: "รายการโปรด", path: "/favorite" },
@@ -39,8 +41,8 @@ const AccountSideBar = () => {
       console.error("Logout request failed:", err);
     }
 
-    localStorage.clear(); // หรือ context.clear()
-    setShowLogoutModal(false);
+    setAuth(false, null, null);
+    localStorage.clear();
     navigate("/login");
   };
 

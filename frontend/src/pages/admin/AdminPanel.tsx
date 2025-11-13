@@ -2,31 +2,34 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Box, Typography, Stack } from "@mui/material";
 import { createPortal } from "react-dom";
+import { useAuth } from "../../context/AuthContext"
+
 
 const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { logout, setAuth } = useAuth();
 
-  const logout = async () => {
-    try {
-      await fetch("http://localhost:8081/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-    localStorage.clear();
-    navigate("/login");
-  };
+  const handleLogoutConfirm = async () => {
+  setShowLogoutModal(false);
+  
+  // เรียก logout API backend
+  try {
+    await fetch("http://localhost:8081/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+
+  setAuth(false, null, null); 
+  localStorage.clear(); 
+  navigate("/login");
+};
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
-  };
-
-  const handleLogoutConfirm = () => {
-    setShowLogoutModal(false);
-    logout();
   };
 
   return (

@@ -3,10 +3,12 @@ import { BrowserRouter as Router, useNavigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import AppRoutes from "./route/AppRoutes";
 import logoPath from "./assets/logo.png";
+import { useAuth, AuthProvider } from "./context/AuthContext";
 
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 นาที
 
 function AppContent() {
+  const { logout: contextLogout } = useAuth();
   const navigate = useNavigate();
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -20,7 +22,7 @@ function AppContent() {
     } catch (err) {
       console.error("Logout failed:", err);
     }
-    localStorage.clear();
+    contextLogout();
     navigate("/login");
   };
 
@@ -34,23 +36,33 @@ function AppContent() {
   };
 
   useEffect(() => {
-  const activityEvents = ["mousemove", "keydown", "click", "scroll", "touchstart"];
-  activityEvents.forEach((event) => window.addEventListener(event, resetTimer));
-  resetTimer();
+    const activityEvents = [
+      "mousemove",
+      "keydown",
+      "click",
+      "scroll",
+      "touchstart",
+    ];
+    activityEvents.forEach((event) =>
+      window.addEventListener(event, resetTimer)
+    );
+    resetTimer();
 
     // logout เมื่อปิด tab/browser
-  const handleUnload = () => {
-    const url = "http://localhost:8081/api/logout";
-    navigator.sendBeacon(url); // ส่ง logout request
-  };
-  window.addEventListener("beforeunload", handleUnload);
+    const handleUnload = () => {
+      const url = "http://localhost:8081/api/logout";
+      navigator.sendBeacon(url); // ส่ง logout request
+    };
+    window.addEventListener("beforeunload", handleUnload);
 
-  return () => {
-    activityEvents.forEach((event) => window.removeEventListener(event, resetTimer));
-    window.removeEventListener("beforeunload", handleUnload);
-    if (timer.current) clearTimeout(timer.current);
-  };
-}, []);
+    return () => {
+      activityEvents.forEach((event) =>
+        window.removeEventListener(event, resetTimer)
+      );
+      window.removeEventListener("beforeunload", handleUnload);
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, []);
 
   return (
     <>
@@ -64,8 +76,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }

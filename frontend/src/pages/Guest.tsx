@@ -36,8 +36,8 @@ const Guest: React.FC = () => {
       );
 
       if (res.data.status) {
-        localStorage.setItem("role", res.data.role); // เก็บ role
-        setAuth(true, res.data.role);
+        localStorage.setItem("role", res.data.role);
+        setAuth(true, res.data.role, res.data.guestExpireAt || null);
         navigate(res.data.redirect); // redirect ตาม backend
       } else {
         setApiError(res.data.error);
