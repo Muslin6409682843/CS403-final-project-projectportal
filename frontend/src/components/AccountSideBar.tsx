@@ -17,7 +17,6 @@ const AccountSideBar = () => {
       external: true,
     },
     { label: "ประวัติการเข้าชม", path: "/history" },
-    { label: "โครงงานของฉัน", path: "/my-projects" },
     { label: "ออกจากระบบ", path: "/logout" },
   ];
 
