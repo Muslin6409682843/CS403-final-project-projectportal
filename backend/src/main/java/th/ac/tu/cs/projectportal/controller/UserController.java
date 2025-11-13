@@ -264,4 +264,33 @@ public class UserController {
         return ResponseEntity.ok("✅ ตั้งรหัสผ่านใหม่เรียบร้อยแล้ว");
     }
 
+    @GetMapping("/check-session")
+    public ResponseEntity<Map<String, Object>> checkSession(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        // ดึง authentication context ที่ Spring Security เก็บไว้ใน session
+        var context = session.getAttribute("SPRING_SECURITY_CONTEXT");
+
+        if (context != null) {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal != null && !"anonymousUser".equals(principal)) {
+                String username = principal.toString();
+
+                // หาข้อมูล user จาก database
+                var userOpt = userRepository.findByUsername(username);
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+
+                    response.put("status", true);
+                    response.put("username", user.getUsername());
+                    response.put("role", user.getRole());
+                    return ResponseEntity.ok(response);
+                }
+            }
+        }
+
+        response.put("status", false);
+        return ResponseEntity.ok(response);
+    }
+
 }
