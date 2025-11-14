@@ -41,6 +41,11 @@ public class ProjectController {
             @RequestPart(value = "zipFile", required = false) MultipartFile zipFile
     ) {
         try {
+
+            System.out.println("zipFile = " + (zipFile != null ? zipFile.getOriginalFilename() : "null"));
+            System.out.println("slideFile = " + (slideFile != null ? slideFile.getOriginalFilename() : "null"));
+            System.out.println("file = " + (file != null ? file.getOriginalFilename() : "null"));
+            
             Project project = new Project();
             project.setTitleTh(projectNameTH);
             project.setTitleEn(projectNameEN);
