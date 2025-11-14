@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/api/admin/projects") 
@@ -63,7 +64,12 @@ public class ProjectController {
 
             // สร้างโฟลเดอร์ upload ถ้าไม่มี
             String uploadDir = "upload";
-            Files.createDirectories(Paths.get(uploadDir));
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
+            System.out.println("Absolute path: " + uploadPath);
+            Files.createDirectories(uploadPath);
+
+            // Debug: ดู path ที่เซฟจริง
+            System.out.println("Saving to: " + Paths.get(uploadDir).toAbsolutePath());
 
             // บันทึกไฟล์ PDF
             if (file != null) {
@@ -106,6 +112,40 @@ public class ProjectController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @DeleteMapping("/{id}")
+public ResponseEntity<?> deleteProject(@PathVariable Long id) {
+    try {
+        Project project = projectService.getProjectById(id);
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("ไม่พบโครงงาน ID: " + id);
+        }
+
+        // ลบไฟล์ในโฟลเดอร์ upload/
+        String uploadDir = "upload";
+        if (project.getFile() != null) {
+            Files.deleteIfExists(Paths.get(uploadDir, project.getFile()));
+        }
+        if (project.getUploadFile() != null) {
+            Files.deleteIfExists(Paths.get(uploadDir, project.getUploadFile()));
+        }
+        if (project.getUploadCode() != null) {
+            Files.deleteIfExists(Paths.get(uploadDir, project.getUploadCode()));
+        }
+
+        // ลบจาก database
+        projectService.deleteProjectById(id);
+
+        return ResponseEntity.ok("ลบโครงงานและไฟล์เรียบร้อย ID: " + id);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("เกิดข้อผิดพลาดในการลบโครงงาน: " + e.getMessage());
+    }
 }
+
+
 
 }

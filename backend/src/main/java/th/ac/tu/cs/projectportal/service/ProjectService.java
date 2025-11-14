@@ -14,13 +14,31 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
+    // บันทึกโครงงาน
     public Project saveProject(Project project) {
         return projectRepository.save(project);
     }
 
+    // ดึงโครงงานทั้งหมด
     public List<Project> getAllProjects() {
-    return projectRepository.findAll();
+        return projectRepository.findAll();
+    }
+
+    // ตรวจสอบว่าโครงงานมีอยู่ไหม 
+    public boolean existsById(Long id) {
+        return projectRepository.existsById(id);
+    }
+
+    //  ลบโครงงาน 
+    public void deleteProjectById(Long id) {
+        projectRepository.deleteById(id);
+    }
+
+    public Project getProjectById(Long id) {
+    return projectRepository.findById(id).orElse(null);
 }
+
+
 
 
 }

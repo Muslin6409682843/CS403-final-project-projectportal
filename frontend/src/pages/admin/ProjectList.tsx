@@ -41,18 +41,19 @@ const ProjectList: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("คุณต้องการลบโครงงานนี้หรือไม่?")) return;
-    try {
-      await axios.delete(`http://localhost:8081/api/admin/projects/${id}`, {
-        withCredentials: true,
-      });
-      alert("ลบโครงงานเรียบร้อยแล้ว");
-      fetchProjects();
-    } catch (err) {
-      console.error("Delete Project Error:", err);
-      alert("เกิดข้อผิดพลาดในการลบโครงงาน");
-    }
-  };
+  if (!window.confirm("คุณต้องการลบโครงงานนี้หรือไม่?")) return;
+  try {
+    const res = await axios.delete(`http://localhost:8081/api/admin/projects/${id}`, {
+      withCredentials: true,
+    });
+    alert(res.data); // ข้อความจาก backend
+    fetchProjects(); // รีเฟรชรายการโปรเจค
+  } catch (err: any) {
+    console.error("Delete Project Error:", err);
+    alert(err.response?.data || "เกิดข้อผิดพลาดในการลบโครงงาน");
+  }
+};
+
 
   const filteredProjects = projects.filter((p) => {
     const query = search.trim().toLowerCase();
