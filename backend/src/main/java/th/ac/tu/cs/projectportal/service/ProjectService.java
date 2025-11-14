@@ -14,7 +14,7 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
-    // บันทึกโครงงาน
+    // บันทึกหรืออัปเดตโครงงาน
     public Project saveProject(Project project) {
         return projectRepository.save(project);
     }
@@ -34,6 +34,7 @@ public class ProjectService {
         projectRepository.deleteById(id);
     }
 
+    // ดึงโครงงานโดยใช้ ID
     public Project getProjectById(Long id) {
     return projectRepository.findById(id).orElse(null);
 }

@@ -79,6 +79,7 @@ function AppRoutes() {
         }
       />
     <Route path="/admin/add-project" element={<AddProject />} />
+    <Route path="/admin/edit-project/:id" element={<EditProject />} />
     </Routes>
 
     

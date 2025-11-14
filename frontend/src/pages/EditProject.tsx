@@ -1,63 +1,60 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ProjectForm, { type ProjectData } from "../components/ProjectForm";
-import "bootstrap/dist/css/bootstrap.css";
-import "../assets/background.css";
 import { createPortal } from "react-dom";
-
-// Mock ข้อมูล MyProjects
-const MOCK_PROJECTS: (ProjectData & { id: string })[] = [
-  {
-    id: "p1",
-    title: "ระบบจองห้องเรียนออนไลน์",
-    projectNameTH: "ระบบจองห้องเรียนออนไลน์",
-    projectNameEN: "Online Classroom Booking System",
-    members: ["นายสมศักดิ์ ดีเด่น"],
-    advisor: "อ. ดร. นันทนา ใจเย็น",
-    year: "2025",
-    abstract: "บทคัดย่อภาษาไทย...",
-    uploadedAt: "2025-09-10T14:30:00",
-  },
-  {
-    id: "p2",
-    title: "แพลตฟอร์มสื่อสารเพื่อการเรียนการสอน",
-    projectNameTH: "แพลตฟอร์มสื่อสารเพื่อการเรียนการสอน",
-    projectNameEN: "Communication Platform for Learning",
-    members: ["ทีมงานนักศึกษาปี 4"],
-    advisor: "อ. ดร. กาญจนา ใจดี",
-    year: "2023",
-    abstract: "บทคัดย่อภาษาไทย...",
-    uploadedAt: "2025-09-05T09:00:00",
-  },
-  {
-    id: "p3",
-    title: "แอปพลิเคชันวิเคราะห์ข้อมูลการเดินทาง",
-    projectNameTH: "แอปพลิเคชันวิเคราะห์ข้อมูลการเดินทาง",
-    projectNameEN: "Travel Data Analysis App",
-    members: ["น.ส. สมหญิง เก่งงาน"],
-    advisor: "อ. ดร. สมปอง สมใจ",
-    year: "2024",
-    abstract: "บทคัดย่อภาษาไทย...",
-    uploadedAt: "2025-09-08T16:45:00",
-  },
-];
+import axios from "axios";
 
 const EditProject: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [project, setProject] = useState<ProjectData | undefined>(undefined);
   const [isDirty, setIsDirty] = useState(false);
   const [showBackModal, setShowBackModal] = useState(false);
+  const [initialData, setInitialData] = useState<ProjectData | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  // โหลดข้อมูลโครงงานจาก backend
   useEffect(() => {
-    const proj = MOCK_PROJECTS.find((p) => p.id === id);
-    setProject(proj);
+    if (!id) return;
+
+    const fetchProject = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8081/api/admin/projects/${id}`, {
+          withCredentials: true,
+        });
+
+        const data: ProjectData = {
+          title: res.data.file || "",
+          projectNameTH: res.data.titleTh,
+          projectNameEN: res.data.titleEn,
+          members: res.data.coAdvisor ? res.data.coAdvisor.split(",").map((c: string) => c.trim()) : [],
+          advisor: res.data.advisor,
+          coAdvisors: res.data.coAdvisor ? res.data.coAdvisor.split(",").map((c: string) => c.trim()) : [],
+          year: res.data.category,
+          abstract: res.data.abstractTh,
+          abstractEN: res.data.abstractEn,
+          keywordsTH: res.data.keywordsTH || "",
+          keywordsEN: res.data.keywordsEN || "",
+          titleFile: null,
+          slideFileObj: null,
+          zipFileObj: null,
+        };
+
+        setInitialData(data);
+      } catch (err) {
+        console.error(err);
+        alert("ไม่สามารถโหลดข้อมูลโครงงานได้");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
   }, [id]);
 
   const handleBackClick = () => {
     if (!isDirty) {
-      navigate("/my-projects");
+      navigate("/admin/projects");
     } else {
       setShowBackModal(true);
     }
@@ -65,20 +62,51 @@ const EditProject: React.FC = () => {
 
   const confirmBack = () => {
     setShowBackModal(false);
-    navigate("/my-projects");
+    navigate("/admin/projects");
   };
 
-  const handleSubmit = (data: ProjectData) => {
-    console.log("แก้ไขโครงงาน:", data);
-    navigate("/my-projects");
+  const handleSubmit = async (data: ProjectData) => {
+    try {
+      if (!id) return;
+
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("projectNameTH", data.projectNameTH);
+      formData.append("projectNameEN", data.projectNameEN);
+      formData.append("members", JSON.stringify(data.members));
+      formData.append("advisor", data.advisor);
+      formData.append("coAdvisors", JSON.stringify(data.coAdvisors || []));
+      formData.append("year", data.year);
+      formData.append("abstractTh", data.abstract);
+      formData.append("abstractEn", data.abstractEN || "");
+      formData.append("keywordsTH", data.keywordsTH || "");
+      formData.append("keywordsEN", data.keywordsEN || "");
+
+      if (data.titleFile) formData.append("file", data.titleFile);
+      if (data.slideFileObj) formData.append("slideFile", data.slideFileObj);
+      if (data.zipFileObj) formData.append("zipFile", data.zipFileObj);
+
+      const res = await axios.put(
+        `http://localhost:8081/api/admin/projects/edit/${id}`,
+        formData,
+        { withCredentials: true }
+      );
+
+      alert("แก้ไขโครงงานสำเร็จ");
+      navigate("/admin/projects");
+    } catch (err: any) {
+      console.error(err);
+      alert("ไม่สามารถแก้ไขโครงงานได้: " + (err.response?.data || err.message));
+    }
   };
 
-  const handleDelete = () => {
-    console.log("ลบโครงงาน:", project);
-    navigate("/my-projects");
-  };
+  if (loading) {
+    return <div style={{ padding: "2rem" }}>กำลังโหลดข้อมูลโครงงาน...</div>;
+  }
 
-  if (!project) return <p>Loading...</p>;
+  if (!initialData) {
+    return <div style={{ padding: "2rem" }}>ไม่พบข้อมูลโครงงาน</div>;
+  }
 
   return (
     <div
@@ -119,12 +147,11 @@ const EditProject: React.FC = () => {
 
         <h2>แก้ไขโครงงาน</h2>
 
-        {/* เพิ่มระยะห่างจากหัวข้อ */}
         <div style={{ marginTop: "2rem" }}>
           <ProjectForm
-            initialData={project}
+            initialData={initialData}
             onSubmit={handleSubmit}
-            onDelete={handleDelete}
+            onDelete={undefined}
             onChangeDirty={() => setIsDirty(true)}
           />
         </div>
@@ -159,7 +186,7 @@ const EditProject: React.FC = () => {
               }}
             >
               <h2 style={{ marginBottom: "1.5rem" }}>
-                คุณไม่ต้องการบันทึกการเปลี่ยนแปลงที่เกิดขึ้นกับโครงงานใช่หรือไม่?
+                คุณไม่ต้องการบันทึกการแก้ไขโครงงานใช่หรือไม่?
               </h2>
               <button
                 onClick={confirmBack}
