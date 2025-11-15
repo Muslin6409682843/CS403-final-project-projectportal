@@ -23,7 +23,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           fontWeight: "bold",
           color: "#1835a9ff",
           marginBottom: "12px",
-          textAlign: "left", // ✅ ชิดซ้าย
+          textAlign: "left",
         }}
       >
         {titleTh} <br />
