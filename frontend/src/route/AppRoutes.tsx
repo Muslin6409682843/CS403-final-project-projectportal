@@ -3,6 +3,7 @@ import Browse from "../pages/Browse";
 import Favorite from "../pages/Favorite";
 import ChangePassword from "../pages/ChangePassword";
 import History from "../pages/History";
+import Project from "../pages/Project";
 import AddProject from "../pages/AddProject";
 import EditProject from "../pages/EditProject";
 import Home from "../pages/Home";
@@ -33,6 +34,7 @@ function AppRoutes() {
       />
       <Route path="/change-password" element={<ChangePassword />} />
       <Route path="/history" element={<History />} />
+      <Route path="/project" element={<Project />} />
       <Route path="/add-project" element={<AddProject />} />
       <Route path="/edit-project/:id" element={<EditProject />} />
       <Route path="/tu-login" element={<TULogin />} />
