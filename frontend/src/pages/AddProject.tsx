@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProjectForm, { type ProjectData } from "../components/ProjectForm";
-import "bootstrap/dist/css/bootstrap.css";
-import "../assets/background.css";
 import { createPortal } from "react-dom";
 
 const AddProject: React.FC = () => {
@@ -13,7 +11,7 @@ const AddProject: React.FC = () => {
 
   const handleBackClick = () => {
     if (!isDirty) {
-      navigate("/my-projects");
+      navigate("/admin/projects");
     } else {
       setShowBackModal(true);
     }
@@ -21,13 +19,61 @@ const AddProject: React.FC = () => {
 
   const confirmBack = () => {
     setShowBackModal(false);
-    navigate("/my-projects");
+    navigate("/admin/projects");
   };
 
-  const handleSubmit = (data: ProjectData) => {
-    console.log("เพิ่มโครงงาน:", data);
-    // TODO: POST ไป backend
-    navigate("/my-projects");
+  const handleSubmit = async (data: ProjectData) => {
+    try {
+      // สร้าง FormData สำหรับส่ง multipart/form-data
+      const formData = new FormData();
+
+      formData.append("title", data.title); // ชื่อไฟล์ PDF
+      formData.append("projectNameTH", data.projectNameTH);
+      formData.append("projectNameEN", data.projectNameEN);
+      formData.append("members", JSON.stringify(data.members));
+      formData.append("advisor", data.advisor);
+      formData.append("coAdvisors", JSON.stringify(data.coAdvisors || []));
+      formData.append("year", data.year);
+      formData.append("abstractTh", data.abstract);
+      formData.append("abstractEn", data.abstractEN || "");
+      formData.append("keywordsTH", data.keywordsTH || "");
+      formData.append("keywordsEN", data.keywordsEN || "");
+
+      // ไฟล์ PDF / Slide / Zip
+      // สมมติ ProjectForm เก็บไฟล์ใน state เป็น File objects: titleFile, slideFileObj, zipFileObj
+      if ((data as any).titleFile) {
+        formData.append("file", (data as any).titleFile);
+      }
+      if ((data as any).slideFileObj) {
+        formData.append("slideFile", (data as any).slideFileObj);
+      }
+      if ((data as any).zipFileObj) {
+        formData.append("zipFile", (data as any).zipFileObj); // รอแก้ไข
+      }
+
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+    const response = await fetch("http://localhost:8081/api/admin/projects/add", {
+      method: "POST",
+      body: formData,
+      credentials: "include", 
+    });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+
+      const savedProject = await response.json();
+      console.log("บันทึกสำเร็จ:", savedProject);
+
+      navigate("/admin/projects");
+    } catch (error: any) {
+      console.error("เกิดข้อผิดพลาด:", error.message);
+      alert("ไม่สามารถบันทึกโครงงานได้: " + error.message);
+    }
   };
 
   return (
@@ -69,7 +115,6 @@ const AddProject: React.FC = () => {
 
         <h2>เพิ่มโครงงานใหม่</h2>
 
-        {/* เพิ่มระยะห่างจากหัวข้อ */}
         <div style={{ marginTop: "2rem" }}>
           <ProjectForm
             onSubmit={handleSubmit}

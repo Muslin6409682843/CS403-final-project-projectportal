@@ -18,6 +18,7 @@ import PendingUsers from "../pages/admin/PendingUsers";
 import ApprovedUsers from "../pages/admin/ApprovedUsers";
 import PendingApproval from "../pages/PendingApproval";
 import ProtectedRoute from "../route/ProtectedRoute";
+import ProjectList from "../pages/admin/ProjectList";
 
 function AppRoutes() {
   return (
@@ -70,6 +71,17 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/admin/projects"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <ProjectList />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/admin/add-project" element={<AddProject />} />
+      <Route path="/admin/edit-project/:id" element={<EditProject />} />
     </Routes>
   );
 }
