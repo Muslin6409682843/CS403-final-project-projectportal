@@ -11,50 +11,54 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ProjectID")
     private Long projectID;
 
-    @Column(name = "Title_th", nullable = false, length = 100)
+    @Column(name = "Title_th")
     private String titleTh;
 
-    @Column(name = "Title_en", nullable = false, length = 100)
+    @Column(name = "Title_en")
     private String titleEn;
 
-    @Column(name = "Abstract_th", nullable = false, length = 255)
+    @Column(name = "Abstract_th")
     private String abstractTh;
 
-    @Column(name = "Abstract_en", nullable = false, length = 255)
+    @Column(name = "Abstract_en")
     private String abstractEn;
 
-    @Column(name = "Keyword_th", nullable = false, length = 100)
+    @Column(name = "Keyword_th")
     private String keywordTh;
 
-    @Column(name = "Keyword_en", nullable = false, length = 100)
+    @Column(name = "Keyword_en")
     private String keywordEn;
 
-    @Column(name = "Advisor", length = 100)
+    @Column(name = "Member")
+    private String member;
+
+    @Column(name = "Advisor")
     private String advisor;
 
-    @Column(name = "Co-advisor", length = 100)
+    @Column(name = "Co_advisor")
     private String coAdvisor;
 
-    @Column(name = "File", length = 100)
+    @Column(name = "File")
     private String file;
 
-    @Column(name = "CreateDate")
+    @Column(name = "create_date")
     private LocalDateTime createDate;
 
-    @Column(name = "Category", length = 100)
+    @Column(name = "Category")
     private String category;
 
-    @Column(name = "UploadedDate")
-    private LocalDateTime uploadedDate;
+    @Column(name = "year")
+    private Integer year;
 
-    @Column(name = "UploadedBy")
-    private Long uploadedBy;
+    @Column(name = "slide_file")
+    private String slideFile;
 
-    @Column(name = "Upload_file", length = 100)
-    private String uploadFile;
+    @Column(name = "zip_file")
+    private String zipFile;
 
-    @Column(name = "Upload_code", length = 100)
-    private String uploadCode;
+    @Column(name = "github")
+    private String github;
 }

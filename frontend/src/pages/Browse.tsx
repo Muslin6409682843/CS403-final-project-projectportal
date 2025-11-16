@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import SideBar from "../components/SideBar";
 import TextSearch from "../components/TextSearch";
 import Sorting from "../components/Sorting";
@@ -7,46 +8,41 @@ import Pagination from "../components/Pagination";
 import "bootstrap/dist/css/bootstrap.css";
 import "../assets/background.css";
 
+interface Project {
+  projectID: number;
+  titleTh: string;
+  member: string;
+  advisor: string;
+  coAdvisor?: string;
+  year: number;
+  createDate?: string;
+}
+
 function Browse() {
   // State
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   const itemsPerPage = 2;
 
-  // Project data
-  const projects = [
-    {
-      id: "p1",
-      title: "ระบบจัดการโปรเจกต์นักศึกษา",
-      author: "นายสมชาย ใจดี",
-      advisor: "อ. ดร. วิไล ศรีสุข",
-      year: "2025",
-    },
-    {
-      id: "p2",
-      title: "แอปพลิเคชันวิเคราะห์ข้อมูลการเดินทาง",
-      author: "น.ส. สมหญิง เก่งงาน",
-      advisor: "อ. ดร. สมปอง สมใจ",
-      year: "2024",
-    },
-    {
-      id: "p3",
-      title: "แพลตฟอร์มสื่อสารเพื่อการเรียนการสอน",
-      author: "ทีมงานนักศึกษาปี 4",
-      advisor: "อ. ดร. กาญจนา ใจดี",
-      year: "2023",
-    },
-    {
-      id: "p4",
-      title: "ระบบจองห้องเรียนออนไลน์",
-      author: "นายสมศักดิ์ ดีเด่น",
-      advisor: "อ. ดร. นันทนา ใจเย็น",
-      year: "2025",
-    },
-  ];
+  // Fetch data from backend
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await axios.get<Project[]>(
+          "http://localhost:8081/api/projects",
+          { withCredentials: true }
+        );
+        setProjects(res.data);
+      } catch (err) {
+        console.error("ไม่สามารถโหลดข้อมูลโครงงาน:", err);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   // Handlers
   const handleSearch = (query: string) => {
@@ -64,13 +60,14 @@ function Browse() {
     );
   };
 
+
   // Filter + Sort
   const filteredProjects = projects.filter((p) =>
-    p.title.includes(searchQuery)
+    p.titleTh.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const sortedProjects = filteredProjects.sort((a, b) =>
-    sortOption === "newest" ? +b.year - +a.year : +a.year - +b.year
+    sortOption === "newest" ? b.year - a.year : a.year - b.year
   );
 
   // Pagination
@@ -144,14 +141,16 @@ function Browse() {
         >
           {displayedProjects.map((project) => (
             <ProjectCard
-              key={project.id}
-              id={project.id}
-              title={project.title}
-              author={project.author}
+              key={project.projectID}
+              id={project.projectID}
+              title={project.titleTh}
+              author={project.member}
               advisor={project.advisor}
               year={project.year}
-              onNavigate={(id) => console.log("ไปหน้ารายละเอียด:", id)}
-              isFavorite={favorites.includes(project.id)}
+              onNavigate={(id) =>
+                console.log("ไปหน้ารายละเอียด:", id)
+              }
+              isFavorite={favorites.includes(project.projectID)}
               onToggleFavorite={toggleFavorite}
             />
           ))}

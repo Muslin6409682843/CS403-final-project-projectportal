@@ -24,50 +24,61 @@ const AddProject: React.FC = () => {
 
   const handleSubmit = async (data: ProjectData) => {
     try {
-      // สร้าง FormData สำหรับส่ง multipart/form-data
       const formData = new FormData();
 
-      formData.append("title", data.title); // ชื่อไฟล์ PDF
+      // ฟิลด์ข้อความ
+      formData.append("title", data.title);
       formData.append("projectNameTH", data.projectNameTH);
       formData.append("projectNameEN", data.projectNameEN);
-      formData.append("members", JSON.stringify(data.members));
-      formData.append("advisor", data.advisor);
+
+      formData.append("members", JSON.stringify(data.members || []));
+      formData.append("advisor", data.advisor || "");
       formData.append("coAdvisors", JSON.stringify(data.coAdvisors || []));
-      formData.append("year", data.year);
-      formData.append("abstractTh", data.abstract);
-      formData.append("abstractEn", data.abstractEN || "");
+
+      formData.append("year", data.year || "");
+      formData.append("category", data.category || "");
+
+      formData.append("abstractTh", data.abstractTh || "");
+      formData.append("abstractEn", data.abstractEn || "");
+
+
       formData.append("keywordsTH", data.keywordsTH || "");
       formData.append("keywordsEN", data.keywordsEN || "");
 
-      // ไฟล์ PDF / Slide / Zip
-      // สมมติ ProjectForm เก็บไฟล์ใน state เป็น File objects: titleFile, slideFileObj, zipFileObj
+      formData.append("githubLink", data.github || "");
+
+      // ไฟล์ PDF (ชื่อ file)
       if ((data as any).titleFile) {
         formData.append("file", (data as any).titleFile);
       }
+
+      // SlideFile
       if ((data as any).slideFileObj) {
         formData.append("slideFile", (data as any).slideFileObj);
       }
+
+      // ZipFile
       if ((data as any).zipFileObj) {
-        formData.append("zipFile", (data as any).zipFileObj); // รอแก้ไข
+        formData.append("zipFile", (data as any).zipFileObj);
       }
 
+      // Debug FormData
       for (let pair of formData.entries()) {
         console.log(pair[0], pair[1]);
       }
 
-    const response = await fetch("http://localhost:8081/api/admin/projects/add", {
-      method: "POST",
-      body: formData,
-      credentials: "include", 
-    });
+      const response = await fetch(
+        "http://localhost:8081/api/admin/projects/add",
+        {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+        throw new Error(await response.text());
       }
-
-      const savedProject = await response.json();
-      console.log("บันทึกสำเร็จ:", savedProject);
 
       navigate("/admin/projects");
     } catch (error: any) {
@@ -77,21 +88,9 @@ const AddProject: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "calc(100vh - 80px)",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          flex: 1,
-          padding: "2rem",
-          overflowY: "auto",
-          backgroundColor: "#f8f9fa",
-        }}
-      >
+    <div style={{ display: "flex", height: "calc(100vh - 80px)", overflow: "hidden" }}>
+      <div style={{ flex: 1, padding: "2rem", overflowY: "auto", backgroundColor: "#f8f9fa" }}>
+        
         <button
           onClick={handleBackClick}
           style={{
@@ -100,14 +99,8 @@ const AddProject: React.FC = () => {
             backgroundColor: "#eee",
             border: "none",
             borderRadius: "6px",
-            color: "#000000",
             fontWeight: 600,
             cursor: "pointer",
-            fontSize: "1rem",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.3rem",
-            width: "fit-content",
           }}
         >
           ← กลับไปหน้าโครงงานของฉัน
@@ -124,7 +117,6 @@ const AddProject: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal Confirm Back */}
       {showBackModal &&
         createPortal(
           <div
@@ -138,7 +130,6 @@ const AddProject: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              zIndex: 999999,
             }}
           >
             <div
@@ -149,12 +140,10 @@ const AddProject: React.FC = () => {
                 textAlign: "center",
                 maxWidth: "400px",
                 width: "90%",
-                boxShadow: "0 0 15px rgba(0,0,0,0.3)",
               }}
             >
-              <h2 style={{ marginBottom: "1.5rem" }}>
-                คุณไม่ต้องการบันทึกการเพิ่มโครงงานใช่หรือไม่?
-              </h2>
+              <h2>คุณไม่ต้องการบันทึกการเพิ่มโครงงานใช่หรือไม่?</h2>
+
               <button
                 onClick={confirmBack}
                 style={{
@@ -163,25 +152,18 @@ const AddProject: React.FC = () => {
                   color: "#fff",
                   border: "none",
                   borderRadius: "12px",
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  cursor: "pointer",
                   marginRight: "1rem",
                 }}
               >
                 ยืนยัน
               </button>
+
               <button
                 onClick={() => setShowBackModal(false)}
                 style={{
                   padding: "12px 24px",
                   backgroundColor: "#ddd",
-                  color: "#333",
-                  border: "none",
                   borderRadius: "12px",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  cursor: "pointer",
                 }}
               >
                 ยกเลิก

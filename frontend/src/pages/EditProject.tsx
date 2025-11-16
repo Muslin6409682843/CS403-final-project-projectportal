@@ -13,7 +13,6 @@ const EditProject: React.FC = () => {
   const [initialData, setInitialData] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // โหลดข้อมูลโครงงานจาก backend
   useEffect(() => {
     if (!id) return;
 
@@ -27,14 +26,16 @@ const EditProject: React.FC = () => {
           title: res.data.file || "",
           projectNameTH: res.data.titleTh,
           projectNameEN: res.data.titleEn,
-          members: res.data.coAdvisor ? res.data.coAdvisor.split(",").map((c: string) => c.trim()) : [],
-          advisor: res.data.advisor,
-          coAdvisors: res.data.coAdvisor ? res.data.coAdvisor.split(",").map((c: string) => c.trim()) : [],
-          year: res.data.category,
-          abstract: res.data.abstractTh,
-          abstractEN: res.data.abstractEn,
+          members: res.data.members || [],
+          advisor: res.data.advisor || "",
+          coAdvisors: res.data.coAdvisors || [],
+          year: res.data.year || "",
+          category: res.data.category || "", 
+          abstractTh: res.data.abstractTh || "",
+          abstractEn: res.data.abstractEn || "",
           keywordsTH: res.data.keywordsTH || "",
           keywordsEN: res.data.keywordsEN || "",
+          github: res.data.github || "",
           titleFile: null,
           slideFileObj: null,
           zipFileObj: null,
@@ -53,11 +54,8 @@ const EditProject: React.FC = () => {
   }, [id]);
 
   const handleBackClick = () => {
-    if (!isDirty) {
-      navigate("/admin/projects");
-    } else {
-      setShowBackModal(true);
-    }
+    if (!isDirty) navigate("/admin/projects");
+    else setShowBackModal(true);
   };
 
   const confirmBack = () => {
@@ -77,16 +75,18 @@ const EditProject: React.FC = () => {
       formData.append("advisor", data.advisor);
       formData.append("coAdvisors", JSON.stringify(data.coAdvisors || []));
       formData.append("year", data.year);
-      formData.append("abstractTh", data.abstract);
-      formData.append("abstractEn", data.abstractEN || "");
+      formData.append("category", data.category || "");
+      formData.append("abstractTh", data.abstractTh);
+      formData.append("abstractEn", data.abstractEn || "");
       formData.append("keywordsTH", data.keywordsTH || "");
       formData.append("keywordsEN", data.keywordsEN || "");
+      formData.append("github", data.github || "");
 
       if (data.titleFile) formData.append("file", data.titleFile);
       if (data.slideFileObj) formData.append("slideFile", data.slideFileObj);
       if (data.zipFileObj) formData.append("zipFile", data.zipFileObj);
 
-      const res = await axios.put(
+      await axios.put(
         `http://localhost:8081/api/admin/projects/edit/${id}`,
         formData,
         { withCredentials: true }
@@ -100,30 +100,12 @@ const EditProject: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return <div style={{ padding: "2rem" }}>กำลังโหลดข้อมูลโครงงาน...</div>;
-  }
-
-  if (!initialData) {
-    return <div style={{ padding: "2rem" }}>ไม่พบข้อมูลโครงงาน</div>;
-  }
+  if (loading) return <div style={{ padding: "2rem" }}>กำลังโหลดข้อมูลโครงงาน...</div>;
+  if (!initialData) return <div style={{ padding: "2rem" }}>ไม่พบข้อมูลโครงงาน</div>;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "calc(100vh - 80px)",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          flex: 1,
-          padding: "2rem",
-          overflowY: "auto",
-          backgroundColor: "#f8f9fa",
-        }}
-      >
+    <div style={{ display: "flex", height: "calc(100vh - 80px)", overflow: "hidden" }}>
+      <div style={{ flex: 1, padding: "2rem", overflowY: "auto", backgroundColor: "#f8f9fa" }}>
         <button
           onClick={handleBackClick}
           style={{
@@ -157,7 +139,6 @@ const EditProject: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal Confirm Back */}
       {showBackModal &&
         createPortal(
           <div

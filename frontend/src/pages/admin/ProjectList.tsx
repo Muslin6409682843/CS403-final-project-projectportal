@@ -11,9 +11,10 @@ interface Project {
   advisor: string;
   coAdvisor: string;
   category: string;
+  year: string;
   createDate: string;
-  uploadFile: string | null;
-  uploadCode: string | null;
+  slideFile?: string | null;
+  zipFile?: string | null;
 }
 
 const ProjectList: React.FC = () => {
@@ -41,19 +42,18 @@ const ProjectList: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: number) => {
-  if (!window.confirm("คุณต้องการลบโครงงานนี้หรือไม่?")) return;
-  try {
-    const res = await axios.delete(`http://localhost:8081/api/admin/projects/${id}`, {
-      withCredentials: true,
-    });
-    alert(res.data); // ข้อความจาก backend
-    fetchProjects(); // รีเฟรชรายการโปรเจค
-  } catch (err: any) {
-    console.error("Delete Project Error:", err);
-    alert(err.response?.data || "เกิดข้อผิดพลาดในการลบโครงงาน");
-  }
-};
-
+    if (!window.confirm("คุณต้องการลบโครงงานนี้หรือไม่?")) return;
+    try {
+      const res = await axios.delete(`http://localhost:8081/api/admin/projects/${id}`, {
+        withCredentials: true,
+      });
+      alert(res.data);
+      fetchProjects();
+    } catch (err: any) {
+      console.error("Delete Project Error:", err);
+      alert(err.response?.data || "เกิดข้อผิดพลาดในการลบโครงงาน");
+    }
+  };
 
   const filteredProjects = projects.filter((p) => {
     const query = search.trim().toLowerCase();
@@ -70,7 +70,7 @@ const ProjectList: React.FC = () => {
     { field: "titleEn", headerName: "ชื่อโครงงาน (EN)", flex: 1 },
     { field: "advisor", headerName: "อาจารย์ที่ปรึกษา", width: 200 },
     { field: "coAdvisor", headerName: "ผู้ช่วยที่ปรึกษา", width: 200 },
-    { field: "category", headerName: "ปี", width: 150 },
+    { field: "year", headerName: "ปี", width: 150 },
     {
       field: "createDate",
       headerName: "วันที่สร้าง",
@@ -79,17 +79,18 @@ const ProjectList: React.FC = () => {
         params.value ? new Date(params.value).toLocaleString("th-TH", { hour12: false }) : "—",
     },
     {
-      field: "uploadFile",
+      field: "slideFile",
       headerName: "ไฟล์ PDF",
       width: 150,
       renderCell: (params: any) =>
         params.value ? (
           <Button
-            variant="outlined"
-            size="small"
+            component="a"
             href={`http://localhost:8081/upload/${params.value}`}
             target="_blank"
-            title={params.value}
+            rel="noopener noreferrer"
+            variant="outlined"
+            size="small"
           >
             เปิดไฟล์
           </Button>
@@ -98,17 +99,18 @@ const ProjectList: React.FC = () => {
         ),
     },
     {
-      field: "uploadCode",
+      field: "zipFile",
       headerName: "ไฟล์ Code/Zip",
       width: 150,
       renderCell: (params: any) =>
         params.value ? (
           <Button
-            variant="outlined"
-            size="small"
+            component="a"
             href={`http://localhost:8081/upload/${params.value}`}
             target="_blank"
-            title={params.value}
+            rel="noopener noreferrer"
+            variant="outlined"
+            size="small"
           >
             เปิดไฟล์
           </Button>
@@ -116,6 +118,8 @@ const ProjectList: React.FC = () => {
           <Chip label="ไม่มีไฟล์" size="small" />
         ),
     },
+
+
     {
       field: "actions",
       headerName: "การจัดการ",
@@ -146,39 +150,33 @@ const ProjectList: React.FC = () => {
 
   return (
     <Box p={4}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h5" fontWeight="bold">
           รายการโครงงานทั้งหมด
         </Typography>
 
         <Button
-        variant="contained"
-        onClick={() => navigate("/admin/add-project")}
-        sx={{
-        borderRadius: "20px",
-        backgroundColor: "#FD7521",
-        color: "#FFFFFF",
-        fontFamily: "Inter, sans-serif",
-        fontWeight: 600,
-        fontSize: "1rem",
-        padding: "10px 25px",
-        border: "none",
-        boxShadow: "0px 4px 10px rgba(253, 117, 33, 0.3)",
-        textTransform: "none",
-        "&:hover": {
-        backgroundColor: "#e96515", // สีตอน hover
-        boxShadow: "0px 6px 12px rgba(253, 117, 33, 0.4)",
+          variant="contained"
+          onClick={() => navigate("/admin/add-project")}
+          sx={{
+            borderRadius: "20px",
+            backgroundColor: "#FD7521",
+            color: "#FFFFFF",
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 600,
+            fontSize: "1rem",
+            padding: "10px 25px",
+            border: "none",
+            boxShadow: "0px 4px 10px rgba(253, 117, 33, 0.3)",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: "#e96515",
+              boxShadow: "0px 6px 12px rgba(253, 117, 33, 0.4)",
             },
-        }}
+          }}
         >
-        ➕ เพิ่มโครงงานใหม่
+          ➕ เพิ่มโครงงานใหม่
         </Button>
-
       </Box>
 
       <Box mb={2}>
