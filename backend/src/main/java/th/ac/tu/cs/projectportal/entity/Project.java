@@ -20,10 +20,10 @@ public class Project {
     @Column(name = "Title_en")
     private String titleEn;
 
-    @Column(name = "Abstract_th")
+    @Column(columnDefinition = "TEXT")
     private String abstractTh;
 
-    @Column(name = "Abstract_en")
+    @Column(columnDefinition = "TEXT")
     private String abstractEn;
 
     @Column(name = "Keyword_th")
