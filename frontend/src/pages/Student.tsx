@@ -93,6 +93,7 @@ const Student: React.FC = () => {
       faculty: formData.faculty,
       department: formData.major,
       role: role === "student" ? "Student" : "Staff",
+      userCode: role === "student" ? formData.studentId : formData.staffId,
     };
 
     try {

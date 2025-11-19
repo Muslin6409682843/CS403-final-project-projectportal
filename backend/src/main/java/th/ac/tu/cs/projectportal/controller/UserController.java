@@ -46,6 +46,13 @@ public class UserController {
             return ResponseEntity.badRequest().body("❌ Email นี้ถูกใช้แล้ว");
         }
 
+        if (newUser.getUserCode() != null && !newUser.getUserCode().isEmpty()) {
+            Optional<User> existingUserCode = userRepository.findByUserCode(newUser.getUserCode());
+            if (existingUserCode.isPresent()) {
+                return ResponseEntity.badRequest().body("❌ รหัสนักศึกษา/บุคลากร นี้ถูกใช้แล้ว");
+            }
+        }
+
         // กำหนด role default เป็น Student หรือ Staff
         if (newUser.getRole() == null) {
             newUser.setRole(Role.Student);
@@ -75,6 +82,8 @@ public class UserController {
         if (existingEmail.isPresent()) {
             return ResponseEntity.badRequest().body("❌ Email นี้ถูกใช้แล้ว");
         }
+
+        
 
         // ✅ บังคับ role เป็น Guest เสมอ
         newGuest.setRole(Role.Guest);

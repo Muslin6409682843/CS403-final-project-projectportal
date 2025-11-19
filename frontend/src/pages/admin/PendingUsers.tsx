@@ -17,6 +17,7 @@ import ConfirmDialog from "../../components/admin/ConfirmDialog";
 
 interface User {
   userId: number;
+  userCode: string;
   username: string;
   nameTh: string;
   nameEn: string;
@@ -110,6 +111,7 @@ const PendingUsers: React.FC = () => {
 
   const columns: GridColDef[] = [
     { field: "userId", headerName: "ID", width: 70 },
+    { field: "userCode", headerName: "รหัสนักศึกษา/อาจารย์", width: 180 },
     { field: "username", headerName: "Username", flex: 1 },
     { field: "nameTh", headerName: "ชื่อ (TH)", flex: 1 },
     { field: "nameEn", headerName: "ชื่อ (EN)", flex: 1 },

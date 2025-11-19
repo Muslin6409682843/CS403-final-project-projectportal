@@ -80,6 +80,7 @@ public class AdminController {
     private UserResponseDTO mapToDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
         dto.setUserId(user.getUserId());
+        dto.setUserCode(user.getUserCode());
         dto.setUsername(user.getUsername());
         dto.setNameTh(user.getNameTh());
         dto.setNameEn(user.getNameEn());

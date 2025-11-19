@@ -14,13 +14,16 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByUserCode(String userCode);
+
     // สำหรับลบผู้ใช้ที่ยังไม่อนุมัติและหมดอายุ
     List<User> findByApprovedFalseAndApprovalExpireAtBefore(LocalDateTime dateTime);
+
     // สำหรับลบ Guest ที่อนุมัติแล้ว และหมดอายุการใช้งาน
     List<User> findByRoleAndApprovedTrueAndGuestExpireAtBefore(Role role, LocalDateTime dateTime);
-    
-    List<User> findByApprovedFalse();
-    List<User> findByApprovedTrue();
 
+    List<User> findByApprovedFalse();
+
+    List<User> findByApprovedTrue();
 
 }

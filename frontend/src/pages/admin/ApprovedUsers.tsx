@@ -16,6 +16,7 @@ import RoleFilter from "../../components/admin/RoleFilter";
 
 interface User {
   userId: number;
+  userCode: string;
   username: string;
   nameTh: string;
   nameEn: string;
@@ -91,6 +92,7 @@ const ApprovedUsers: React.FC = () => {
   // ✅ กำหนด column ของตาราง
   const columns: GridColDef[] = [
     { field: "userId", headerName: "ID", width: 80 },
+    { field: "userCode", headerName: "รหัสนักศึกษา/อาจารย์", width: 180 },
     { field: "username", headerName: "Username", width: 150 },
     { field: "nameTh", headerName: "ชื่อ (TH)", width: 150 },
     { field: "nameEn", headerName: "ชื่อ (EN)", width: 150 },

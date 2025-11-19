@@ -12,7 +12,7 @@ public class ProjectDTO {
 
     private List<String> members;
     private String advisor;
-    private List<String> coAdvisors;
+    private List<String> coAdvisors; 
 
     private String year;
 

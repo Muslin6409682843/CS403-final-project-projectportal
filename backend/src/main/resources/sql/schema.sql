@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS `finalproject`.`user`;
 
 CREATE TABLE `finalproject`.`user` (
   `UserID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_code` VARCHAR(50) NULL,
   `Username` VARCHAR(255) NOT NULL,
   `Password` VARCHAR(255) NOT NULL,
   `Name_th` VARCHAR(255) NOT NULL,
@@ -45,6 +46,7 @@ CREATE TABLE `finalproject`.`user` (
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`UserID`),
+  UNIQUE INDEX `UserCode_UNIQUE` (`user_code`),
   UNIQUE INDEX `Username_UNIQUE` (`Username`),
   UNIQUE INDEX `Email_UNIQUE` (`Email`),
   CHECK ((Role='Guest' AND Institute IS NOT NULL) OR (Role<>'Guest'))

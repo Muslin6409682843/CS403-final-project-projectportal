@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UserResponseDTO {
     private Integer userId;
+    private String userCode;
     private String username;
     private String nameTh;
     private String nameEn;

@@ -15,6 +15,9 @@ public class User {
     @Column(name = "UserID")
     private Integer userId;
 
+    @Column(name = "UserCode")
+    private String userCode;
+
     @Column(name = "Username", nullable = false, unique = true)
     private String username;
 
@@ -81,6 +84,14 @@ public class User {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
     }
 
     public String getUsername() {
