@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SideBar from "../components/SideBar";
 import TextSearch from "../components/TextSearch";
@@ -20,6 +21,7 @@ interface Project {
 
 function Browse() {
   // State
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
@@ -59,7 +61,6 @@ function Browse() {
       prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
     );
   };
-
 
   // Filter + Sort
   const filteredProjects = projects.filter((p) =>
@@ -147,9 +148,7 @@ function Browse() {
               author={project.member}
               advisor={project.advisor}
               year={project.year}
-              onNavigate={(id) =>
-                console.log("ไปหน้ารายละเอียด:", id)
-              }
+              onNavigate={(id) => navigate(`/project/${id}`)}
               isFavorite={favorites.includes(project.projectID)}
               onToggleFavorite={toggleFavorite}
             />

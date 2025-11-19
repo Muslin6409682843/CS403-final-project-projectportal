@@ -47,4 +47,4 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ project }) => {
   );
 };
 
-export default ProjectInfo;
+export default ProjectInfo; 

@@ -1,7 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { FaStar, FaFileAlt, FaFileCode, FaFileImage } from "react-icons/fa";
+
+import { useAuth } from "../../context/AuthContext";
+import type { ProjectDTO } from "../../dto/ProjectDTO";
+
+interface ProjectActionButtonsProps {
+  project: ProjectDTO;
+}
 
 const buttonStyle: React.CSSProperties = {
-  backgroundColor: "#FD7521",
   color: "#fff",
   border: "none",
   borderRadius: "20px",
@@ -15,12 +23,42 @@ const buttonStyle: React.CSSProperties = {
   width: "250px",
 };
 
-const iconStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-};
+const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
+  project,
+}) => {
+  const { isLoggedIn, role } = useAuth();
+  const navigate = useNavigate();
 
-const ProjectActionButtons: React.FC = () => {
+  const allowedRoles = ["Admin", "Staff", "Student", "Guest"];
+
+  const handleDownload = (fileUrl?: string) => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
+    if (!role || !allowedRoles.includes(role)) return;
+
+    if (!fileUrl) return;
+
+    const link = document.createElement("a");
+    link.href = fileUrl.startsWith("http") ? fileUrl : `/upload/${fileUrl}`;
+    link.download = fileUrl.split("/").pop() || "file";
+    link.click();
+  };
+
+  const getButtonStyle = (file?: string) => ({
+    ...buttonStyle,
+    backgroundColor:
+      !file || !isLoggedIn || !allowedRoles.includes(role ?? "")
+        ? "#ccc"
+        : "#FD7521",
+    cursor:
+      !file || !isLoggedIn || !allowedRoles.includes(role ?? "")
+        ? "not-allowed"
+        : "pointer",
+  });
+
   return (
     <div
       style={{
@@ -32,84 +70,33 @@ const ProjectActionButtons: React.FC = () => {
         gap: "18px",
       }}
     >
-      {/* ⭐ รายการโปรด */}
-      <button style={buttonStyle}>
-        <span style={iconStyle}>
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9" />
-          </svg>
-        </span>
-        เพิ่มเข้ารายการโปรด
+      {/* ⭐ รายการโปรด (ยังไม่ทำ backend) */}
+      <button style={{ ...buttonStyle, backgroundColor: "#FD7521" }}>
+        <FaStar style={{ marginRight: "10px" }} /> เพิ่มเข้ารายการโปรด
       </button>
 
       {/* 📄 ดาวน์โหลดเล่มโครงงาน */}
-      <button style={buttonStyle}>
-        <span style={iconStyle}>
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>
-        </span>
-        ดาวน์โหลดเล่มโครงงาน
+      <button
+        style={getButtonStyle(project.file)}
+        onClick={() => handleDownload(project.file)}
+      >
+        <FaFileAlt style={{ marginRight: "10px" }} /> ดาวน์โหลดเล่มโครงงาน
       </button>
 
       {/* 🖼 ดาวน์โหลดสไลด์ */}
-      <button style={buttonStyle}>
-        <span style={iconStyle}>
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-            <line x1="12" y1="17" x2="12" y2="23" />
-            <line x1="8" y1="23" x2="16" y2="23" />
-          </svg>
-        </span>
-        ดาวน์โหลดสไลด์
+      <button
+        style={getButtonStyle(project.slideFile)}
+        onClick={() => handleDownload(project.slideFile)}
+      >
+        <FaFileImage style={{ marginRight: "10px" }} /> ดาวน์โหลดสไลด์
       </button>
 
       {/* <> ดาวน์โหลดโค้ด */}
-      <button style={buttonStyle}>
-        <span style={iconStyle}>
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="16 18 22 12 16 6" />
-            <polyline points="8 6 2 12 8 18" />
-          </svg>
-        </span>
-        ดาวน์โหลดโค้ด
+      <button
+        style={getButtonStyle(project.zipFile)}
+        onClick={() => handleDownload(project.zipFile)}
+      >
+        <FaFileCode style={{ marginRight: "10px" }} /> ดาวน์โหลดโค้ด
       </button>
     </div>
   );

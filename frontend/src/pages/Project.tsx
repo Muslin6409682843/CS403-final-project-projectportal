@@ -94,7 +94,7 @@ const Project: React.FC = () => {
         </div>
       </div>
 
-      <ProjectActionButtons />
+      <ProjectActionButtons project={project} />
 
       {/* Abstract + Info */}
       <div
