@@ -108,6 +108,7 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("ERROR: " + e.getMessage());
         }

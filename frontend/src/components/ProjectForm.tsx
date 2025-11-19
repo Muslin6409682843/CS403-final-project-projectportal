@@ -18,6 +18,8 @@ export interface ProjectData {
   titleFile?: File | null;
   slideFileObj?: File | null;
   zipFileObj?: File | null;
+
+  codeUploadType?: "github" | "zip" | "";
 }
 
 interface ProjectFormProps {
@@ -191,6 +193,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         zipFileObj,
         github: form.github?.trim() || "", 
         category: form.category || "",
+        codeUploadType,
       });
     } else {
       setShowSubmitAlertModal(true);

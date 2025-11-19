@@ -41,25 +41,24 @@ const AddProject: React.FC = () => {
       formData.append("abstractTh", data.abstractTh || "");
       formData.append("abstractEn", data.abstractEn || "");
 
-
       formData.append("keywordsTH", data.keywordsTH || "");
       formData.append("keywordsEN", data.keywordsEN || "");
 
-      formData.append("githubLink", data.github || "");
-
-      // ไฟล์ PDF (ชื่อ file)
-      if ((data as any).titleFile) {
-        formData.append("file", (data as any).titleFile);
+      // GitHub Link / Zip File
+      if (data.github && data.codeUploadType === "github") {
+        formData.append("github", data.github.trim());
+      } else if (data.zipFileObj && data.codeUploadType === "zip") {
+        formData.append("zipFile", data.zipFileObj);
       }
 
-      // SlideFile
-      if ((data as any).slideFileObj) {
-        formData.append("slideFile", (data as any).slideFileObj);
+      // ไฟล์ PDF ของโครงงาน
+      if (data.titleFile) {
+        formData.append("file", data.titleFile);
       }
 
-      // ZipFile
-      if ((data as any).zipFileObj) {
-        formData.append("zipFile", (data as any).zipFileObj);
+      // Slide PDF
+      if (data.slideFileObj) {
+        formData.append("slideFile", data.slideFileObj);
       }
 
       // Debug FormData
@@ -88,9 +87,21 @@ const AddProject: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 80px)", overflow: "hidden" }}>
-      <div style={{ flex: 1, padding: "2rem", overflowY: "auto", backgroundColor: "#f8f9fa" }}>
-        
+    <div
+      style={{
+        display: "flex",
+        height: "calc(100vh - 80px)",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          padding: "2rem",
+          overflowY: "auto",
+          backgroundColor: "#f8f9fa",
+        }}
+      >
         <button
           onClick={handleBackClick}
           style={{
