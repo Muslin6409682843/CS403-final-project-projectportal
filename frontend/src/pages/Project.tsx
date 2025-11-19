@@ -1,5 +1,8 @@
 import React from "react";
 import ProjectHeader from "../components/project/ProjectHeader";
+import ProjectAbstract from "../components/project/ProjectAbstract";
+import ProjectSection from "../components/project/ProjectSection";
+import ProjectActionButtons from "../components/project/ProjectActionButtons";
 
 const Project: React.FC = () => {
   return (
@@ -8,6 +11,7 @@ const Project: React.FC = () => {
         backgroundColor: "#fff", // ✅ พื้นหลังหลักสีขาว
         minHeight: "100vh",
         boxSizing: "border-box",
+        position: "relative",
       }}
     >
       <div
@@ -25,23 +29,49 @@ const Project: React.FC = () => {
             titleEn="Employee Information Management System"
             author="นายมุสลิน พัฒนิจ และคณะ"
             advisor="อาจารย์ ดร.สมชาย ใจดี"
-            year="ปีการศึกษาที่เสนอ: 2568"
+            year="ปีการศึกษา: 2568"
           />
         </div>
       </div>
+
+      {/* ⬅ ปุ่มทางขวา */}
+      <ProjectActionButtons />
 
       {/* ✅ เนื้อหาหลัก */}
       <div
         style={{
           width: "80%",
           maxWidth: "1000px",
-          margin: "40px auto",
+          marginLeft: "10%",
+          marginTop: "40px",
         }}
       >
-        <p style={{ fontSize: "16px", color: "#000" }}>
-          (พื้นที่สำหรับรายละเอียดโครงงาน เช่น บทคัดย่อ วัตถุประสงค์ เนื้อหา
-          ฯลฯ)
-        </p>
+        <ProjectAbstract
+          abstractTh={`บทคัดย่อภาษาไทยของโครงงานนี้ ทดสอบความยาวววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววว
+          สามารถเว้นบรรทัดได้ตามต้องการ
+          และรองรับข้อความยาวๆ`}
+          abstractEn={`This project aims to develop...
+You can write multiple lines here as well.`}
+        />
+
+        <ProjectSection
+          title="รายละเอียดโครงงาน"
+          items={[
+            {
+              subtitle: "คำสำคัญ",
+              content:
+                "AI, Machine Learning, ทดสอบความยาวววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววว",
+            },
+            {
+              subtitle: "วัตถุประสงค์",
+              content: "1. เพื่อพัฒนาระบบ...\n2. เพื่อเพิ่มประสิทธิภาพระบบ...",
+            },
+            {
+              subtitle: "ขอบเขตของระบบ",
+              content: "ระบบนี้ครอบคลุม...\nไม่ครอบคลุม...",
+            },
+          ]}
+        />
       </div>
     </div>
   );
