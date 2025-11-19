@@ -23,19 +23,19 @@ const ProjectAbstract: React.FC<ProjectAbstractProps> = ({
             marginBottom: "10px",
           }}
         >
-          บทคัดย่อ (ภาษาไทย)
+          บทคัดย่อ
         </h2>
         <p
           style={{
-            fontSize: "16px",
+            fontSize: "18px",
             lineHeight: "1.8",
-            whiteSpace: "pre-line",
+            whiteSpace: "normal", // ให้ wrap ตามพื้นที่ปกติ
             color: "#444",
             maxWidth: "75vw",
             wordBreak: "break-word",
           }}
         >
-          {abstractTh}
+          {abstractTh.replace(/\r?\n|\r/g, " ")}
         </p>
       </section>
 
@@ -49,19 +49,19 @@ const ProjectAbstract: React.FC<ProjectAbstractProps> = ({
             marginBottom: "10px",
           }}
         >
-          Abstract (English)
+          Abstract
         </h2>
         <p
           style={{
-            fontSize: "16px",
+            fontSize: "18px",
             lineHeight: "1.8",
-            whiteSpace: "pre-line",
+            whiteSpace: "normal",
             color: "#444",
             maxWidth: "75vw",
             wordBreak: "break-word",
           }}
         >
-          {abstractEn}
+          {abstractEn.replace(/\r?\n|\r/g, " ")}
         </p>
       </section>
     </div>

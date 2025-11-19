@@ -22,7 +22,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           fontSize: "28px",
           fontWeight: "bold",
           color: "#1835a9ff",
-          marginBottom: "12px",
+          marginBottom: "30px",
           textAlign: "left",
         }}
       >

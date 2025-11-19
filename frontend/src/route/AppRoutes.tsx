@@ -35,7 +35,7 @@ function AppRoutes() {
       />
       <Route path="/change-password" element={<ChangePassword />} />
       <Route path="/history" element={<History />} />
-      <Route path="/project" element={<Project />} />
+      <Route path="/project/:id" element={<Project />} />
       <Route path="/add-project" element={<AddProject />} />
       <Route path="/edit-project/:id" element={<EditProject />} />
       <Route path="/tu-login" element={<TULogin />} />

@@ -1,43 +1,102 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
 import ProjectHeader from "../components/project/ProjectHeader";
 import ProjectAbstract from "../components/project/ProjectAbstract";
-import ProjectSection from "../components/project/ProjectSection";
+import ProjectInfo from "../components/project/ProjectInfo";
 import ProjectActionButtons from "../components/project/ProjectActionButtons";
 
+import type { ProjectDTO } from "../dto/ProjectDTO";
+
 const Project: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [project, setProject] = useState<ProjectDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8081/api/projects/${id}`
+        );
+
+        const raw = response.data;
+
+        // ⭐ MAP backend → frontend DTO
+        const mapped: ProjectDTO = {
+          projectID: raw.projectID,
+          projectNameTH: raw.titleTh,
+          projectNameEN: raw.titleEn,
+
+          abstractTh: raw.abstractTh || "",
+          abstractEn: raw.abstractEn || "",
+
+          keywordsTH: raw.keywordTh || "",
+          keywordsEN: raw.keywordEn || "",
+
+          members: raw.member ? raw.member.split(",") : [],
+          advisor: raw.advisor || "",
+          coAdvisors: raw.coAdvisor ? raw.coAdvisor.split(",") : [],
+
+          category: raw.category || "",
+          year: raw.year ? String(raw.year) : "",
+
+          github: raw.github || "",
+
+          file: raw.file || "",
+          slideFile: raw.slideFile || "",
+          zipFile: raw.zipFile || "",
+        };
+
+        setProject(mapped);
+      } catch (err) {
+        console.error(err);
+        setError("ไม่สามารถโหลดข้อมูลโครงงานได้");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchProject();
+  }, [id]);
+
+  if (loading) return <p>กำลังโหลดข้อมูล...</p>;
+  if (error || !project) return <p>{error || "ไม่พบโครงงาน"}</p>;
+
   return (
     <div
       style={{
-        backgroundColor: "#fff", // ✅ พื้นหลังหลักสีขาว
+        backgroundColor: "#fff",
         minHeight: "100vh",
-        boxSizing: "border-box",
         position: "relative",
       }}
     >
+      {/* Header */}
       <div
         style={{
           width: "100vw",
           background: "linear-gradient(to bottom, #fff9f0, #ffe0b2)",
           display: "flex",
-          justifyContent: "flex-start", // ✅ ชิดซ้าย
+          justifyContent: "flex-start",
           padding: "40px 0",
         }}
       >
         <div style={{ width: "80%", maxWidth: "1000px", marginLeft: "10%" }}>
           <ProjectHeader
-            titleTh="ระบบจัดการข้อมูลพนักงาน"
-            titleEn="Employee Information Management System"
-            author="นายมุสลิน พัฒนิจ และคณะ"
-            advisor="อาจารย์ ดร.สมชาย ใจดี"
-            year="ปีการศึกษา: 2568"
+            titleTh={project.projectNameTH}
+            titleEn={project.projectNameEN}
+            author={project.members.join(", ")}
+            advisor={project.advisor}
+            year={project.year ? `ปีการศึกษา: ${project.year}` : ""}
           />
         </div>
       </div>
 
-      {/* ⬅ ปุ่มทางขวา */}
       <ProjectActionButtons />
 
-      {/* ✅ เนื้อหาหลัก */}
+      {/* Abstract + Info */}
       <div
         style={{
           width: "80%",
@@ -47,31 +106,10 @@ const Project: React.FC = () => {
         }}
       >
         <ProjectAbstract
-          abstractTh={`บทคัดย่อภาษาไทยของโครงงานนี้ ทดสอบความยาวววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววว
-          สามารถเว้นบรรทัดได้ตามต้องการ
-          และรองรับข้อความยาวๆ`}
-          abstractEn={`This project aims to develop...
-You can write multiple lines here as well.`}
+          abstractTh={project.abstractTh}
+          abstractEn={project.abstractEn}
         />
-
-        <ProjectSection
-          title="รายละเอียดโครงงาน"
-          items={[
-            {
-              subtitle: "คำสำคัญ",
-              content:
-                "AI, Machine Learning, ทดสอบความยาวววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววววว",
-            },
-            {
-              subtitle: "วัตถุประสงค์",
-              content: "1. เพื่อพัฒนาระบบ...\n2. เพื่อเพิ่มประสิทธิภาพระบบ...",
-            },
-            {
-              subtitle: "ขอบเขตของระบบ",
-              content: "ระบบนี้ครอบคลุม...\nไม่ครอบคลุม...",
-            },
-          ]}
-        />
+        <ProjectInfo project={project} />
       </div>
     </div>
   );
