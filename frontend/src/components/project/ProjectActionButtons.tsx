@@ -31,33 +31,29 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
 
   const allowedRoles = ["Admin", "Staff", "Student", "Guest"];
 
-  const handleDownload = (fileUrl?: string) => {
-    if (!isLoggedIn) {
+  /** ปุ่มสีส้มถ้ามีไฟล์ */
+  const getButtonStyle = (file?: string) => ({
+    ...buttonStyle,
+    backgroundColor: file ? "#FD7521" : "#ccc",
+    cursor: file ? "pointer" : "not-allowed",
+  });
+
+  /** คลิกแล้วทำอะไร */
+  const handleClick = (fileUrl?: string) => {
+    if (!fileUrl) return; // ปุ่มเทา → ไม่ทำอะไร
+
+    // role ไม่มี → ไป login
+    if (!role || !allowedRoles.includes(role)) {
       navigate("/login");
       return;
     }
 
-    if (!role || !allowedRoles.includes(role)) return;
-
-    if (!fileUrl) return;
-
+    // role ถูกต้อง → ดาวน์โหลด
     const link = document.createElement("a");
     link.href = fileUrl.startsWith("http") ? fileUrl : `/upload/${fileUrl}`;
     link.download = fileUrl.split("/").pop() || "file";
     link.click();
   };
-
-  const getButtonStyle = (file?: string) => ({
-    ...buttonStyle,
-    backgroundColor:
-      !file || !isLoggedIn || !allowedRoles.includes(role ?? "")
-        ? "#ccc"
-        : "#FD7521",
-    cursor:
-      !file || !isLoggedIn || !allowedRoles.includes(role ?? "")
-        ? "not-allowed"
-        : "pointer",
-  });
 
   return (
     <div
@@ -70,7 +66,7 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
         gap: "18px",
       }}
     >
-      {/* ⭐ รายการโปรด (ยังไม่ทำ backend) */}
+      {/* ⭐ รายการโปรด */}
       <button style={{ ...buttonStyle, backgroundColor: "#FD7521" }}>
         <FaStar style={{ marginRight: "10px" }} /> เพิ่มเข้ารายการโปรด
       </button>
@@ -78,7 +74,8 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
       {/* 📄 ดาวน์โหลดเล่มโครงงาน */}
       <button
         style={getButtonStyle(project.file)}
-        onClick={() => handleDownload(project.file)}
+        onClick={() => handleClick(project.file)}
+        disabled={!project.file}
       >
         <FaFileAlt style={{ marginRight: "10px" }} /> ดาวน์โหลดเล่มโครงงาน
       </button>
@@ -86,7 +83,8 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
       {/* 🖼 ดาวน์โหลดสไลด์ */}
       <button
         style={getButtonStyle(project.slideFile)}
-        onClick={() => handleDownload(project.slideFile)}
+        onClick={() => handleClick(project.slideFile)}
+        disabled={!project.slideFile}
       >
         <FaFileImage style={{ marginRight: "10px" }} /> ดาวน์โหลดสไลด์
       </button>
@@ -94,7 +92,8 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
       {/* <> ดาวน์โหลดโค้ด */}
       <button
         style={getButtonStyle(project.zipFile)}
-        onClick={() => handleDownload(project.zipFile)}
+        onClick={() => handleClick(project.zipFile)}
+        disabled={!project.zipFile}
       >
         <FaFileCode style={{ marginRight: "10px" }} /> ดาวน์โหลดโค้ด
       </button>
