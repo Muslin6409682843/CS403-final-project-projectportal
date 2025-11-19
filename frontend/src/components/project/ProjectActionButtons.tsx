@@ -55,6 +55,46 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
     link.click();
   };
 
+  /** ปุ่มดาวน์โหลดโค้ด — มี 3 กรณีพิเศษ */
+  const getCodeButtonStyle = () => {
+    const hasZip = !!project.zipFile;
+    const hasGithub = !!project.github;
+
+    return {
+      ...buttonStyle,
+      backgroundColor: hasZip || hasGithub ? "#FD7521" : "#ccc",
+      cursor: hasZip || hasGithub ? "pointer" : "not-allowed",
+    };
+  };
+
+  const handleCodeClick = () => {
+    const zip = project.zipFile;
+    const github = project.github;
+
+    // 1) ไม่มี zip + ไม่มี github = ปุ่มเทา → ไม่ทำอะไร
+    if (!zip && !github) return;
+
+    // 2) ไม่ได้ role ที่กำหนด → ไป login
+    if (!role || !allowedRoles.includes(role)) {
+      navigate("/login");
+      return;
+    }
+
+    // 3) เปิด github (ถ้ามี)
+    if (github) {
+      window.open(github, "_blank");
+      return;
+    }
+
+    // 4) ดาวน์โหลด zip (ถ้ามี)
+    if (zip) {
+      const link = document.createElement("a");
+      link.href = zip.startsWith("http") ? zip : `/upload/${zip}`;
+      link.download = zip.split("/").pop() || "code.zip";
+      link.click();
+    }
+  };
+
   return (
     <div
       style={{
@@ -89,11 +129,11 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
         <FaFileImage style={{ marginRight: "10px" }} /> ดาวน์โหลดสไลด์
       </button>
 
-      {/* <> ดาวน์โหลดโค้ด */}
+      {/* 🧩 ดาวน์โหลดโค้ด (zip หรือ github) */}
       <button
-        style={getButtonStyle(project.zipFile)}
-        onClick={() => handleClick(project.zipFile)}
-        disabled={!project.zipFile}
+        style={getCodeButtonStyle()}
+        onClick={handleCodeClick}
+        disabled={!project.zipFile && !project.github}
       >
         <FaFileCode style={{ marginRight: "10px" }} /> ดาวน์โหลดโค้ด
       </button>
