@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Typography, Button, Chip, CircularProgress, Stack } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Chip,
+  CircularProgress,
+  Stack,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 interface Project {
@@ -13,6 +20,7 @@ interface Project {
   category: string;
   year: string;
   createDate: string;
+  file?: string | null;
   slideFile?: string | null;
   zipFile?: string | null;
 }
@@ -26,9 +34,12 @@ const ProjectList: React.FC = () => {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:8081/api/admin/projects", {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        "http://localhost:8081/api/admin/projects",
+        {
+          withCredentials: true,
+        }
+      );
       setProjects(response.data);
     } catch (err) {
       console.error("Fetch Projects Error:", err);
@@ -44,9 +55,12 @@ const ProjectList: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm("คุณต้องการลบโครงงานนี้หรือไม่?")) return;
     try {
-      const res = await axios.delete(`http://localhost:8081/api/admin/projects/${id}`, {
-        withCredentials: true,
-      });
+      const res = await axios.delete(
+        `http://localhost:8081/api/admin/projects/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
       alert(res.data);
       fetchProjects();
     } catch (err: any) {
@@ -76,10 +90,12 @@ const ProjectList: React.FC = () => {
       headerName: "วันที่สร้าง",
       width: 180,
       renderCell: (params: any) =>
-        params.value ? new Date(params.value).toLocaleString("th-TH", { hour12: false }) : "—",
+        params.value
+          ? new Date(params.value).toLocaleString("th-TH", { hour12: false })
+          : "—",
     },
     {
-      field: "slideFile",
+      field: "file",
       headerName: "ไฟล์ PDF",
       width: 150,
       renderCell: (params: any) =>
@@ -119,7 +135,6 @@ const ProjectList: React.FC = () => {
         ),
     },
 
-
     {
       field: "actions",
       headerName: "การจัดการ",
@@ -131,7 +146,9 @@ const ProjectList: React.FC = () => {
             variant="contained"
             color="info"
             size="small"
-            onClick={() => navigate(`/admin/edit-project/${params.row.projectID}`)}
+            onClick={() =>
+              navigate(`/admin/edit-project/${params.row.projectID}`)
+            }
           >
             แก้ไข
           </Button>
@@ -150,7 +167,12 @@ const ProjectList: React.FC = () => {
 
   return (
     <Box p={4}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h5" fontWeight="bold">
           รายการโครงงานทั้งหมด
         </Typography>
