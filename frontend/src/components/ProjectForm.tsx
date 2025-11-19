@@ -8,12 +8,12 @@ export interface ProjectData {
   advisor: string;
   coAdvisors?: string[];
   year: string;
-  category?: string; 
+  category?: string;
   abstractTh: string;
   abstractEn?: string;
   keywordsTH?: string;
   keywordsEN?: string;
-  github?: string;  
+  github?: string;
 
   titleFile?: File | null;
   slideFileObj?: File | null;
@@ -43,7 +43,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     advisor: initialData?.advisor || "",
     coAdvisors: initialData?.coAdvisors || [],
     year: initialData?.year || "",
-    category: initialData?.category || "", 
+    category: initialData?.category || "",
     abstractTh: initialData?.abstractTh || "",
     abstractEn: initialData?.abstractEn || "",
     keywordsTH: initialData?.keywordsTH || "",
@@ -54,15 +54,23 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     zipFileObj: initialData?.zipFileObj || null,
   });
 
-  const [titleFile, setTitleFile] = useState<File | null>(form.titleFile || null);
-  const [slideFileObj, setSlideFileObj] = useState<File | null>(form.slideFileObj || null);
-  const [zipFileObj, setZipFileObj] = useState<File | null>(form.zipFileObj || null);
+  const [titleFile, setTitleFile] = useState<File | null>(
+    form.titleFile || null
+  );
+  const [slideFileObj, setSlideFileObj] = useState<File | null>(
+    form.slideFileObj || null
+  );
+  const [zipFileObj, setZipFileObj] = useState<File | null>(
+    form.zipFileObj || null
+  );
 
   const [advisorPosition, setAdvisorPosition] = useState(
     initialData?.advisor ? initialData.advisor.split(" ")[0] : ""
   );
   const [advisorName, setAdvisorName] = useState(
-    initialData?.advisor ? initialData.advisor.split(" ").slice(1).join(" ") : ""
+    initialData?.advisor
+      ? initialData.advisor.split(" ").slice(1).join(" ")
+      : ""
   );
   const [customAdvisorPosition, setCustomAdvisorPosition] = useState("");
 
@@ -70,7 +78,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     initialData?.coAdvisors
       ? initialData.coAdvisors.map((c) => {
           const [pos, ...nameParts] = c.split(" ");
-          return { position: pos, customPosition: "", name: nameParts.join(" ") };
+          return {
+            position: pos,
+            customPosition: "",
+            name: nameParts.join(" "),
+          };
         })
       : [{ position: "", customPosition: "", name: "" }]
   );
@@ -78,11 +90,21 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const [keywordsTH, setKeywordsTH] = useState(initialData?.keywordsTH || "");
   const [keywordsEN, setKeywordsEN] = useState(initialData?.keywordsEN || "");
 
-  const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">("");
+  const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">(
+    ""
+  );
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSubmitAlertModal, setShowSubmitAlertModal] = useState(false);
 
-  const positions = ["", "อ.", "อ.ดร.", "ผศ.ดร.", "รศ.ดร.", "ศ.ดร.", "อื่นๆ (ระบุ)"];
+  const positions = [
+    "",
+    "อ.",
+    "ดร.",
+    "ผศ.ดร.",
+    "รศ.ดร.",
+    "ศ.ดร.",
+    "อื่นๆ (ระบุ)",
+  ];
 
   const currentYear = new Date().getFullYear();
   const thaiYears: number[] = [];
@@ -92,21 +114,33 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   useEffect(() => {
     const newErrors: { [key: string]: string } = {};
     if (!form.title) newErrors.title = "กรุณาอัปโหลดไฟล์ PDF ของโครงงาน";
-    if (!form.projectNameTH) newErrors.projectNameTH = "กรุณากรอกชื่อโครงงาน (ภาษาไทย)";
-    else if (/[a-zA-Z]/.test(form.projectNameTH)) newErrors.projectNameTH = "ชื่อโครงงาน (ไทย) ห้ามมีตัวอักษรภาษาอังกฤษ";
-    if (!form.projectNameEN) newErrors.projectNameEN = "กรุณากรอกชื่อโครงงาน (ภาษาอังกฤษ)";
+    if (!form.projectNameTH)
+      newErrors.projectNameTH = "กรุณากรอกชื่อโครงงาน (ภาษาไทย)";
+    if (!form.projectNameEN)
+      newErrors.projectNameEN = "กรุณากรอกชื่อโครงงาน (ภาษาอังกฤษ)";
 
     const memberErrors = form.members.filter((m) => !m.trim());
-    if (memberErrors.length === form.members.length) newErrors.members = "กรุณากรอกชื่อผู้จัดทำอย่างน้อย 1 คน";
+    if (memberErrors.length === form.members.length)
+      newErrors.members = "กรุณากรอกชื่อผู้จัดทำอย่างน้อย 1 คน";
 
-    if (!advisorPosition && !advisorName.trim() && !customAdvisorPosition.trim()) newErrors.advisor = "กรุณากรอกตำแหน่งและชื่ออาจารย์";
+    if (
+      !advisorPosition &&
+      !advisorName.trim() &&
+      !customAdvisorPosition.trim()
+    )
+      newErrors.advisor = "กรุณากรอกตำแหน่งและชื่ออาจารย์";
     else if (!advisorPosition) newErrors.advisor = "กรุณาเลือกตำแหน่งอาจารย์";
-    else if (advisorPosition === "อื่นๆ (ระบุ)" && !customAdvisorPosition.trim()) newErrors.advisor = "กรุณากรอกตำแหน่งอาจารย์";
+    else if (
+      advisorPosition === "อื่นๆ (ระบุ)" &&
+      !customAdvisorPosition.trim()
+    )
+      newErrors.advisor = "กรุณากรอกตำแหน่งอาจารย์";
     else if (!advisorName.trim()) newErrors.advisor = "กรุณากรอกชื่ออาจารย์";
 
     coAdvisors.forEach((c, idx) => {
       if (c.position === "" && c.name.trim() === "") return;
-      if (c.position === "") newErrors[`coAdvisor-${idx}`] = "กรุณาเลือกตำแหน่งอาจารย์ที่ปรึกษาร่วม";
+      if (c.position === "")
+        newErrors[`coAdvisor-${idx}`] = "กรุณาเลือกตำแหน่งอาจารย์ที่ปรึกษาร่วม";
       else if (c.position === "อื่นๆ (ระบุ)" && !c.customPosition.trim())
         newErrors[`coAdvisor-${idx}`] = "กรุณากรอกตำแหน่งอาจารย์ที่ปรึกษาร่วม";
       else if (!c.name.trim())
@@ -114,15 +148,24 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     });
 
     if (!form.year) newErrors.year = "กรุณาเลือกปีการศึกษา";
-    if (!form.category?.trim()) newErrors.category = "กรุณาเลือกหมวดหมู่"; 
+    if (!form.category?.trim()) newErrors.category = "กรุณาเลือกหมวดหมู่";
     if (!form.abstractTh.trim()) newErrors.abstractTh = "กรุณากรอกบทคัดย่อ";
     if (!keywordsTH.trim()) newErrors.keywordsTH = "กรุณากรอกคำสำคัญ";
 
     setErrors(newErrors);
-  }, [form, advisorPosition, advisorName, customAdvisorPosition, coAdvisors, keywordsTH]);
+  }, [
+    form,
+    advisorPosition,
+    advisorName,
+    customAdvisorPosition,
+    coAdvisors,
+    keywordsTH,
+  ]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
     index?: number
   ) => {
     const { name, value } = e.target;
@@ -142,33 +185,61 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   ) => {
     const file = e.target.files?.[0];
     if (!file) {
-      if (type === "project") { setForm({ ...form, title: "" }); setTitleFile(null); }
-      if (type === "slide") { setForm({ ...form, slideFileObj: null }); setSlideFileObj(null); }
-      if (type === "zip") { setForm({ ...form, zipFileObj: null }); setZipFileObj(null); }
+      if (type === "project") {
+        setForm({ ...form, title: "" });
+        setTitleFile(null);
+      }
+      if (type === "slide") {
+        setForm({ ...form, slideFileObj: null });
+        setSlideFileObj(null);
+      }
+      if (type === "zip") {
+        setForm({ ...form, zipFileObj: null });
+        setZipFileObj(null);
+      }
       return;
     }
 
-    if ((type === "project" || type === "slide") && file.type !== "application/pdf") {
-      alert("กรุณาเลือกไฟล์ PDF เท่านั้น"); return;
+    if (
+      (type === "project" || type === "slide") &&
+      file.type !== "application/pdf"
+    ) {
+      alert("กรุณาเลือกไฟล์ PDF เท่านั้น");
+      return;
     }
 
-    if (type === "project") { setForm({ ...form, title: file.name }); setTitleFile(file); }
-    else if (type === "slide") { setForm({ ...form, slideFileObj: file }); setSlideFileObj(file); }
-    else if (type === "zip") { setForm({ ...form, zipFileObj: file }); setZipFileObj(file); }
+    if (type === "project") {
+      setForm({ ...form, title: file.name });
+      setTitleFile(file);
+    } else if (type === "slide") {
+      setForm({ ...form, slideFileObj: file });
+      setSlideFileObj(file);
+    } else if (type === "zip") {
+      setForm({ ...form, zipFileObj: file });
+      setZipFileObj(file);
+    }
 
     onChangeDirty?.();
   };
 
   const handleAddMember = () => {
-    if (form.members.length < 2) setForm({ ...form, members: [...form.members, ""] });
+    if (form.members.length < 2)
+      setForm({ ...form, members: [...form.members, ""] });
   };
 
   const handleAddCoAdvisor = () => {
     if (coAdvisors.length < 5)
-      setCoAdvisors([...coAdvisors, { position: "", customPosition: "", name: "" }]);
+      setCoAdvisors([
+        ...coAdvisors,
+        { position: "", customPosition: "", name: "" },
+      ]);
   };
 
-  const handleCoAdvisorChange = (idx: number, field: "position" | "name" | "customPosition", value: string) => {
+  const handleCoAdvisorChange = (
+    idx: number,
+    field: "position" | "name" | "customPosition",
+    value: string
+  ) => {
     const newCoAdvisors = [...coAdvisors];
     newCoAdvisors[idx][field] = value;
     setCoAdvisors(newCoAdvisors);
@@ -177,10 +248,17 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errors).length === 0) {
-      const advisorFull = advisorPosition === "อื่นๆ (ระบุ)" ? customAdvisorPosition + " " + advisorName.trim() : advisorPosition + " " + advisorName.trim();
+      const advisorFull =
+        advisorPosition === "อื่นๆ (ระบุ)"
+          ? customAdvisorPosition + " " + advisorName.trim()
+          : advisorPosition + " " + advisorName.trim();
       const coAdvisorFull = coAdvisors
-        .filter(c => c.name.trim() !== "")
-        .map(c => (c.position === "อื่นๆ (ระบุ)" ? c.customPosition + " " + c.name.trim() : c.position + " " + c.name.trim()));
+        .filter((c) => c.name.trim() !== "")
+        .map((c) =>
+          c.position === "อื่นๆ (ระบุ)"
+            ? c.customPosition + " " + c.name.trim()
+            : c.position + " " + c.name.trim()
+        );
 
       onSubmit({
         ...form,
@@ -191,7 +269,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         titleFile,
         slideFileObj,
         zipFileObj,
-        github: form.github?.trim() || "", 
+        github: form.github?.trim() || "",
         category: form.category || "",
         codeUploadType,
       });
@@ -486,14 +564,23 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 
       {/* Category */}
       <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>หมวดหมู่</label>
-      <select name="category" value={form.category || ""} onChange={handleChange} style={{ fontSize: "1rem", padding: "0.4rem" }}>
+      <select
+        name="category"
+        value={form.category || ""}
+        onChange={handleChange}
+        style={{ fontSize: "1rem", padding: "0.4rem" }}
+      >
         <option value="">-- เลือกหมวดหมู่ --</option>
         <option value="Software">Software</option>
         <option value="Hardware">Hardware</option>
         <option value="AI/ML">AI/ML</option>
         <option value="Research">Research</option>
       </select>
-      {errors.category && <span style={{ color: "red", fontSize: "0.95rem" }}>{errors.category}</span>}
+      {errors.category && (
+        <span style={{ color: "red", fontSize: "0.95rem" }}>
+          {errors.category}
+        </span>
+      )}
 
       {/* Abstract (TH) */}
       <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>บทคัดย่อ</label>
@@ -509,7 +596,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           {errors.abstractTh}
         </span>
       )}
-
 
       {/* Keywords TH */}
       <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>คำสำคัญ</label>
@@ -561,7 +647,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         style={{ padding: "0.5rem 0", fontSize: "1rem" }}
       />
       {form.slideFileObj && (
-        <p style={{ fontSize: "1rem" }}>ไฟล์ที่เลือก: {form.slideFileObj.name}</p>
+        <p style={{ fontSize: "1rem" }}>
+          ไฟล์ที่เลือก: {form.slideFileObj.name}
+        </p>
       )}
 
       {/* Upload Code */}
@@ -609,7 +697,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               style={{ padding: "0.5rem 0", fontSize: "1rem" }}
             />
             {form.zipFileObj && (
-              <p style={{ fontSize: "1rem" }}>ไฟล์ที่เลือก: {form.zipFileObj.name}</p>
+              <p style={{ fontSize: "1rem" }}>
+                ไฟล์ที่เลือก: {form.zipFileObj.name}
+              </p>
             )}
           </>
         )}

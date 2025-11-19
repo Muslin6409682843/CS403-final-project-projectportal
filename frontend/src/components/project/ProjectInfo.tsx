@@ -25,7 +25,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ project }) => {
 
   if (project.coAdvisors && project.coAdvisors.length > 0) {
     detailItems.push({
-      subtitle: "อาจารย์ที่ปรึกษาร่วม",
+      subtitle: "ที่ปรึกษาร่วม",
       content: project.coAdvisors.join(", "),
     });
   }
@@ -47,4 +47,4 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ project }) => {
   );
 };
 
-export default ProjectInfo; 
+export default ProjectInfo;
