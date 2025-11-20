@@ -119,7 +119,7 @@ function Home() {
           backgroundColor: "white",
           padding: "20px 40px",
           width: "100%", // ⭐ เต็มหน้าจอ
-          marginTop: "0px",
+          marginTop: "-40px",
           boxSizing: "border-box", // ⭐ ป้องกันล้นขอบ
           borderTop: "1px solid #eee",
           borderBottom: "1px solid #eee",

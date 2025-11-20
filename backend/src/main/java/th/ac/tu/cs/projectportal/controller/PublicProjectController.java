@@ -60,9 +60,10 @@ public class PublicProjectController {
                 .map(Map.Entry::getKey)
                 .toList();
 
-        // เลือก 8 คำแรก
+        // ส่งทั้งหมด (หรือจำกัดสูงสุด 50)
+        int maxKeywords = 50;
         List<String> selected = new ArrayList<>();
-        for (int i = 0; i < Math.min(8, sorted.size()); i++)
+        for (int i = 0; i < Math.min(maxKeywords, sorted.size()); i++)
             selected.add(sorted.get(i));
 
         return ResponseEntity.ok(selected);

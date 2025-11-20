@@ -1,9 +1,12 @@
 // FooterKeywords.tsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const FooterKeywords: React.FC = () => {
   const [keywords, setKeywords] = useState<string[]>([]);
+  const maxCount = 15;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchKeywords = async () => {
@@ -22,11 +25,14 @@ const FooterKeywords: React.FC = () => {
           { withCredentials: true }
         );
 
-        setKeywords(res.data);
+        let fetchedKeywords = res.data;
+        const shuffled = [...fetchedKeywords].sort(() => Math.random() - 0.5);
+        const selected = shuffled.slice(0, maxCount);
+        setKeywords(selected);
 
         // เก็บ cache 1 เดือน
         const expireTime = new Date().getTime() + 30 * 24 * 60 * 60 * 1000;
-        localStorage.setItem("footerKeywords", JSON.stringify(res.data));
+        localStorage.setItem("footerKeywords", JSON.stringify(selected));
         localStorage.setItem("footerKeywordsExpire", expireTime.toString());
       } catch (err) {
         console.error("ไม่สามารถโหลด keywords:", err);
@@ -44,17 +50,27 @@ const FooterKeywords: React.FC = () => {
         display: "flex",
         gap: "15px",
         flexWrap: "wrap",
+        maxHeight: "120px",
+        overflow: "hidden",
       }}
     >
       {keywords.map((kw, idx) => (
         <span
           key={idx}
+          onClick={() => navigate(`/browse?search=${encodeURIComponent(kw)}`)}
           style={{
             backgroundColor: "#ffd54f",
             padding: "5px 10px",
             borderRadius: "15px",
             cursor: "pointer",
+            transition: "all 0.2s",
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "#ffb300")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = "#ffd54f")
+          }
         >
           {kw}
         </span>
