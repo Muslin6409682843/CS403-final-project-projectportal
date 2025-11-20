@@ -14,7 +14,8 @@ type FilterKey =
   | "researchYearSub"
   | "searchField"
   | "searchKeyword"
-  | "topic";
+  | "topic"
+  | "searchKeyword";
 
 const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
   const [filters, setFilters] = useState<Record<FilterKey, any>>({
@@ -40,7 +41,8 @@ const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
       yearRange: Array.isArray(newFilters.researchYearSub)
         ? newFilters.researchYearSub
         : [2000, new Date().getFullYear()],
-        searchField: newFilters.searchField || "",
+      searchField: newFilters.searchField || "",
+      searchKeyword: newFilters.searchKeyword || [],
     });
   };
 
@@ -107,8 +109,8 @@ const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
       />
 
       <FilterMultiChoice
-        label="หัวข้อโครงงาน"
-        options={["AI", "Data Science", "Web Development", "DevOps"]}
+        label="เอกสารประกอบโครงงาน"
+        options={["รูปเล่มโครงงาน", "สไลด์นำเสนอ", "Source code"]}
         selectedOptions={filters.searchKeyword}
         onChange={(selected) => handleSelectFilter("searchKeyword", selected)}
       />

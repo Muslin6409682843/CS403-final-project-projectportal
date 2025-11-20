@@ -36,6 +36,7 @@ interface FilterValues {
   yearSub?: string;
   yearRange?: [number, number];
   searchField?: string;
+  searchKeyword?: string[];
 }
 
 function Browse() {
@@ -60,6 +61,7 @@ function Browse() {
     new Date().getFullYear(),
   ]);
   const [searchField, setSearchField] = useState<string>("");
+  const [documentFilter, setDocumentFilter] = useState<string[]>([]);
 
   useEffect(() => {
     setSearchQuery(searchParam);
@@ -104,6 +106,7 @@ function Browse() {
     setYearSubOption(filters.yearSub || "");
     setYearRange(filters.yearRange || [2000, new Date().getFullYear()]);
     setSearchField(filters.searchField || "");
+    setDocumentFilter(filters.searchKeyword || []);
     setCurrentPage(1);
   };
 
@@ -167,7 +170,31 @@ function Browse() {
         projectYearAD >= yearRange[0] && projectYearAD <= yearRange[1];
     }
 
-    return matchSearch && matchYear;
+    // --- เอกสารประกอบโครงงาน ---
+    let matchDocument = true;
+
+    if (documentFilter.length > 0) {
+      matchDocument = documentFilter.every((doc) => {
+        switch (doc) {
+          case "รูปเล่มโครงงาน":
+            return p.file != null && p.file.trim() !== "";
+
+          case "สไลด์นำเสนอ":
+            return p.slideFile != null && p.slideFile.trim() !== "";
+
+          case "Source code":
+            return (
+              (p.zipFile != null && p.zipFile.trim() !== "") ||
+              (p.github != null && p.github.trim() !== "")
+            );
+
+          default:
+            return true;
+        }
+      });
+    }
+
+    return matchSearch && matchYear && matchDocument;
   });
 
   const sortedProjects = filteredProjects.sort((a, b) =>
