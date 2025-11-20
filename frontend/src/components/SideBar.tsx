@@ -2,10 +2,11 @@ import { useState } from "react";
 import FilterDropMenu from "./FilterDropMenu";
 import FilterSingleSelect from "./FilterSingleSelect";
 import FilterMultiChoice from "./FilterMultiChoice";
+import type { Filters } from "../dto/types";  
 
 // Props ของ Sidebar
 interface SideBarProps {
-  onFilterChange: (filters: string[]) => void;
+  onFilterChange: (filters: Partial<Filters>) => void;
   onResetFilters: () => void;
 }
 
@@ -18,45 +19,37 @@ type FilterKey =
   | "topic";
 
 const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
-  const [filters, setFilters] = useState<
-    Record<FilterKey, string | string[] | null>
-  >({
-    programPath: null,
-    researchYear: null,
-    researchYearSub: null,
-    searchField: null,
-    searchKeyword: [],
-    topic: null,
-  });
+  const [filters, setFilters] = useState<Filters>({
+  programPath: "",
+  researchYear: "",
+  researchYearSub: "",
+  searchField: "",
+  searchKeyword: [],
+  topic: "",
+});
 
   const [yearRange, setYearRange] = useState<[number, number]>([
     2000,
     new Date().getFullYear(),
   ]);
 
-  const handleSelectFilter = (section: FilterKey, value: string | string[]) => {
-    const newFilters = { ...filters, [section]: value };
-    setFilters(newFilters);
+  const handleSelectFilter = (section: keyof Filters, value: string | string[]) => {
+  const newFilters: Partial<Filters> = { [section]: value } as Partial<Filters>;
+  setFilters(prev => ({ ...prev, [section]: value }));
+  onFilterChange(newFilters);
+};
 
-    // รวมค่าทั้งหมดเป็น array ของ string
-    const allSelected: string[] = Object.values(newFilters).flatMap((val) => {
-      if (!val) return [];
-      if (Array.isArray(val)) return val;
-      return [val];
-    });
-
-    onFilterChange(allSelected);
-  };
 
   const handleReset = () => {
-    setFilters({
-      programPath: null,
-      researchYear: null,
-      researchYearSub: null,
-      searchField: null,
+    const resetFilters: Record<FilterKey, string | string[]> = {
+      programPath: "",
+      researchYear: "",
+      researchYearSub: "",
+      searchField: "",
       searchKeyword: [],
-      topic: null,
-    });
+      topic: "",
+    };
+    setFilters(resetFilters);
     setYearRange([2000, new Date().getFullYear()]);
     onResetFilters();
   };
@@ -154,17 +147,8 @@ const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
 
       {/* Multi-choice */}
       <FilterMultiChoice
-        label="หัวข้อโครงงาน"
-        options={[
-          "AI",
-          "Data Science",
-          "Web Development",
-          "DevOps",
-          "AI",
-          "Data Science",
-          "Web Development",
-          "DevOps",
-        ]}
+        label="เอกสารประกอบโครงงาน"
+        options={["รูปเล่มรายงาน", "สไลด์ประกอบการนำเสนอ", "Source code"]}
         selectedOptions={
           Array.isArray(filters["searchKeyword"])
             ? filters["searchKeyword"]

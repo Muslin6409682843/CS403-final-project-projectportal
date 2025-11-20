@@ -6,6 +6,10 @@ import TextSearch from "../components/TextSearch";
 import Sorting from "../components/Sorting";
 import ProjectCard from "../components/ProjectCard";
 import Pagination from "../components/Pagination";
+import 
+
+
+
 
 import "bootstrap/dist/css/bootstrap.css";
 import "../assets/background.css";
@@ -38,7 +42,6 @@ interface Project {
 }
 
 function Browse() {
-  // State
   const navigate = useNavigate();
   const [sortOption, setSortOption] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,15 +53,22 @@ function Browse() {
   const searchParam = queryParams.get("search") || "";
 
   const [searchQuery, setSearchQuery] = useState(searchParam);
+  const [filters, setFilters] = useState<Filters>({
+  programPath: "",
+  researchYear: "",
+  researchYearSub: "",
+  searchField: "",
+  searchKeyword: [],
+  topic: "",
+});
+
 
   const itemsPerPage = 10;
 
-  // useEffect อัปเดต searchQuery ทุกครั้งที่ URL เปลี่ยน
   useEffect(() => {
-    setSearchQuery(searchParam); // update ช่อง input
+    setSearchQuery(searchParam);
   }, [searchParam]);
 
-  // Fetch data from backend
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -75,13 +85,36 @@ function Browse() {
       }
     };
     fetchProjects();
-  }, [searchQuery]); // ⭐ เรียกใหม่ทุกครั้งที่ searchQuery เปลี่ยน
+  }, [searchQuery]);
 
-  // Handlers
   const handleSearch = (query: string) => {
-    // push URL ใหม่ เพื่อให้ useEffect detect การเปลี่ยน
     navigate(`/browse?search=${encodeURIComponent(query)}`);
-    setCurrentPage(1); // reset pagination
+    setCurrentPage(1);
+    setFilters({
+      programPath: "",
+      researchYear: "",
+      researchYearSub: "",
+      searchField: "",
+      searchKeyword: [],
+      topic: "",
+    });
+  };
+
+  const handleFilterChange = (partial: Partial<Filters>) => {
+    setFilters((prev) => ({ ...prev, ...partial }));
+    setCurrentPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      programPath: "",
+      researchYear: "",
+      researchYearSub: "",
+      searchField: "",
+      searchKeyword: [],
+      topic: "",
+    });
+    setCurrentPage(1);
   };
 
   const handleSortChange = (value: string) => {
@@ -94,22 +127,70 @@ function Browse() {
     );
   };
 
-  // Filter + Sort
   const filteredProjects = projects.filter((p) => {
     const q = searchQuery.toLowerCase();
 
+    const matchesSearch =
+      !q ||
+      (filters.searchField === "ชื่อโครงงาน"
+        ? p.titleTh.toLowerCase().includes(q) ||
+          p.titleEn.toLowerCase().includes(q)
+        : filters.searchField === "ชื่อผู้จัดทำ"
+        ? p.member.toLowerCase().includes(q)
+        : filters.searchField === "ชื่ออาจารย์ที่ปรึกษา"
+        ? p.advisor.toLowerCase().includes(q) ||
+          p.coAdvisor?.toLowerCase().includes(q)
+        : filters.searchField === "บทคัดย่อ"
+        ? p.abstractTh.toLowerCase().includes(q) ||
+          p.abstractEn.toLowerCase().includes(q)
+        : filters.searchField === "คำสำคัญ"
+        ? p.keywordTh.toLowerCase().includes(q) ||
+          p.keywordEn.toLowerCase().includes(q)
+        : p.titleTh.toLowerCase().includes(q) ||
+          p.titleEn.toLowerCase().includes(q) ||
+          p.abstractTh.toLowerCase().includes(q) ||
+          p.abstractEn.toLowerCase().includes(q) ||
+          p.keywordTh.toLowerCase().includes(q) ||
+          p.keywordEn.toLowerCase().includes(q) ||
+          p.member.toLowerCase().includes(q) ||
+          p.advisor.toLowerCase().includes(q) ||
+          p.coAdvisor?.toLowerCase().includes(q) ||
+          String(p.year).includes(q) ||
+          p.category.toLowerCase().includes(q));
+
+    const matchesProgram =
+      !filters.programPath || p.category === filters.programPath;
+
+    const matchesKeyword =
+      !filters.searchKeyword.length ||
+      filters.searchKeyword.some(
+        (kw) => p.keywordTh.includes(kw) || p.keywordEn.includes(kw)
+      );
+
+    const matchesFile =
+      !filters.topic ||
+      ((filters.topic === "รูปเล่มรายงาน" ? !!p.file : true) &&
+        (filters.topic === "สไลด์" ? !!p.slideFile : true) &&
+        (filters.topic === "Source code" ? !!p.zipFile || !!p.github : true));
+
+    let matchesYear = true;
+    if (filters.researchYear === "ย้อนหลัง" && filters.researchYearSub) {
+      const n = parseInt(filters.researchYearSub.replace(" ปี", ""));
+      const currentYear = new Date().getFullYear();
+      matchesYear = p.year >= currentYear - n;
+    } else if (filters.researchYear === "จากปี" && filters.researchYearSub) {
+      const [start, end] = filters.researchYearSub.split("-").map(Number);
+      if (!isNaN(start) && !isNaN(end)) {
+        matchesYear = p.year >= start && p.year <= end;
+      }
+    }
+
     return (
-      p.titleTh?.toLowerCase().includes(q) ||
-      p.titleEn?.toLowerCase().includes(q) ||
-      p.abstractTh?.toLowerCase().includes(q) ||
-      p.abstractEn?.toLowerCase().includes(q) ||
-      p.keywordTh?.toLowerCase().includes(q) ||
-      p.keywordEn?.toLowerCase().includes(q) ||
-      p.member?.toLowerCase().includes(q) ||
-      p.advisor?.toLowerCase().includes(q) ||
-      p.coAdvisor?.toLowerCase().includes(q) ||
-      String(p.year).includes(q) ||
-      p.category?.toLowerCase().includes(q)
+      matchesSearch &&
+      matchesProgram &&
+      matchesKeyword &&
+      matchesFile &&
+      matchesYear
     );
   });
 
@@ -117,7 +198,6 @@ function Browse() {
     sortOption === "newest" ? b.year - a.year : a.year - b.year
   );
 
-  // Pagination
   const totalPages = Math.ceil(sortedProjects.length / itemsPerPage);
   const displayedProjects = sortedProjects.slice(
     (currentPage - 1) * itemsPerPage,
@@ -144,8 +224,8 @@ function Browse() {
         }}
       >
         <SideBar
-          onFilterChange={(filters) => console.log("Filter changed:", filters)}
-          onResetFilters={() => console.log("Reset filters")}
+          onFilterChange={handleFilterChange}
+          onResetFilters={handleResetFilters}
         />
       </div>
 
