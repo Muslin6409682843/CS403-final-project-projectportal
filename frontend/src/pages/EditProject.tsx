@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ProjectForm, { type ProjectData } from "../components/ProjectForm";
+import ProjectForm, { type ProjectData } from "../components/EditProjectForm";
 import { createPortal } from "react-dom";
 import axios from "axios";
 
@@ -18,11 +18,13 @@ const EditProject: React.FC = () => {
 
     const fetchProject = async () => {
       try {
-        const res = await axios.get(`http://localhost:8081/api/admin/projects/${id}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `http://localhost:8081/api/admin/projects/${id}`,
+          { withCredentials: true }
+        );
 
         const data: ProjectData = {
+          // ใช้ title เป็น "ชื่อไฟล์ PDF" ตามระบบเดิม
           title: res.data.file || "",
           projectNameTH: res.data.titleTh,
           projectNameEN: res.data.titleEn,
@@ -30,15 +32,22 @@ const EditProject: React.FC = () => {
           advisor: res.data.advisor || "",
           coAdvisors: res.data.coAdvisors || [],
           year: res.data.year || "",
-          category: res.data.category || "", 
+          category: res.data.category || "",
           abstractTh: res.data.abstractTh || "",
           abstractEn: res.data.abstractEn || "",
           keywordsTH: res.data.keywordsTH || "",
           keywordsEN: res.data.keywordsEN || "",
           github: res.data.github || "",
+
+          // ไฟล์ (ตอนโหลดยังไม่มี object เพราะต้องอัปหลังเลือกใหม่)
           titleFile: null,
           slideFileObj: null,
           zipFileObj: null,
+
+          // เพิ่มชื่อไฟล์เก่ากลับไป (ให้หน้า form แสดงได้)
+          oldTitleFile: res.data.file || "",
+          oldSlideFile: res.data.slideFile || "",
+          oldZipFile: res.data.zipFile || "",
         };
 
         setInitialData(data);
@@ -68,7 +77,10 @@ const EditProject: React.FC = () => {
       if (!id) return;
 
       const formData = new FormData();
+
+      // Title = ชื่อไฟล์ PDF (ถูกต้องตามระบบ)
       formData.append("title", data.title);
+
       formData.append("projectNameTH", data.projectNameTH);
       formData.append("projectNameEN", data.projectNameEN);
       formData.append("members", JSON.stringify(data.members));
@@ -82,6 +94,7 @@ const EditProject: React.FC = () => {
       formData.append("keywordsEN", data.keywordsEN || "");
       formData.append("github", data.github || "");
 
+      // อัปโหลดไฟล์จริง
       if (data.titleFile) formData.append("file", data.titleFile);
       if (data.slideFileObj) formData.append("slideFile", data.slideFileObj);
       if (data.zipFileObj) formData.append("zipFile", data.zipFileObj);
@@ -96,16 +109,34 @@ const EditProject: React.FC = () => {
       navigate("/admin/projects");
     } catch (err: any) {
       console.error(err);
-      alert("ไม่สามารถแก้ไขโครงงานได้: " + (err.response?.data || err.message));
+      alert(
+        "ไม่สามารถแก้ไขโครงงานได้: " +
+          (err.response?.data || err.message)
+      );
     }
   };
 
-  if (loading) return <div style={{ padding: "2rem" }}>กำลังโหลดข้อมูลโครงงาน...</div>;
-  if (!initialData) return <div style={{ padding: "2rem" }}>ไม่พบข้อมูลโครงงาน</div>;
+  if (loading)
+    return <div style={{ padding: "2rem" }}>กำลังโหลดข้อมูลโครงงาน...</div>;
+  if (!initialData)
+    return <div style={{ padding: "2rem" }}>ไม่พบข้อมูลโครงงาน</div>;
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 80px)", overflow: "hidden" }}>
-      <div style={{ flex: 1, padding: "2rem", overflowY: "auto", backgroundColor: "#f8f9fa" }}>
+    <div
+      style={{
+        display: "flex",
+        height: "calc(100vh - 80px)",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          padding: "2rem",
+          overflowY: "auto",
+          backgroundColor: "#f8f9fa",
+        }}
+      >
         <button
           onClick={handleBackClick}
           style={{
