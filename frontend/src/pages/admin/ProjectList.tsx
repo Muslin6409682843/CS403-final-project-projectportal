@@ -15,6 +15,7 @@ interface Project {
   projectID: number;
   titleTh: string;
   titleEn: string;
+  member?: string;
   advisor: string;
   coAdvisor: string;
   category: string;
@@ -79,12 +80,12 @@ const ProjectList: React.FC = () => {
   });
 
   const columns = [
-    { field: "projectID", headerName: "ID", width: 70 },
-    { field: "titleTh", headerName: "ชื่อโครงงาน (TH)", flex: 1 },
-    { field: "titleEn", headerName: "ชื่อโครงงาน (EN)", flex: 1 },
-    { field: "advisor", headerName: "อาจารย์ที่ปรึกษา", width: 200 },
-    { field: "coAdvisor", headerName: "ผู้ช่วยที่ปรึกษา", width: 200 },
-    { field: "year", headerName: "ปี", width: 150 },
+    { field: "projectID", headerName: "ID", width: 50 },
+    { field: "titleTh", headerName: "ชื่อโครงงาน (TH)", width: 200 },
+    { field: "titleEn", headerName: "ชื่อโครงงาน (EN)", width: 200 },
+    { field: "member", headerName: "สมาชิก", width: 150 },
+    { field: "advisor", headerName: "อาจารย์ที่ปรึกษา", width: 150 },
+    { field: "year", headerName: "ปี", width: 100 },
     {
       field: "createDate",
       headerName: "วันที่สร้าง",
@@ -97,7 +98,7 @@ const ProjectList: React.FC = () => {
     {
       field: "file",
       headerName: "ไฟล์ PDF",
-      width: 150,
+      width: 125,
       renderCell: (params: any) =>
         params.value ? (
           <Button
@@ -117,7 +118,7 @@ const ProjectList: React.FC = () => {
     {
       field: "zipFile",
       headerName: "ไฟล์ Code/Zip",
-      width: 150,
+      width: 125,
       renderCell: (params: any) =>
         params.value ? (
           <Button
@@ -138,7 +139,7 @@ const ProjectList: React.FC = () => {
     {
       field: "actions",
       headerName: "การจัดการ",
-      width: 200,
+      width: 150,
       sortable: false,
       renderCell: (params: any) => (
         <Stack direction="row" spacing={1}>
