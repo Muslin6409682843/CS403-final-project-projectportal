@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import SideBar from "../components/SideBar";
 import TextSearch from "../components/TextSearch";
@@ -46,11 +45,18 @@ function Browse() {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const location = useLocation();
+
   const queryParams = new URLSearchParams(location.search);
-  const initialSearch = queryParams.get("search") || "";
-  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const searchParam = queryParams.get("search") || "";
+
+  const [searchQuery, setSearchQuery] = useState(searchParam);
 
   const itemsPerPage = 10;
+
+  // useEffect อัปเดต searchQuery ทุกครั้งที่ URL เปลี่ยน
+  useEffect(() => {
+    setSearchQuery(searchParam); // update ช่อง input
+  }, [searchParam]);
 
   // Fetch data from backend
   useEffect(() => {
@@ -73,8 +79,9 @@ function Browse() {
 
   // Handlers
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1);
+    // push URL ใหม่ เพื่อให้ useEffect detect การเปลี่ยน
+    navigate(`/browse?search=${encodeURIComponent(query)}`);
+    setCurrentPage(1); // reset pagination
   };
 
   const handleSortChange = (value: string) => {
