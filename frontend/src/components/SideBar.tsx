@@ -3,9 +3,8 @@ import FilterDropMenu from "./FilterDropMenu";
 import FilterSingleSelect from "./FilterSingleSelect";
 import FilterMultiChoice from "./FilterMultiChoice";
 
-// Props ของ Sidebar
 interface SideBarProps {
-  onFilterChange: (filters: string[]) => void;
+  onFilterChange: (filters: any) => void;
   onResetFilters: () => void;
 }
 
@@ -15,126 +14,96 @@ type FilterKey =
   | "researchYearSub"
   | "searchField"
   | "searchKeyword"
-  | "topic";
+  | "topic"
+  | "searchKeyword";
 
 const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
-  const [filters, setFilters] = useState<
-    Record<FilterKey, string | string[] | null>
-  >({
+  const [filters, setFilters] = useState<Record<FilterKey, any>>({
     programPath: null,
     researchYear: null,
-    researchYearSub: null,
+    researchYearSub: [2000, new Date().getFullYear()], // <<-- เก็บเป็น array จริง
     searchField: null,
     searchKeyword: [],
     topic: null,
   });
 
-  const [yearRange, setYearRange] = useState<[number, number]>([
-    2000,
-    new Date().getFullYear(),
-  ]);
-
-  const handleSelectFilter = (section: FilterKey, value: string | string[]) => {
+  const handleSelectFilter = (section: FilterKey, value: any) => {
     const newFilters = { ...filters, [section]: value };
     setFilters(newFilters);
 
-    // รวมค่าทั้งหมดเป็น array ของ string
-    const allSelected: string[] = Object.values(newFilters).flatMap((val) => {
-      if (!val) return [];
-      if (Array.isArray(val)) return val;
-      return [val];
+    onFilterChange({
+      program: newFilters.programPath || "",
+      yearType: newFilters.researchYear || "",
+      yearSub:
+        typeof newFilters.researchYearSub === "string"
+          ? newFilters.researchYearSub
+          : "",
+      yearRange: Array.isArray(newFilters.researchYearSub)
+        ? newFilters.researchYearSub
+        : [2000, new Date().getFullYear()],
+      searchField: newFilters.searchField || "",
+      searchKeyword: newFilters.searchKeyword || [],
     });
+  };
 
-    onFilterChange(allSelected);
+  const handleRange = (range: [number, number]) => {
+    handleSelectFilter("researchYearSub", range);
   };
 
   const handleReset = () => {
+    const defaultRange: [number, number] = [2000, new Date().getFullYear()];
+
+    // รีเซ็ต filter ทุกตัว ยกเว้น searchQuery
     setFilters({
       programPath: null,
       researchYear: null,
-      researchYearSub: null,
+      researchYearSub: defaultRange,
       searchField: null,
       searchKeyword: [],
       topic: null,
     });
-    setYearRange([2000, new Date().getFullYear()]);
-    onResetFilters();
+
+    // ส่งค่า filter ว่างให้ Browse
+    onFilterChange({
+      program: "",
+      yearType: "",
+      yearSub: "",
+      yearRange: defaultRange,
+      searchField: "",
+      searchKeyword: [],
+    });
   };
 
   return (
-    <div
-      style={{
-        width: "400px",
-        paddingLeft: "2rem",
-        backgroundColor: "#ffffff",
-        minHeight: "100%",
-        display: "flex",
-        flexDirection: "column",
-        position: "sticky",
-        top: "80px",
-      }}
-    >
-      {/* ปุ่มรีเซ็ต */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "1rem",
-        }}
-      >
+    <div style={{ width: "400px", paddingLeft: "2rem" }}>
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <button
           onClick={handleReset}
           style={{
             backgroundColor: "#FD7521",
-            color: "#ffffff",
-            fontWeight: 600,
-            fontSize: "20px",
-            border: "none",
-            borderRadius: "20px",
+            color: "white",
             padding: "10px 20px",
-            cursor: "pointer",
+            borderRadius: "20px",
+            border: "none",
           }}
         >
           รีเซ็ตตัวกรอง
         </button>
       </div>
 
-      {/* Dropdown filters */}
-
       <FilterDropMenu
         label="แผนการเรียน"
         options={["หัวข้อพิเศษ", "สหกิจ"]}
-        selected={
-          typeof filters["programPath"] === "string"
-            ? filters["programPath"]
-            : undefined
-        }
-        onSelect={(value) => handleSelectFilter("programPath", value)}
+        selected={filters.programPath || undefined}
+        onSelect={(val) => handleSelectFilter("programPath", val)}
       />
 
-      {/* Single select / range year */}
       <FilterSingleSelect
         label="ปีการศึกษาที่ยื่นโครงงาน"
-        options={["ย้อนหลัง", "จากปี"]}
-        selected={
-          typeof filters["researchYear"] === "string"
-            ? filters["researchYear"]
-            : undefined
-        }
-        onSelect={(value) => handleSelectFilter("researchYear", value)}
-        subOptions={["5 ปี", "10 ปี", "15 ปี", "25 ปี"]}
-        selectedSubOption={(filters["researchYearSub"] as string) || ""}
-        onSelectSubOption={(value) =>
-          handleSelectFilter("researchYearSub", value)
-        }
-        rangeValue={yearRange}
-        onRangeChange={(value) => {
-          setYearRange(value);
-          handleSelectFilter("researchYearSub", `${value[0]}-${value[1]}`);
-        }}
+        rangeValue={filters.researchYearSub}
+        onRangeChange={handleRange}
       />
 
-      {/* Dropdown filters */}
       <FilterDropMenu
         label="ค้นหาเฉพาะ"
         options={[
@@ -144,32 +113,14 @@ const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
           "บทคัดย่อ",
           "คำสำคัญ",
         ]}
-        selected={
-          typeof filters["searchField"] === "string"
-            ? filters["searchField"]
-            : undefined
-        }
-        onSelect={(value) => handleSelectFilter("searchField", value)}
+        selected={filters.searchField || undefined}
+        onSelect={(val) => handleSelectFilter("searchField", val)}
       />
 
-      {/* Multi-choice */}
       <FilterMultiChoice
-        label="หัวข้อโครงงาน"
-        options={[
-          "AI",
-          "Data Science",
-          "Web Development",
-          "DevOps",
-          "AI",
-          "Data Science",
-          "Web Development",
-          "DevOps",
-        ]}
-        selectedOptions={
-          Array.isArray(filters["searchKeyword"])
-            ? filters["searchKeyword"]
-            : []
-        }
+        label="เอกสารประกอบโครงงาน"
+        options={["รูปเล่มโครงงาน", "สไลด์นำเสนอ", "Source code"]}
+        selectedOptions={filters.searchKeyword}
         onChange={(selected) => handleSelectFilter("searchKeyword", selected)}
       />
     </div>

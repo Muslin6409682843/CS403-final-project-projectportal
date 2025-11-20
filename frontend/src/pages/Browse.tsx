@@ -12,53 +12,61 @@ import "../assets/background.css";
 
 interface Project {
   projectID: number;
-
   titleTh: string;
   titleEn: string;
-
   abstractTh: string;
   abstractEn: string;
-
   keywordTh: string;
   keywordEn: string;
-
   member: string;
   advisor: string;
   coAdvisor?: string;
-
   category: string;
   year: number;
-
   createDate?: string;
-
   file?: string;
   slideFile?: string;
   zipFile?: string;
   github?: string;
 }
 
-function Browse() {
-  // State
-  const navigate = useNavigate();
-  const [sortOption, setSortOption] = useState("newest");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [favorites, setFavorites] = useState<(string | number)[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const location = useLocation();
+interface FilterValues {
+  program?: string;
+  yearType?: "ย้อนหลัง" | "จากปี";
+  yearSub?: string;
+  yearRange?: [number, number];
+  searchField?: string;
+  searchKeyword?: string[];
+}
 
+function Browse() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchParam = queryParams.get("search") || "";
 
   const [searchQuery, setSearchQuery] = useState(searchParam);
+  const [sortOption, setSortOption] = useState("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [favorites, setFavorites] = useState<(string | number)[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   const itemsPerPage = 10;
 
-  // useEffect อัปเดต searchQuery ทุกครั้งที่ URL เปลี่ยน
+  const [programFilter, setProgramFilter] = useState<string>("");
+  const [yearFilterType, setYearFilterType] = useState<string>("");
+  const [yearSubOption, setYearSubOption] = useState<string>("");
+  const [yearRange, setYearRange] = useState<[number, number]>([
+    2000,
+    new Date().getFullYear(),
+  ]);
+  const [searchField, setSearchField] = useState<string>("");
+  const [documentFilter, setDocumentFilter] = useState<string[]>([]);
+
   useEffect(() => {
-    setSearchQuery(searchParam); // update ช่อง input
+    setSearchQuery(searchParam);
   }, [searchParam]);
 
-  // Fetch data from backend
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -75,13 +83,11 @@ function Browse() {
       }
     };
     fetchProjects();
-  }, [searchQuery]); // ⭐ เรียกใหม่ทุกครั้งที่ searchQuery เปลี่ยน
+  }, [searchQuery]);
 
-  // Handlers
   const handleSearch = (query: string) => {
-    // push URL ใหม่ เพื่อให้ useEffect detect การเปลี่ยน
     navigate(`/browse?search=${encodeURIComponent(query)}`);
-    setCurrentPage(1); // reset pagination
+    setCurrentPage(1);
   };
 
   const handleSortChange = (value: string) => {
@@ -94,30 +100,107 @@ function Browse() {
     );
   };
 
-  // Filter + Sort
+  const handleFilterChange = (filters: FilterValues) => {
+    setProgramFilter(filters.program || "");
+    setYearFilterType(filters.yearType || "");
+    setYearSubOption(filters.yearSub || "");
+    setYearRange(filters.yearRange || [2000, new Date().getFullYear()]);
+    setSearchField(filters.searchField || "");
+    setDocumentFilter(filters.searchKeyword || []);
+    setCurrentPage(1);
+  };
+
   const filteredProjects = projects.filter((p) => {
+    if (programFilter === "สหกิจ") return false;
+
     const q = searchQuery.toLowerCase();
 
-    return (
-      p.titleTh?.toLowerCase().includes(q) ||
-      p.titleEn?.toLowerCase().includes(q) ||
-      p.abstractTh?.toLowerCase().includes(q) ||
-      p.abstractEn?.toLowerCase().includes(q) ||
-      p.keywordTh?.toLowerCase().includes(q) ||
-      p.keywordEn?.toLowerCase().includes(q) ||
-      p.member?.toLowerCase().includes(q) ||
-      p.advisor?.toLowerCase().includes(q) ||
-      p.coAdvisor?.toLowerCase().includes(q) ||
-      String(p.year).includes(q) ||
-      p.category?.toLowerCase().includes(q)
-    );
+    // --- ค้นหาเฉพาะ ---
+    let matchSearch = true;
+
+    if (q.trim() !== "") {
+      switch (searchField) {
+        case "ชื่อโครงงาน":
+          matchSearch =
+            p.titleTh?.toLowerCase().includes(q) ||
+            p.titleEn?.toLowerCase().includes(q);
+          break;
+
+        case "ชื่อผู้จัดทำ":
+          matchSearch = p.member?.toLowerCase().includes(q);
+          break;
+
+        case "ชื่ออาจารย์ที่ปรึกษา":
+          matchSearch =
+            (p.advisor ?? "").toLowerCase().includes(q) ||
+            (p.coAdvisor ?? "").toLowerCase().includes(q);
+          break;
+
+        case "บทคัดย่อ":
+          matchSearch =
+            p.abstractTh?.toLowerCase().includes(q) ||
+            p.abstractEn?.toLowerCase().includes(q);
+          break;
+
+        case "คำสำคัญ":
+          matchSearch =
+            p.keywordTh?.toLowerCase().includes(q) ||
+            p.keywordEn?.toLowerCase().includes(q);
+          break;
+
+        default:
+          matchSearch =
+            (p.titleTh ?? "").toLowerCase().includes(q) ||
+            (p.titleEn ?? "").toLowerCase().includes(q) ||
+            (p.abstractTh ?? "").toLowerCase().includes(q) ||
+            (p.abstractEn ?? "").toLowerCase().includes(q) ||
+            (p.keywordTh ?? "").toLowerCase().includes(q) ||
+            (p.keywordEn ?? "").toLowerCase().includes(q) ||
+            (p.member ?? "").toLowerCase().includes(q) ||
+            (p.advisor ?? "").toLowerCase().includes(q) ||
+            (p.coAdvisor ?? "").toLowerCase().includes(q);
+      }
+    }
+
+    // --- ปีการศึกษา ---
+    let matchYear = true;
+    if (Array.isArray(yearRange)) {
+      const projectYearAD = p.year - 543;
+      matchYear =
+        projectYearAD >= yearRange[0] && projectYearAD <= yearRange[1];
+    }
+
+    // --- เอกสารประกอบโครงงาน ---
+    let matchDocument = true;
+
+    if (documentFilter.length > 0) {
+      matchDocument = documentFilter.every((doc) => {
+        switch (doc) {
+          case "รูปเล่มโครงงาน":
+            return p.file != null && p.file.trim() !== "";
+
+          case "สไลด์นำเสนอ":
+            return p.slideFile != null && p.slideFile.trim() !== "";
+
+          case "Source code":
+            return (
+              (p.zipFile != null && p.zipFile.trim() !== "") ||
+              (p.github != null && p.github.trim() !== "")
+            );
+
+          default:
+            return true;
+        }
+      });
+    }
+
+    return matchSearch && matchYear && matchDocument;
   });
 
   const sortedProjects = filteredProjects.sort((a, b) =>
     sortOption === "newest" ? b.year - a.year : a.year - b.year
   );
 
-  // Pagination
   const totalPages = Math.ceil(sortedProjects.length / itemsPerPage);
   const displayedProjects = sortedProjects.slice(
     (currentPage - 1) * itemsPerPage,
@@ -132,7 +215,6 @@ function Browse() {
         overflow: "hidden",
       }}
     >
-      {/* Sidebar */}
       <div
         style={{
           width: "500px",
@@ -144,12 +226,16 @@ function Browse() {
         }}
       >
         <SideBar
-          onFilterChange={(filters) => console.log("Filter changed:", filters)}
-          onResetFilters={() => console.log("Reset filters")}
+          onFilterChange={handleFilterChange}
+          onResetFilters={() => {
+            setProgramFilter("");
+            setYearFilterType("");
+            setYearSubOption("");
+            setYearRange([2000, new Date().getFullYear()]);
+          }}
         />
       </div>
 
-      {/* Main content */}
       <div
         className="main-background"
         style={{
@@ -161,12 +247,10 @@ function Browse() {
           flexDirection: "column",
         }}
       >
-        {/* Search */}
         <div style={{ marginBottom: "1rem" }}>
           <TextSearch value={searchQuery} onSearch={handleSearch} />
         </div>
 
-        {/* Sorting */}
         <div
           style={{
             display: "flex",
@@ -177,7 +261,6 @@ function Browse() {
           <Sorting value={sortOption} onChange={handleSortChange} />
         </div>
 
-        {/* Project cards */}
         <div
           style={{
             flex: 1,
@@ -204,7 +287,6 @@ function Browse() {
           )}
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div style={{ marginTop: "1rem", alignSelf: "center" }}>
             <Pagination
