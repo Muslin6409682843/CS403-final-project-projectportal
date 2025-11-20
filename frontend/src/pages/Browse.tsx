@@ -35,6 +35,7 @@ interface FilterValues {
   yearType?: "ย้อนหลัง" | "จากปี";
   yearSub?: string;
   yearRange?: [number, number];
+  searchField?: string;
 }
 
 function Browse() {
@@ -58,6 +59,7 @@ function Browse() {
     2000,
     new Date().getFullYear(),
   ]);
+  const [searchField, setSearchField] = useState<string>("");
 
   useEffect(() => {
     setSearchQuery(searchParam);
@@ -101,6 +103,7 @@ function Browse() {
     setYearFilterType(filters.yearType || "");
     setYearSubOption(filters.yearSub || "");
     setYearRange(filters.yearRange || [2000, new Date().getFullYear()]);
+    setSearchField(filters.searchField || "");
     setCurrentPage(1);
   };
 
@@ -108,24 +111,58 @@ function Browse() {
     if (programFilter === "สหกิจ") return false;
 
     const q = searchQuery.toLowerCase();
-    const matchSearch =
-      p.titleTh?.toLowerCase().includes(q) ||
-      p.titleEn?.toLowerCase().includes(q) ||
-      p.abstractTh?.toLowerCase().includes(q) ||
-      p.abstractEn?.toLowerCase().includes(q) ||
-      p.keywordTh?.toLowerCase().includes(q) ||
-      p.keywordEn?.toLowerCase().includes(q) ||
-      p.member?.toLowerCase().includes(q) ||
-      p.advisor?.toLowerCase().includes(q) ||
-      p.coAdvisor?.toLowerCase().includes(q) ||
-      String(p.year).includes(q) ||
-      p.category?.toLowerCase().includes(q);
 
+    // --- ค้นหาเฉพาะ ---
+    let matchSearch = true;
+
+    if (q.trim() !== "") {
+      switch (searchField) {
+        case "ชื่อโครงงาน":
+          matchSearch =
+            p.titleTh?.toLowerCase().includes(q) ||
+            p.titleEn?.toLowerCase().includes(q);
+          break;
+
+        case "ชื่อผู้จัดทำ":
+          matchSearch = p.member?.toLowerCase().includes(q);
+          break;
+
+        case "ชื่ออาจารย์ที่ปรึกษา":
+          matchSearch =
+            (p.advisor ?? "").toLowerCase().includes(q) ||
+            (p.coAdvisor ?? "").toLowerCase().includes(q);
+          break;
+
+        case "บทคัดย่อ":
+          matchSearch =
+            p.abstractTh?.toLowerCase().includes(q) ||
+            p.abstractEn?.toLowerCase().includes(q);
+          break;
+
+        case "คำสำคัญ":
+          matchSearch =
+            p.keywordTh?.toLowerCase().includes(q) ||
+            p.keywordEn?.toLowerCase().includes(q);
+          break;
+
+        default:
+          matchSearch =
+            (p.titleTh ?? "").toLowerCase().includes(q) ||
+            (p.titleEn ?? "").toLowerCase().includes(q) ||
+            (p.abstractTh ?? "").toLowerCase().includes(q) ||
+            (p.abstractEn ?? "").toLowerCase().includes(q) ||
+            (p.keywordTh ?? "").toLowerCase().includes(q) ||
+            (p.keywordEn ?? "").toLowerCase().includes(q) ||
+            (p.member ?? "").toLowerCase().includes(q) ||
+            (p.advisor ?? "").toLowerCase().includes(q) ||
+            (p.coAdvisor ?? "").toLowerCase().includes(q);
+      }
+    }
+
+    // --- ปีการศึกษา ---
     let matchYear = true;
-
     if (Array.isArray(yearRange)) {
-      const projectYearAD = p.year - 543; // แปลง พ.ศ. → ค.ศ.
-
+      const projectYearAD = p.year - 543;
       matchYear =
         projectYearAD >= yearRange[0] && projectYearAD <= yearRange[1];
     }

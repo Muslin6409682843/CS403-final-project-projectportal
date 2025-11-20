@@ -40,6 +40,7 @@ const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
       yearRange: Array.isArray(newFilters.researchYearSub)
         ? newFilters.researchYearSub
         : [2000, new Date().getFullYear()],
+        searchField: newFilters.searchField || "",
     });
   };
 
