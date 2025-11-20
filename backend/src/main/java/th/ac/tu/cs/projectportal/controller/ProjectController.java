@@ -44,8 +44,7 @@ public class ProjectController {
             @RequestParam(value = "github", required = false) String github,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestPart(value = "slideFile", required = false) MultipartFile slideFile,
-            @RequestPart(value = "zipFile", required = false) MultipartFile zipFile
-    ) {
+            @RequestPart(value = "zipFile", required = false) MultipartFile zipFile) {
         try {
             Project project = new Project();
 
@@ -160,7 +159,8 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         Project project = projectService.getProjectById(id);
-        if (project == null) return ResponseEntity.status(404).body("ไม่พบโครงงาน");
+        if (project == null)
+            return ResponseEntity.status(404).body("ไม่พบโครงงาน");
         return ResponseEntity.ok(project);
     }
 
@@ -185,8 +185,7 @@ public class ProjectController {
             @RequestParam(value = "github", required = false) String github,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestPart(value = "slideFile", required = false) MultipartFile slideFile,
-            @RequestPart(value = "zipFile", required = false) MultipartFile zipFile
-    ) {
+            @RequestPart(value = "zipFile", required = false) MultipartFile zipFile) {
         try {
             Project project = projectService.getProjectById(id);
             if (project == null) {
@@ -261,4 +260,5 @@ public class ProjectController {
                     .body("ไม่สามารถแก้ไขโครงงานได้: " + e.getMessage());
         }
     }
+
 }

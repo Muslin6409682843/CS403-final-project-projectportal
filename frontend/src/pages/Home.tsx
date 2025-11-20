@@ -1,6 +1,8 @@
+// Home.tsx
 import React from "react";
 import "../assets/background.css";
 import { useNavigate } from "react-router-dom";
+import FooterKeywords from "../components/FooterKeywords";
 
 function Home() {
   const navigate = useNavigate();
@@ -8,28 +10,29 @@ function Home() {
     <div
       className="main-background"
       style={{
+        width: "100%",
+        minHeight: "100vh",
+        boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh",
-        width: "100%",
-        boxSizing: "border-box",
+        alignItems: "center",
       }}
     >
-      {/* Main Content */}
+      {/* ⭐ ส่วนที่ต้องตรงกลางจอ ⭐ */}
       <div
         style={{
-          flex: 1,
+          height: "70vh", // คุมพื้นที่ให้กลางจอ
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "2rem",
+          justifyContent: "center", // กลางแนวตั้ง
+          alignItems: "center", // กลางแนวนอน
+          textAlign: "center",
+          width: "100%",
         }}
       >
         {/* Header */}
         <h1
           style={{
-            textAlign: "center",
             marginBottom: "30px",
             fontSize: "36px",
             color: "#333",
@@ -41,12 +44,11 @@ function Home() {
         {/* Search Box */}
         <form
           style={{
-            display: "flex", // ทำให้ form เป็น flex
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
             gap: "15px",
             marginBottom: "1rem",
-            width: "100%", // กว้างเต็ม container
           }}
         >
           <input
@@ -100,71 +102,35 @@ function Home() {
           onMouseOut={(e) =>
             (e.currentTarget.style.backgroundColor = "#007bff")
           }
-          onClick={() => navigate("/browse")} // ✅ เมื่อคลิกให้ไปหน้า browse
+          onClick={() => navigate("/browse")}
         >
           ค้นหาแบบละเอียด
         </button>
       </div>
 
-      {/* Footer */}
-      <footer
+      {/* ⭐ กล่อง Keyword อยู่ด้านล่าง ⭐ */}
+      <div
         style={{
-          width: "100%",
           backgroundColor: "white",
-          padding: "20px 20px 60px 20px",
-          borderTop: "1px solid #ddd",
-          fontSize: "14px",
-          color: "#333",
-          boxSizing: "border-box",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-end",
+          padding: "20px 40px",
+          width: "100%", // ⭐ เต็มหน้าจอ
+          marginTop: "0px",
+          boxSizing: "border-box", // ⭐ ป้องกันล้นขอบ
+          borderTop: "1px solid #eee",
+          borderBottom: "1px solid #eee",
         }}
       >
-        <h1
+        <h2
           style={{
-            marginLeft: "20px",
             fontSize: "20px",
             marginBottom: "10px",
           }}
         >
           ค้นหาโครงงานพิเศษ
-        </h1>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "20px",
-            padding: "0 20px",
-            alignContent: "start",
-          }}
-        >
-          <div style={{ fontSize: "16px", padding: "10px", cursor: "pointer" }}>
-            Artificial Intelligence (AI)
-          </div>
-          <div style={{ fontSize: "16px", padding: "10px", cursor: "pointer" }}>
-            Cybersecurity
-          </div>
-          <div style={{ fontSize: "16px", padding: "10px", cursor: "pointer" }}>
-            Mobile Application Development
-          </div>
-          <div style={{ fontSize: "16px", padding: "10px", cursor: "pointer" }}>
-            Recommendation System
-          </div>
-          <div style={{ fontSize: "16px", padding: "10px", cursor: "pointer" }}>
-            Data Science
-          </div>
-          <div style={{ fontSize: "16px", padding: "10px", cursor: "pointer" }}>
-            Robotics and Embedded System
-          </div>
-          <div style={{ fontSize: "16px", padding: "10px", cursor: "pointer" }}>
-            Web Development
-          </div>
-          <div style={{ fontSize: "16px", padding: "10px", cursor: "pointer" }}>
-            Chatbots & Conversational AI
-          </div>
-        </div>
-      </footer>
+        </h2>
+
+        <FooterKeywords />
+      </div>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import TextSearch from "../components/TextSearch";
 import Sorting from "../components/Sorting";
 import ProjectCard from "../components/ProjectCard";
 import Pagination from "../components/Pagination";
+
 import "bootstrap/dist/css/bootstrap.css";
 import "../assets/background.css";
 
@@ -27,8 +28,7 @@ function Browse() {
   const [currentPage, setCurrentPage] = useState(1);
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-
-  const itemsPerPage = 2;
+  const itemsPerPage = 10;
 
   // Fetch data from backend
   useEffect(() => {
