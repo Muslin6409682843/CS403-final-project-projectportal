@@ -51,8 +51,9 @@ const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
   };
 
   const handleReset = () => {
-    const defaultRange = [2000, new Date().getFullYear()];
+    const defaultRange: [number, number] = [2000, new Date().getFullYear()];
 
+    // รีเซ็ต filter ทุกตัว ยกเว้น searchQuery
     setFilters({
       programPath: null,
       researchYear: null,
@@ -62,7 +63,15 @@ const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
       topic: null,
     });
 
-    onResetFilters();
+    // ส่งค่า filter ว่างให้ Browse
+    onFilterChange({
+      program: "",
+      yearType: "",
+      yearSub: "",
+      yearRange: defaultRange,
+      searchField: "",
+      searchKeyword: [],
+    });
   };
 
   return (
