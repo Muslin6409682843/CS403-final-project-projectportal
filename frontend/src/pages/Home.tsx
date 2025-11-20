@@ -1,11 +1,19 @@
 // Home.tsx
-import React from "react";
+import React, { useState } from "react";
 import "../assets/background.css";
 import { useNavigate } from "react-router-dom";
 import FooterKeywords from "../components/FooterKeywords";
 
 function Home() {
   const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    navigate(`/browse?search=${encodeURIComponent(query)}`);
+  };
+
   return (
     <div
       className="main-background"
@@ -43,6 +51,7 @@ function Home() {
 
         {/* Search Box */}
         <form
+          onSubmit={handleSubmit} // ← เพิ่มตรงนี้
           style={{
             display: "flex",
             justifyContent: "center",
@@ -54,6 +63,8 @@ function Home() {
           <input
             type="text"
             placeholder="ค้นหา..."
+            value={query} // ← เพิ่ม
+            onChange={(e) => setQuery(e.target.value)} // ← เพิ่ม
             style={{
               padding: "15px 20px",
               fontSize: "18px",
@@ -73,12 +84,6 @@ function Home() {
               color: "white",
               cursor: "pointer",
             }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.backgroundColor = "#FFB347")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.backgroundColor = "#FD7521")
-            }
           >
             ค้นหา
           </button>

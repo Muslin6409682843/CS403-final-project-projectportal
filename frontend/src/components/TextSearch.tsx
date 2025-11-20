@@ -1,28 +1,31 @@
 // TextSearch.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa"; // ใช้ไอคอนแว่นขยายจาก react-icons
 
 interface TextSearchProps {
   placeholder?: string;
+  value?: string; // <-- เพิ่ม
   onSearch?: (query: string) => void;
 }
 
 const TextSearch: React.FC<TextSearchProps> = ({
   placeholder = "ค้นหา...",
+  value = "",
   onSearch,
 }) => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(value);
+
+  // ซิงค์กับ prop value ถ้ามีการเปลี่ยนจากภายนอก
+  useEffect(() => {
+    setQuery(value);
+  }, [value]);
 
   const handleSearch = () => {
-    if (onSearch) {
-      onSearch(query);
-    }
+    if (onSearch) onSearch(query);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    if (e.key === "Enter") handleSearch();
   };
 
   return (

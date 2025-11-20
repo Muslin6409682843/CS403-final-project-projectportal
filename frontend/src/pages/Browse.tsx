@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import SideBar from "../components/SideBar";
 import TextSearch from "../components/TextSearch";
@@ -12,39 +13,63 @@ import "../assets/background.css";
 
 interface Project {
   projectID: number;
+
   titleTh: string;
+  titleEn: string;
+
+  abstractTh: string;
+  abstractEn: string;
+
+  keywordTh: string;
+  keywordEn: string;
+
   member: string;
   advisor: string;
   coAdvisor?: string;
+
+  category: string;
   year: number;
+
   createDate?: string;
+
+  file?: string;
+  slideFile?: string;
+  zipFile?: string;
+  github?: string;
 }
 
 function Browse() {
   // State
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialSearch = queryParams.get("search") || "";
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+
   const itemsPerPage = 10;
 
   // Fetch data from backend
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await axios.get<Project[]>(
-          "http://localhost:8081/api/projects",
-          { withCredentials: true }
-        );
+        const url = searchQuery
+          ? `http://localhost:8081/api/projects/search?q=${encodeURIComponent(
+              searchQuery
+            )}`
+          : "http://localhost:8081/api/projects";
+
+        const res = await axios.get<Project[]>(url, { withCredentials: true });
         setProjects(res.data);
       } catch (err) {
         console.error("ไม่สามารถโหลดข้อมูลโครงงาน:", err);
       }
     };
     fetchProjects();
-  }, []);
+  }, [searchQuery]); // ⭐ เรียกใหม่ทุกครั้งที่ searchQuery เปลี่ยน
 
   // Handlers
   const handleSearch = (query: string) => {
@@ -63,9 +88,23 @@ function Browse() {
   };
 
   // Filter + Sort
-  const filteredProjects = projects.filter((p) =>
-    p.titleTh.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProjects = projects.filter((p) => {
+    const q = searchQuery.toLowerCase();
+
+    return (
+      p.titleTh?.toLowerCase().includes(q) ||
+      p.titleEn?.toLowerCase().includes(q) ||
+      p.abstractTh?.toLowerCase().includes(q) ||
+      p.abstractEn?.toLowerCase().includes(q) ||
+      p.keywordTh?.toLowerCase().includes(q) ||
+      p.keywordEn?.toLowerCase().includes(q) ||
+      p.member?.toLowerCase().includes(q) ||
+      p.advisor?.toLowerCase().includes(q) ||
+      p.coAdvisor?.toLowerCase().includes(q) ||
+      String(p.year).includes(q) ||
+      p.category?.toLowerCase().includes(q)
+    );
+  });
 
   const sortedProjects = filteredProjects.sort((a, b) =>
     sortOption === "newest" ? b.year - a.year : a.year - b.year
@@ -117,7 +156,7 @@ function Browse() {
       >
         {/* Search */}
         <div style={{ marginBottom: "1rem" }}>
-          <TextSearch onSearch={handleSearch} />
+          <TextSearch value={searchQuery} onSearch={handleSearch} />
         </div>
 
         {/* Sorting */}

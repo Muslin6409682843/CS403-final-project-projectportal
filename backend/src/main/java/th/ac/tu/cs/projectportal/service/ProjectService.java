@@ -6,8 +6,6 @@ import th.ac.tu.cs.projectportal.entity.Project;
 import th.ac.tu.cs.projectportal.repository.ProjectRepository;
 import java.util.List;
 
-
-
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
@@ -24,22 +22,23 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
-    // ตรวจสอบว่าโครงงานมีอยู่ไหม 
+    // ตรวจสอบว่าโครงงานมีอยู่ไหม
     public boolean existsById(Long id) {
         return projectRepository.existsById(id);
     }
 
-    //  ลบโครงงาน 
+    // ลบโครงงาน
     public void deleteProjectById(Long id) {
         projectRepository.deleteById(id);
     }
 
     // ดึงโครงงานโดยใช้ ID
     public Project getProjectById(Long id) {
-    return projectRepository.findById(id).orElse(null);
-}
+        return projectRepository.findById(id).orElse(null);
+    }
 
-
-
+    public List<Project> searchProjects(String q) {
+        return projectRepository.searchProjects(q.toLowerCase());
+    }
 
 }
