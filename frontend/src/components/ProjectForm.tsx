@@ -106,6 +106,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     "อื่นๆ (ระบุ)",
   ];
 
+  const categoryOptions = ["Software", "Hardware", "AI/ML", "Research", "อื่นๆ (ระบุ)"];
+  const [category, setCategory] = useState(initialData?.category || "");
+  const [customCategory, setCustomCategory] = useState("");
+
   const currentYear = new Date().getFullYear();
   const thaiYears: number[] = [];
   for (let y = currentYear + 543; y >= 2543; y--) thaiYears.push(y);
@@ -160,6 +164,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     customAdvisorPosition,
     coAdvisors,
     keywordsTH,
+    category,
+    customCategory,
   ]);
 
   const handleChange = (
@@ -259,6 +265,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             ? c.customPosition + " " + c.name.trim()
             : c.position + " " + c.name.trim()
         );
+      const finalCategory =
+        category === "อื่นๆ (ระบุ)" ? customCategory.trim() : category;
 
       onSubmit({
         ...form,
@@ -270,7 +278,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         slideFileObj,
         zipFileObj,
         github: form.github?.trim() || "",
-        category: form.category || "",
+        category: finalCategory,
         codeUploadType,
       });
     } else {
@@ -564,18 +572,48 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 
       {/* Category */}
       <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>หมวดหมู่</label>
-      <select
-        name="category"
-        value={form.category || ""}
-        onChange={handleChange}
-        style={{ fontSize: "1rem", padding: "0.4rem" }}
-      >
-        <option value="">-- เลือกหมวดหมู่ --</option>
-        <option value="Software">Software</option>
-        <option value="Hardware">Hardware</option>
-        <option value="AI/ML">AI/ML</option>
-        <option value="Research">Research</option>
-      </select>
+      {category === "อื่นๆ (ระบุ)" ? (
+        <div style={{ display: "flex", gap: "0.5rem", flex: 1 }}>
+          <input
+            type="text"
+            placeholder="กรอกหมวดหมู่"
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
+            style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
+          />
+          <button
+            type="button"
+            onClick={() => setCategory("")} // กลับไป dropdown
+            style={{
+              fontSize: "0.9rem",
+              padding: "0.4rem 0.8rem",
+              backgroundColor: "#eee",
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
+            🔁 เลือกจากรายการ
+          </button>
+        </div>
+      ) : (
+        <select
+          value={category}
+          onChange={(e) => {
+            const value = e.target.value;
+            setCategory(value);
+            if (value !== "อื่นๆ (ระบุ)") setCustomCategory("");
+          }}
+          style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
+        >
+          <option value="">-- เลือกหมวดหมู่ --</option>
+          {categoryOptions.map((cat, i) => (
+            <option key={i} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      )}
       {errors.category && (
         <span style={{ color: "red", fontSize: "0.95rem" }}>
           {errors.category}

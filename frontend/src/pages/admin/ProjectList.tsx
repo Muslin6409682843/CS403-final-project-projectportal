@@ -80,11 +80,12 @@ const ProjectList: React.FC = () => {
   });
 
   const columns = [
-    { field: "projectID", headerName: "ID", width: 50 },
-    { field: "titleTh", headerName: "ชื่อโครงงาน (TH)", width: 200 },
-    { field: "titleEn", headerName: "ชื่อโครงงาน (EN)", width: 200 },
-    { field: "member", headerName: "สมาชิก", width: 150 },
-    { field: "advisor", headerName: "อาจารย์ที่ปรึกษา", width: 150 },
+    { field: "projectID", headerName: "ID", width: 70 },
+    { field: "titleTh", headerName: "ชื่อโครงงาน (TH)", width: 150 },
+    { field: "titleEn", headerName: "ชื่อโครงงาน (EN)", width: 150 },
+    { field: "member", headerName: "สมาชิก", width: 125 },
+    { field: "advisor", headerName: "อาจารย์ที่ปรึกษา", width: 125 },
+    { field: "category", headerName: "หมวดหมู่", width: 100 },
     { field: "year", headerName: "ปี", width: 100 },
     {
       field: "createDate",
