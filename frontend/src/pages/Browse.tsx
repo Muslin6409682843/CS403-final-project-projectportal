@@ -62,6 +62,7 @@ function Browse() {
   ]);
   const [searchField, setSearchField] = useState<string>("");
   const [documentFilter, setDocumentFilter] = useState<string[]>([]);
+  const [currentUser, setCurrentUser] = useState<{username: string, role: string} | null>(null);
 
   useEffect(() => {
     setSearchQuery(searchParam);
@@ -94,11 +95,58 @@ function Browse() {
     setSortOption(value);
   };
 
-  const toggleFavorite = (id: string | number) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
-    );
+  const toggleFavorite = async (id: string | number) => {
+  try {
+    if (favorites.includes(id)) {
+      // ลบ bookmark
+      await axios.delete(`http://localhost:8081/api/bookmark/${id}`, {
+        withCredentials: true,
+      });
+      setFavorites((prev) => prev.filter((fid) => fid !== id));
+    } else {
+      // เพิ่ม bookmark
+      await axios.post(`http://localhost:8081/api/bookmark/${id}`, {}, {
+        withCredentials: true,
+      });
+      setFavorites((prev) => [...prev, id]);
+    }
+  } catch (err: any) {
+    if (err.response) {
+      alert(err.response.data);
+    } else {
+      console.error(err);
+    }
+  }
+};
+
+useEffect(() => {
+  const fetchFavorites = async () => {
+    try {
+      const res = await axios.get<number[]>(
+        "http://localhost:8081/api/bookmark", 
+        { withCredentials: true }
+      );
+      setFavorites(res.data);
+    } catch (err) {
+      console.error("ไม่สามารถโหลด Favorites:", err);
+    }
   };
+  fetchFavorites();
+}, []);
+
+useEffect(() => {
+  const fetchSession = async () => {
+    try {
+      const res = await axios.get("http://localhost:8081/api/check-session", { withCredentials: true });
+      if (res.data.status) setCurrentUser({ username: res.data.username, role: res.data.role });
+    } catch (err) {
+      console.error("ไม่สามารถเช็ค session:", err);
+    }
+  };
+  fetchSession();
+}, []);
+
+
 
   const handleFilterChange = (filters: FilterValues) => {
     setProgramFilter(filters.program || "");
@@ -280,6 +328,7 @@ function Browse() {
               onNavigate={(id) => navigate(`/project/${id}`)}
               isFavorite={favorites.includes(project.projectID)}
               onToggleFavorite={toggleFavorite}
+              role={currentUser?.role || "Guest"} 
             />
           ))}
           {displayedProjects.length === 0 && (

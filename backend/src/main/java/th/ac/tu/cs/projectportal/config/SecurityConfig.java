@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/projects/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("Admin")
+                        .requestMatchers("/api/bookmark/**").hasAnyRole("Student","Staff","Guest")
                         .anyRequest().authenticated());
         return http.build();
     }

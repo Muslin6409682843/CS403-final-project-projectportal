@@ -12,6 +12,8 @@ interface ProjectCardProps {
 
   isFavorite: boolean;
   onToggleFavorite: (id: string | number) => void;
+
+  role: string;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -23,7 +25,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   onNavigate,
   isFavorite,
   onToggleFavorite,
+  role,
 }) => {
+  const disabled = role === "Admin" || role === "Guest";
   return (
     <div
       style={{
@@ -39,16 +43,18 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     >
       {/* ปุ่ม Favorite */}
       <button
-        onClick={() => onToggleFavorite(id)}
+        onClick={() => !disabled && onToggleFavorite(id)}
         style={{
           position: "absolute",
           top: "15px",
           right: "20px",
           background: "transparent",
           border: "none",
-          cursor: "pointer",
+          cursor: disabled ? "not-allowed" : "pointer",
           fontSize: "20px",
+          color: disabled ? "gray" : isFavorite ? "#FFD700" : "white",
         }}
+        title={disabled ? "Admin/Guest cannot favorite" : ""}
       >
         <FaStar
           color={isFavorite ? "#FFD700" : "white"}
