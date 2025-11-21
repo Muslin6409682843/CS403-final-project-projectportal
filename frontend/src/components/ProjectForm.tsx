@@ -578,7 +578,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             type="text"
             placeholder="กรอกหมวดหมู่"
             value={customCategory}
-            onChange={(e) => setCustomCategory(e.target.value)}
+            onChange={(e) => {
+              setCustomCategory(e.target.value);
+              setForm({ ...form, category: e.target.value }); 
+            }}
             style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
           />
           <button
@@ -602,6 +605,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           onChange={(e) => {
             const value = e.target.value;
             setCategory(value);
+            setForm({ ...form, category: value });
             if (value !== "อื่นๆ (ระบุ)") setCustomCategory("");
           }}
           style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
