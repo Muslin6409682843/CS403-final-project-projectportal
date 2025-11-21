@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaStar, FaFileAlt, FaFileCode, FaFileImage } from "react-icons/fa";
+import { FaFileAlt, FaFileCode, FaFileImage } from "react-icons/fa";
 
 import { useAuth } from "../../context/AuthContext";
 import type { ProjectDTO } from "../../dto/ProjectDTO";
@@ -106,11 +106,6 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
         gap: "18px",
       }}
     >
-      {/* ⭐ รายการโปรด */}
-      <button style={{ ...buttonStyle, backgroundColor: "#FD7521" }}>
-        <FaStar style={{ marginRight: "10px" }} /> เพิ่มเข้ารายการโปรด
-      </button>
-
       {/* 📄 ดาวน์โหลดเล่มโครงงาน */}
       <button
         style={getButtonStyle(project.file)}
