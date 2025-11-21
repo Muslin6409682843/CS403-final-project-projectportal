@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Box, Typography, Stack } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Stack,
+} from "@mui/material";
+import { People, VerifiedUser, MenuBook, Logout } from "@mui/icons-material";
 import { createPortal } from "react-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -15,84 +23,137 @@ const AdminPanel: React.FC = () => {
     navigate("/login");
   };
 
+  const cardData = [
+    {
+      title: "ผู้สมัครรออนุมัติ",
+      description: "ดูรายการผู้สมัครที่ยังไม่ได้อนุมัติ",
+      icon: <People sx={{ fontSize: 40, color: "#1976d2" }} />,
+      onClick: () => navigate("/admin/pending-users"),
+    },
+    {
+      title: "จัดการผู้ใช้งาน",
+      description: "จัดการข้อมูลผู้ใช้งานทั้งหมด",
+      icon: <VerifiedUser sx={{ fontSize: 40, color: "#2e7d32" }} />,
+      onClick: () => navigate("/admin/approved-users"),
+    },
+    {
+      title: "โครงงานนักศึกษา",
+      description: "จัดการข้อมูลโครงงานทั้งหมด",
+      icon: <MenuBook sx={{ fontSize: 40, color: "#f57c00" }} />,
+      onClick: () => navigate("/admin/projects"),
+    },
+  ];
+
   return (
-    <>
-      <Box className="p-6">
-        <Typography variant="h5" fontWeight="bold" mb={2}>
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      minHeight="80vh"
+      bgcolor="#f5f5f5"
+      p={2}
+    >
+      <Box maxWidth={1200} width="100%">
+        {/* Header */}
+        <Typography variant="h4" fontWeight="bold" mb={4} textAlign="center">
           🧭 Admin Dashboard
         </Typography>
 
-        <Stack spacing={2}>
+        {/* Card Grid แบบ flex */}
+        <Box display="flex" flexWrap="wrap" justifyContent="center" gap={4}>
+          {cardData.map((card) => (
+            <Box key={card.title} width={{ xs: "100%", sm: "48%", md: "30%" }}>
+              <Card
+                sx={{
+                  cursor: "pointer",
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  "&:hover": {
+                    transform: "translateY(-5px)",
+                    boxShadow: 6,
+                  },
+                }}
+                onClick={card.onClick}
+              >
+                <CardContent>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    {card.icon}
+                    <Box>
+                      <Typography variant="h6" fontWeight="bold">
+                        {card.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {card.description}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Logout Button */}
+        <Box textAlign="center" mt={6}>
           <Button
             variant="contained"
-            onClick={() => navigate("/admin/pending-users")}
-          >
-            ดูรายการผู้สมัครที่รออนุมัติ
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => navigate("/admin/approved-users")}
-          >
-            จัดการผู้ใช้งานทั้งหมด
-          </Button>
-          <Button variant="outlined" onClick={() => navigate("/admin/projects")}>
-            ดูรายงานระบบ
-          </Button>
-          <Button
-            variant="outlined"
             color="error"
+            startIcon={<Logout />}
             onClick={() => setShowLogoutModal(true)}
           >
             Logout
           </Button>
-        </Stack>
-      </Box>
+        </Box>
 
-      {showLogoutModal &&
-        createPortal(
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: "#fff",
-                padding: "3rem 2rem",
-                borderRadius: "16px",
-                maxWidth: "400px",
-                width: "90%",
-                textAlign: "center",
+        {/* Logout Modal */}
+        {showLogoutModal &&
+          createPortal(
+            <Box
+              sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                bgcolor: "rgba(0,0,0,0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 9999,
               }}
             >
-              <h2>คุณต้องการออกจากระบบใช่ไหม?</h2>
-              <Button
-                onClick={handleLogoutConfirm}
-                variant="contained"
-                color="error"
-                sx={{ marginRight: "1rem" }}
+              <Box
+                sx={{
+                  bgcolor: "background.paper",
+                  p: 4,
+                  borderRadius: 2,
+                  width: { xs: "90%", sm: 400 },
+                  textAlign: "center",
+                }}
               >
-                ยืนยัน
-              </Button>
-              <Button
-                onClick={() => setShowLogoutModal(false)}
-                variant="outlined"
-              >
-                ยกเลิก
-              </Button>
-            </div>
-          </div>,
-          document.body
-        )}
-    </>
+                <Typography variant="h6" mb={3}>
+                  คุณต้องการออกจากระบบใช่ไหม?
+                </Typography>
+                <Stack direction="row" spacing={2} justifyContent="center">
+                  <Button
+                    onClick={handleLogoutConfirm}
+                    variant="contained"
+                    color="error"
+                  >
+                    ยืนยัน
+                  </Button>
+                  <Button
+                    onClick={() => setShowLogoutModal(false)}
+                    variant="outlined"
+                  >
+                    ยกเลิก
+                  </Button>
+                </Stack>
+              </Box>
+            </Box>,
+            document.body
+          )}
+      </Box>
+    </Box>
   );
 };
 
