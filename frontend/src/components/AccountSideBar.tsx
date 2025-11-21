@@ -16,7 +16,6 @@ const AccountSideBar = () => {
       path: "https://accounts.tu.ac.th/Login.aspx",
       external: true,
     },
-    { label: "ประวัติการเข้าชม", path: "/history" },
     { label: "ออกจากระบบ", path: "/logout" },
   ];
 
