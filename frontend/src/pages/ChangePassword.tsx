@@ -33,17 +33,18 @@ function ChangePassword() {
         }),
       });
 
-      const data = await res.text();
-      if (res.ok) {
-        setMessage("✅ เปลี่ยนรหัสผ่านสำเร็จ");
-        setIsError(false);
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-      } else {
-        setMessage("❌ เปลี่ยนรหัสผ่านผิดพลาด"); // ข้อความ error จาก backend
-        setIsError(true);
-      }
+    const data = await res.text(); // หรือ .json() ถ้า backend ส่ง JSON
+    if (res.ok) {
+      setMessage("✅ เปลี่ยนรหัสผ่านสำเร็จ");
+      setIsError(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } else {
+      setMessage(data); // แสดงข้อความที่ backend ส่งมา
+      setIsError(true);
+    }
+
     } catch (error) {
       console.error(error);
       setMessage("❌ เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน");
