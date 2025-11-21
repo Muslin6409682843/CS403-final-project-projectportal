@@ -11,11 +11,7 @@ const AccountSideBar = () => {
 
   const menuItems = [
     { label: "รายการโปรด", path: "/favorite" },
-    {
-      label: "เปลี่ยนรหัสผ่าน",
-      path: "https://accounts.tu.ac.th/Login.aspx",
-      external: true,
-    },
+    { label: "เปลี่ยนรหัสผ่าน", path: "/change-password" },
     { label: "ออกจากระบบ", path: "/logout" },
   ];
 

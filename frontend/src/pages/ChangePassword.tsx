@@ -8,22 +8,52 @@ function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState(""); // ข้อความโชว์
+  const [isError, setIsError] = useState(false); // แยกสี error / success
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (newPassword !== confirmPassword) {
-      alert("รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน");
+      setMessage("❌ รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน");
+      setIsError(true);
       return;
     }
-    // TODO: ส่งข้อมูลไป backend ทีหลัง
-    alert("เปลี่ยนรหัสผ่านเรียบร้อย (mock frontend)");
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
+
+    try {
+      const res = await fetch("http://localhost:8081/api/users/change-password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // ส่ง cookie/session ด้วย
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const data = await res.text();
+      if (res.ok) {
+        setMessage("✅ เปลี่ยนรหัสผ่านสำเร็จ");
+        setIsError(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        setMessage("❌ เปลี่ยนรหัสผ่านผิดพลาด"); // ข้อความ error จาก backend
+        setIsError(true);
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage("❌ เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน");
+      setIsError(true);
+    }
   };
 
   const handleForgotPassword = () => {
-    alert("ลืมรหัสผ่าน? ฟังก์ชันนี้ยังไม่เชื่อม backend");
+    setMessage("❌ ฟังก์ชันลืมรหัสผ่านยังไม่เชื่อม backend");
+    setIsError(true);
   };
 
   return (
@@ -35,10 +65,8 @@ function ChangePassword() {
       }}
     >
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        {/* Sidebar */}
         <AccountSideBar />
 
-        {/* Main Content */}
         <div
           className="main-background"
           style={{
@@ -51,7 +79,6 @@ function ChangePassword() {
             padding: "2rem",
           }}
         >
-          {/* กล่องฟอร์ม */}
           <div
             style={{
               backgroundColor: "#ffffff",
@@ -65,18 +92,28 @@ function ChangePassword() {
               gap: "1rem",
             }}
           >
-            {/* Title */}
             <h2 style={{ margin: 0, textAlign: "center" }}>เปลี่ยนรหัสผ่าน</h2>
+
+            {/* แสดงข้อความ success / error */}
+            {message && (
+              <div
+                style={{
+                  color: isError ? "red" : "green",
+                  fontWeight: 500,
+                  marginBottom: "0.5rem",
+                  textAlign: "center",
+                }}
+              >
+                {message}
+              </div>
+            )}
 
             <form
               onSubmit={handleSubmit}
               style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
             >
-              {/* Current Password */}
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <label style={{ marginBottom: "0.5rem" }}>
-                  รหัสผ่านปัจจุบัน
-                </label>
+                <label style={{ marginBottom: "0.5rem" }}>รหัสผ่านปัจจุบัน</label>
                 <input
                   type="password"
                   value={currentPassword}
@@ -89,7 +126,6 @@ function ChangePassword() {
                     border: "1px solid #ccc",
                   }}
                 />
-                {/* ลิงก์ลืมรหัสผ่านชิดขวา */}
                 <div
                   style={{
                     display: "flex",
@@ -110,7 +146,6 @@ function ChangePassword() {
                 </div>
               </div>
 
-              {/* New Password */}
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <label style={{ marginBottom: "0.5rem" }}>รหัสผ่านใหม่</label>
                 <input
@@ -127,11 +162,8 @@ function ChangePassword() {
                 />
               </div>
 
-              {/* Confirm New Password */}
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <label style={{ marginBottom: "0.5rem" }}>
-                  ยืนยันรหัสผ่านใหม่
-                </label>
+                <label style={{ marginBottom: "0.5rem" }}>ยืนยันรหัสผ่านใหม่</label>
                 <input
                   type="password"
                   value={confirmPassword}
@@ -146,7 +178,6 @@ function ChangePassword() {
                 />
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 style={{
