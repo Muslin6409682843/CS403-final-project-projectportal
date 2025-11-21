@@ -28,15 +28,15 @@ const EditProject: React.FC = () => {
           title: res.data.file || "",
           projectNameTH: res.data.titleTh,
           projectNameEN: res.data.titleEn,
-          members: res.data.members || [],
+          members: res.data.member ? res.data.member.split(",").map((m: string) => m.trim()) : [],
           advisor: res.data.advisor || "",
-          coAdvisors: res.data.coAdvisors || [],
+          coAdvisors: res.data.coAdvisor ? res.data.coAdvisor.split(",").map((c: string) => c.trim()) : [],
           year: res.data.year || "",
           category: res.data.category || "",
           abstractTh: res.data.abstractTh || "",
           abstractEn: res.data.abstractEn || "",
-          keywordsTH: res.data.keywordsTH || "",
-          keywordsEN: res.data.keywordsEN || "",
+          keywordsTH: res.data.keywordTh || "",
+          keywordsEN: res.data.keywordEn || "",
           github: res.data.github || "",
 
           // ไฟล์ (ตอนโหลดยังไม่มี object เพราะต้องอัปหลังเลือกใหม่)
@@ -78,7 +78,7 @@ const EditProject: React.FC = () => {
 
       const formData = new FormData();
 
-      // Title = ชื่อไฟล์ PDF (ถูกต้องตามระบบ)
+      // Title = ชื่อไฟล์ PDF 
       formData.append("title", data.title);
 
       formData.append("projectNameTH", data.projectNameTH);

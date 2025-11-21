@@ -13,11 +13,6 @@ export interface ProjectData {
   abstractEn?: string;
   keywordsTH?: string;
   keywordsEN?: string;
-
-  // fallback ชื่อจาก backend
-  keywordTh?: string;    
-  keywordsEn?: string;   
-
   github?: string;
 
   titleFile?: File | null;
@@ -26,7 +21,6 @@ export interface ProjectData {
 
   oldTitleFile?: string;
   oldSlideFile?: string;
-  oldZipFile?: string;
 
   codeUploadType?: "github" | "zip" | "";
 }
@@ -38,7 +32,7 @@ interface ProjectFormProps {
   onChangeDirty?: () => void;
 }
 
-const EditProjectForm: React.FC<ProjectFormProps> = ({
+const EditProjectAdmin: React.FC<ProjectFormProps> = ({
   initialData,
   onSubmit,
   onDelete,
@@ -63,7 +57,6 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     zipFileObj: initialData?.zipFileObj || null,
     oldTitleFile: initialData?.oldTitleFile || "",
     oldSlideFile: initialData?.oldSlideFile || "",
-    oldZipFile: initialData?.oldZipFile || "",
   });
 
   const [titleFile, setTitleFile] = useState<File | null>(
@@ -99,16 +92,12 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
       : [{ position: "", customPosition: "", name: "" }]
   );
 
-const [keywordsTH, setKeywordsTH] = useState(
-  initialData?.keywordsTH ?? initialData?.keywordTh ?? ""
-);
-const [keywordsEN, setKeywordsEN] = useState(
-  initialData?.keywordsEN ?? initialData?.keywordsEn ?? ""
-);
+  const [keywordsTH, setKeywordsTH] = useState(initialData?.keywordsTH || "");
+  const [keywordsEN, setKeywordsEN] = useState(initialData?.keywordsEN || "");
 
-
-  const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">("");
-
+  const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">(
+    ""
+  );
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSubmitAlertModal, setShowSubmitAlertModal] = useState(false);
 
@@ -129,19 +118,6 @@ const [keywordsEN, setKeywordsEN] = useState(
   const currentYear = new Date().getFullYear();
   const thaiYears: number[] = [];
   for (let y = currentYear + 543; y >= 2543; y--) thaiYears.push(y);
-
-// ---------- Set initial code upload type ----------
-  useEffect(() => {
-    if (initialData) {
-        if (initialData.github && initialData.github.trim() !== "") {
-        setCodeUploadType("github");
-        } else if (initialData.zipFileObj || initialData.oldZipFile) {
-        setCodeUploadType("zip");
-        } else {
-        setCodeUploadType(""); // ไม่เลือกอะไร
-        }
-    }
-    }, [initialData]);
 
   // ---------- Validation ----------
   useEffect(() => {
@@ -250,7 +226,7 @@ const [keywordsEN, setKeywordsEN] = useState(
       setForm({ ...form, slideFileObj: file, oldSlideFile: "" });
       setSlideFileObj(file);
     } else if (type === "zip") {
-      setForm({ ...form, zipFileObj: file, oldZipFile: "" });
+      setForm({ ...form, zipFileObj: file });
       setZipFileObj(file);
     }
 
@@ -325,20 +301,20 @@ const [keywordsEN, setKeywordsEN] = useState(
         maxWidth: "500px",
       }}
     >
-    {/* Upload Project PDF */}
+      {/* Upload Slide */}
     <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
-      อัปโหลดไฟล์โครงงาน (PDF)
+      อัปโหลดสไลด์นำเสนอ (PDF) (ไม่บังคับ)
     </label>
 
-    {form.oldTitleFile && !titleFile && (
+    {form.oldSlideFile && !slideFileObj && (
       <p style={{ fontSize: "1rem" }}>
         ไฟล์เดิม:{" "}
         <a
-          href={`http://localhost:8081/upload/${form.oldTitleFile}`}
+          href={`http://localhost:8081/upload/${form.oldSlideFile}`}
           target="_blank"
           rel="noreferrer"
         >
-          {form.oldTitleFile}
+          {form.oldSlideFile}
         </a>
       </p>
     )}
@@ -346,11 +322,11 @@ const [keywordsEN, setKeywordsEN] = useState(
     <input
       type="file"
       accept=".pdf"
-      onChange={(e) => handleFileUpload(e, "project")}
+      onChange={(e) => handleFileUpload(e, "slide")}
       style={{ padding: "0.5rem 0", fontSize: "1rem" }}
     />
-    {titleFile && (
-      <p style={{ fontSize: "1rem" }}>ไฟล์ที่เลือก: {titleFile.name}</p>
+    {slideFileObj && (
+      <p style={{ fontSize: "1rem" }}>ไฟล์ที่เลือก: {slideFileObj.name}</p>
     )}
 
       {/* Project Names */}
@@ -616,7 +592,10 @@ const [keywordsEN, setKeywordsEN] = useState(
             type="text"
             placeholder="กรอกหมวดหมู่"
             value={customCategory}
-            onChange={(e) => setCustomCategory(e.target.value)}
+            onChange={(e) => {
+              setCustomCategory(e.target.value);
+              setForm({ ...form, category: e.target.value }); 
+            }}
             style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
           />
           <button
@@ -640,6 +619,7 @@ const [keywordsEN, setKeywordsEN] = useState(
           onChange={(e) => {
             const value = e.target.value;
             setCategory(value);
+            setForm({ ...form, category: value });
             if (value !== "อื่นๆ (ระบุ)") setCustomCategory("");
           }}
           style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
@@ -712,98 +692,74 @@ const [keywordsEN, setKeywordsEN] = useState(
         style={{ fontSize: "1rem", padding: "0.4rem" }}
       />
 
-    {/* Upload Slide */}
-    <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
+      {/* Upload Slide */}
+      <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
         อัปโหลดสไลด์นำเสนอ (PDF) (ไม่บังคับ)
-    </label>
-
-    {form.oldSlideFile && !slideFileObj && (
-        <p style={{ fontSize: "1rem" }}>
-        ไฟล์เดิม:{" "}
-            <a
-                href={`http://localhost:8081/upload/${form.oldSlideFile}`}
-                target="_blank"
-                rel="noreferrer"
-            >
-            {form.oldSlideFile}
-            </a>
-        </p>
-    )}
-
-    <input
+      </label>
+      <input
         type="file"
         accept=".pdf"
         onChange={(e) => handleFileUpload(e, "slide")}
         style={{ padding: "0.5rem 0", fontSize: "1rem" }}
-    />
-        {slideFileObj && (
-    <p style={{ fontSize: "1rem" }}>ไฟล์ที่เลือก: {slideFileObj.name}</p>
-    )}
+      />
+      {form.slideFileObj && (
+        <p style={{ fontSize: "1rem" }}>
+          ไฟล์ที่เลือก: {form.slideFileObj.name}
+        </p>
+      )}
 
-
-    {/* Upload Code */}
-    <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
+      {/* Upload Code */}
+      <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
         อัปโหลดโค้ด (ไม่บังคับ)
-    </label>
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-    <label>
-        <input
-        type="radio"
-        name="codeUploadType"
-        value="github"
-        checked={codeUploadType === "github"}
-        onChange={() => setCodeUploadType("github")}
-        />{" "}
-        GitHub Link
-    </label>
-    {codeUploadType === "github" && (
-        <input
-        type="text"
-        name="github"
-        placeholder="ใส่ GitHub Repository URL"
-        value={form.github}
-        onChange={handleChange}
-        style={{ fontSize: "1rem", padding: "0.4rem" }}
-        />
-    )}
-
-    <label>
-        <input
-        type="radio"
-        name="codeUploadType"
-        value="zip"
-        checked={codeUploadType === "zip"}
-        onChange={() => setCodeUploadType("zip")}
-        />{" "}
-        Zip File
-    </label>
-    {codeUploadType === "zip" && (
-        <>
-        <input
-            type="file"
-            accept=".zip"
-            onChange={(e) => handleFileUpload(e, "zip")}
-            style={{ padding: "0.5rem 0", fontSize: "1rem" }}
-        />
-        {form.zipFileObj && (
-            <p style={{ fontSize: "1rem" }}>ไฟล์ที่เลือก: {form.zipFileObj.name}</p>
+      </label>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <label>
+          <input
+            type="radio"
+            name="codeUploadType"
+            value="github"
+            checked={codeUploadType === "github"}
+            onChange={() => setCodeUploadType("github")}
+          />{" "}
+          GitHub Link
+        </label>
+        {codeUploadType === "github" && (
+          <input
+            type="text"
+            name="github"
+            placeholder="ใส่ GitHub Repository URL"
+            value={form.github}
+            onChange={handleChange}
+            style={{ fontSize: "1rem", padding: "0.4rem" }}
+          />
         )}
-        {!form.zipFileObj && form.oldZipFile && (
-            <p style={{ fontSize: "1rem" }}>
-            ไฟล์เดิม:{" "}
-            <a
-                href={`http://localhost:8081/upload/${form.oldZipFile}`}
-                target="_blank"
-                rel="noreferrer"
-            >
-                {form.oldZipFile}
-            </a>
-            </p>
-        )}
-        </>
-    )}
-    </div>
 
+        <label>
+          <input
+            type="radio"
+            name="codeUploadType"
+            value="zip"
+            checked={codeUploadType === "zip"}
+            onChange={() => setCodeUploadType("zip")}
+          />{" "}
+          Zip File
+        </label>
+        {codeUploadType === "zip" && (
+          <>
+            <input
+              type="file"
+              accept=".zip"
+              onChange={(e) => handleFileUpload(e, "zip")}
+              style={{ padding: "0.5rem 0", fontSize: "1rem" }}
+            />
+            {form.zipFileObj && (
+              <p style={{ fontSize: "1rem" }}>
+                ไฟล์ที่เลือก: {form.zipFileObj.name}
+              </p>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Submit */}
       <button
@@ -894,4 +850,4 @@ const [keywordsEN, setKeywordsEN] = useState(
   );
 };
 
-export default EditProjectForm;
+export default EditProjectAdmin;
