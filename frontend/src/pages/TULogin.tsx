@@ -177,10 +177,8 @@ function TULogin() {
             fontSize: "14px",
           }}
         >
-          <a
-            href="https://accounts.tu.ac.th/Login.aspx"
-            target="_blank"
-            rel="noopener noreferrer"
+          <span
+            onClick={() => navigate("/forgot-password")}
             style={{
               color: "#007bff",
               cursor: "pointer",
@@ -188,7 +186,8 @@ function TULogin() {
             }}
           >
             ลืมรหัสผ่าน
-          </a>
+          </span>
+
 
           <Link
             to="/student"

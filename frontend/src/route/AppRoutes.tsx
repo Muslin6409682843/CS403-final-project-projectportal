@@ -19,6 +19,8 @@ import ApprovedUsers from "../pages/admin/ApprovedUsers";
 import PendingApproval from "../pages/PendingApproval";
 import ProtectedRoute from "../route/ProtectedRoute";
 import ProjectList from "../pages/admin/ProjectList";
+import ForgotPassword from "../pages/ForgotPassword";
+import Overview from "../pages/Overview";
 
 function AppRoutes() {
   return (
@@ -34,6 +36,7 @@ function AppRoutes() {
         }
       />
       <Route path="/change-password" element={<ChangePassword />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/history" element={<History />} />
       <Route path="/project/:id" element={<Project />} />
       <Route path="/add-project" element={<AddProject />} />
@@ -45,6 +48,7 @@ function AppRoutes() {
       <Route path="/about" element={<AboutCSTU />} />
       <Route path="/guest-register" element={<GuestRegister />} />
       <Route path="/pending-approval" element={<PendingApproval />} />
+      <Route path="/overview" element={<Overview />} />
 
       {/* 🔹 Admin Routes */}
       <Route

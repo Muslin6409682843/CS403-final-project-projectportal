@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import AccountSideBar from "../components/AccountSideBar";
 import "bootstrap/dist/css/bootstrap.css";
 import "../assets/background.css";
+import { useNavigate } from "react-router-dom";
 
 function ChangePassword() {
   // ----- State -----
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState(""); // ข้อความโชว์
-  const [isError, setIsError] = useState(false); // แยกสี error / success
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +53,10 @@ function ChangePassword() {
     }
   };
 
+  // ----- Navigate to Forgot Password -----
+  const navigate = useNavigate();
   const handleForgotPassword = () => {
-    setMessage("❌ ฟังก์ชันลืมรหัสผ่านยังไม่เชื่อม backend");
-    setIsError(true);
+    navigate("/forgot-password");
   };
 
   return (
