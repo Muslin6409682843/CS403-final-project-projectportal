@@ -25,7 +25,7 @@ function Overview() {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/projects")
+    fetch("http://localhost:8081/api/projects")
       .then((res) => res.json())
       .then((data) => setProjects(data))
       .catch((err) => console.error(err));
@@ -47,6 +47,7 @@ function Overview() {
     ],
   };
 
+  
   // 2️⃣ Category Distribution
   const categories = [...new Set(projects.map((p) => p.category))];
   const projectsPerCategory = categories.map(
@@ -100,7 +101,7 @@ function Overview() {
         <h4>จำนวนโปรเจกต์ต่อปี</h4>
         <Bar data={yearData} />
       </div>
-
+    
       <div style={{ width: "80%", maxWidth: "600px" }}>
         <h4>สัดส่วนโปรเจกต์ตามหมวดหมู่</h4>
         <Pie data={categoryData} />
@@ -109,7 +110,7 @@ function Overview() {
       <div style={{ width: "80%", maxWidth: "600px" }}>
         <h4>Top 5 Keywords</h4>
         <Bar data={keywordData} />
-      </div>
+      </div> 
     </div>
   );
 }

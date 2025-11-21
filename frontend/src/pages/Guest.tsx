@@ -175,15 +175,16 @@ const Guest: React.FC = () => {
             fontSize: "14px",
           }}
         >
-          <a
-            href="#"
+          <span
+            onClick={() => navigate("/forgot-password")}
             style={{
               color: "#007bff",
+              cursor: "pointer",
               textDecoration: "none",
             }}
           >
             ลืมรหัสผ่าน
-          </a>
+          </span>
 
           <Link
             to="/guest-register"
