@@ -100,10 +100,11 @@ const ApprovedUsers: React.FC = () => {
   const filteredUsers = users.filter((u) => {
     const matchRole = filterRole === "All" || u.role === filterRole;
     const matchSearch =
-      u.username.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      u.nameTh.toLowerCase().includes(search.toLowerCase()) ||
-      u.nameEn.toLowerCase().includes(search.toLowerCase());
+      (u.userCode?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+      u.username.toLowerCase().includes(search.toLowerCase()?? false) ||
+      u.email.toLowerCase().includes(search.toLowerCase()?? false) ||
+      u.nameTh.toLowerCase().includes(search.toLowerCase()?? false) ||
+      u.nameEn.toLowerCase().includes(search.toLowerCase()?? false);
     return matchRole && matchSearch;
   });
 
