@@ -74,6 +74,24 @@ const ApprovedUsers: React.FC = () => {
     }
   };
 
+  const changePassword = async (id: number) => {
+    if (!id) return;
+
+    try {
+      await axios.put(
+        `http://localhost:8081/api/admin/users/${id}/password`,
+        { newPassword: "1234" },
+        { withCredentials: true }
+      );
+
+      alert("🔐 เปลี่ยนรหัสผ่านเป็น 1234 สำเร็จ");
+    } catch (err) {
+      console.error("❌ Change Password Error:", err);
+      alert("❌ เปลี่ยนรหัสผ่านไม่สำเร็จ");
+    }
+  };
+
+
   useEffect(() => {
     fetchApprovedUsers();
   }, []);
@@ -132,34 +150,51 @@ const ApprovedUsers: React.FC = () => {
       ),
     },
     {
-      field: "actions",
-      headerName: "Actions",
-      width: 150,
-      sortable: false,
-      renderCell: (params) => (
-        <Box
-          sx={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {params.row.role !== "Admin" && (
-            <Button
-              variant="contained"
-              color="error"
-              size="small"
-              sx={{ minWidth: 100 }}
-              onClick={() => setConfirm({ open: true, id: params.row.userId })}
-            >
-              Delete
-            </Button>
-          )}
-        </Box>
-      ),
-    },
+    field: "actions",
+    headerName: "Actions",
+    width: 250,
+    sortable: false,
+    renderCell: (params) => (
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        {/* ปุ่มเปลี่ยนรหัสผ่าน */}
+        {params.row.role !== "Admin" && (
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            sx={{ minWidth: 120 }}
+            onClick={() => {changePassword(params.row.userId);
+            }}
+          >
+            Change Password
+          </Button>
+        )}
+
+        {/* ปุ่มลบ */}
+        {params.row.role !== "Admin" && (
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            sx={{ minWidth: 100 }}
+            onClick={() => setConfirm({ open: true, id: params.row.userId })}
+          >
+            Delete
+          </Button>
+        )}
+      </Box>
+    ),
+  },
+
   ];
 
   return (
