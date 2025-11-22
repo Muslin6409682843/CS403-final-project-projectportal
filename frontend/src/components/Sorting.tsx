@@ -25,8 +25,6 @@ const Sorting: React.FC<SortingProps> = ({ value, onChange }) => {
       >
         <option value="newest">ใหม่ที่สุด</option>
         <option value="oldest">เก่าที่สุด</option>
-        <option value="relevant">เกี่ยวข้องมากที่สุด</option>
-        <option value="popular">ยอดเข้าชมมากที่สุด</option>
       </select>
     </div>
   );

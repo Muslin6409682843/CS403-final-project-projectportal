@@ -31,7 +31,18 @@ function Overview() {
       .catch((err) => console.error(err));
   }, []);
 
-  // 1️⃣ Yearly Trend
+  /*
+  const [keywords, setKeywords] = useState<string[]>([]);
+
+useEffect(() => {
+  fetch("http://localhost:8081/api/keywords/popular")
+    .then((res) => res.json())
+    .then((data) => setKeywords(data))
+    .catch((err) => console.error(err));
+}, []);*/
+
+
+  // Yearly 
   const years = [...new Set(projects.map((p) => p.year))];
   const projectsPerYear = years.map(
     (y) => projects.filter((p) => p.year === y).length
@@ -48,7 +59,7 @@ function Overview() {
   };
 
   
-  // 2️⃣ Category Distribution
+  // Category Distribution
   const categories = [...new Set(projects.map((p) => p.category))];
   const projectsPerCategory = categories.map(
     (c) => projects.filter((p) => p.category === c).length
@@ -64,11 +75,20 @@ function Overview() {
     ],
   };
 
-  // 3️⃣ Top Keywords (Bar chart)
+  // Top Keywords (Bar chart)
   const keywordCount: { [key: string]: number } = {};
+
   projects.forEach((p) => {
-    keywordCount[p.keywordTh] = (keywordCount[p.keywordTh] || 0) + 1;
+    if (p.keywordTh) {
+      p.keywordTh.split(",").forEach((kw) => {
+        const key = kw.trim();
+        if (key) {
+          keywordCount[key] = (keywordCount[key] || 0) + 1;
+        }
+      });
+    }
   });
+
   const topKeywords = Object.entries(keywordCount)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5); // Top 5
