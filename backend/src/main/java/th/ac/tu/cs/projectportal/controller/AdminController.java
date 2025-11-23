@@ -3,6 +3,7 @@ package th.ac.tu.cs.projectportal.controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import th.ac.tu.cs.projectportal.entity.User;
 import th.ac.tu.cs.projectportal.entity.Role;
@@ -12,6 +13,7 @@ import th.ac.tu.cs.projectportal.dto.UserResponseDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
@@ -20,6 +22,7 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
+    
 
     // ✅ 1. ดึงรายชื่อผู้ใช้ที่ยังไม่ approve
     @GetMapping("/pending-users")
@@ -96,4 +99,31 @@ public class AdminController {
         dto.setGuestExpireAt(user.getGuestExpireAt());
         return dto;
     }
+
+    // 6. เปลี่ยนรหัสผ่านผู้ใช้
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @PutMapping("/users/{id}/password")
+    public ResponseEntity<String> changePassword(
+            @PathVariable Integer id,
+            @RequestBody Map<String, String> body) {
+
+        String newPassword = body.get("newPassword");
+        if (newPassword == null || newPassword.isEmpty()) {
+            return ResponseEntity.badRequest().body("Password is required");
+        }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // เข้ารหัสก่อนบันทึก
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Password updated successfully");
+    }
+
+
 }
