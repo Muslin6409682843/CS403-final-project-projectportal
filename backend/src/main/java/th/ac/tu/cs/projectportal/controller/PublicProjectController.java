@@ -75,4 +75,23 @@ public class PublicProjectController {
         List<Project> results = projectService.searchProjects(q);
         return ResponseEntity.ok(results);
     }
+
+    // -----------------------------------------------
+    // 📌 ดึงโครงงานหลายตัวจาก list ของ ID
+    // GET /api/projects/list?ids=2&ids=5&ids=9
+    // -----------------------------------------------
+    @GetMapping("/list")
+    public ResponseEntity<List<Project>> getProjectsByIds(@RequestParam List<Long> ids) {
+        List<Project> projects = new ArrayList<>();
+
+        for (Long id : ids) {
+            Project p = projectService.getProjectById(id);
+            if (p != null) {
+                projects.add(p);
+            }
+        }
+
+        return ResponseEntity.ok(projects);
+    }
+
 }
