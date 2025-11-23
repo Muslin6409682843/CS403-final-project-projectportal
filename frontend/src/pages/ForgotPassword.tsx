@@ -4,8 +4,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import "../assets/background.css";
 
 function ForgotPassword() {
-
-
   return (
     <div
       style={{
@@ -15,8 +13,6 @@ function ForgotPassword() {
       }}
     >
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        
-
         <div
           className="main-background"
           style={{
@@ -42,138 +38,148 @@ function ForgotPassword() {
               gap: "1rem",
             }}
           >
+            <h2 style={{ margin: 0, textAlign: "center" }}>ลืมรหัสผ่าน</h2>
 
+            {/* สมัครสมาชิกใหม่ */}
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "10px",
+                fontSize: "16px",
+                color: "#FD7521",
+                fontWeight: "bold",
+              }}
+            >
+              → ขอสมัครสมาชิกใหม่
+            </div>
 
-        <h2 style={{ margin: 0, textAlign: "center" }}>ลืมรหัสผ่าน</h2>
+            <form>
+              {/* ปุ่มนักศึกษา / บุคลากร */}
+              <Link to="/student" style={{ textDecoration: "none" }}>
+                <button
+                  style={{
+                    display: "block",
+                    width: "260px",
+                    padding: "16px 0",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    border: "none",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    margin: "10px auto",
+                    backgroundColor: "#FD7521",
+                    color: "#fff",
+                    textDecoration: "none",
+                    transition:
+                      "transform 0.2s, box-shadow 0.2s, background-color 0.2s",
+                  }}
+                  onMouseOver={(e) =>
+                    Object.assign((e.target as HTMLButtonElement).style, {
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                      backgroundColor: "#ffd600",
+                    })
+                  }
+                  onMouseOut={(e) =>
+                    Object.assign((e.target as HTMLButtonElement).style, {
+                      transform: "translateY(0)",
+                      boxShadow: "none",
+                      backgroundColor: "#FD7521",
+                    })
+                  }
+                >
+                  นักศึกษา / บุคลากร
+                </button>
+              </Link>
 
-        <form>
-        {/* ปุ่มนักศึกษา / บุคลากร */}
-        <Link to="/tu-login" style={{ textDecoration: "none" }}>
-          <button
-            style={{
-              display: "block",
-              width: "260px",
-              padding: "16px 0",
-              fontSize: "18px",
-              fontWeight: "bold",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer",
-              margin: "10px auto",
-              backgroundColor: "#FD7521",
-              color: "#fff",
-              textDecoration: "none",
-              transition:
-                "transform 0.2s, box-shadow 0.2s, background-color 0.2s",
-            }}
-            onMouseOver={(e) =>
-              Object.assign((e.target as HTMLButtonElement).style, {
-                transform: "translateY(-2px)",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                backgroundColor: "#ffd600",
-              })
-            }
-            onMouseOut={(e) =>
-              Object.assign((e.target as HTMLButtonElement).style, {
-                transform: "translateY(0)",
-                boxShadow: "none",
-                backgroundColor: "#FD7521",
-              })
-            }
-          >
-            นักศึกษา / บุคลากร
-          </button>
-        </Link>
+              {/* ปุ่มผู้เยี่ยมชม */}
+              <Link to="/guest-register" style={{ textDecoration: "none" }}>
+                <button
+                  style={{
+                    display: "block",
+                    width: "260px",
+                    padding: "16px 0",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    border: "none",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    margin: "10px auto",
+                    backgroundColor: "#FD7521",
+                    color: "#fff",
+                    textDecoration: "none",
+                    transition:
+                      "transform 0.2s, box-shadow 0.2s, background-color 0.2s",
+                  }}
+                  onMouseOver={(e) =>
+                    Object.assign((e.target as HTMLButtonElement).style, {
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                      backgroundColor: "#ffd600",
+                    })
+                  }
+                  onMouseOut={(e) =>
+                    Object.assign((e.target as HTMLButtonElement).style, {
+                      transform: "translateY(0)",
+                      boxShadow: "none",
+                      backgroundColor: "#FD7521",
+                    })
+                  }
+                >
+                  ผู้เยี่ยมชม
+                </button>
+              </Link>
 
-        {/* ปุ่มผู้เยี่ยมชม */}
-        <Link to="/guest" style={{ textDecoration: "none" }}>
-          <button
-            style={{
-              display: "block",
-              width: "260px",
-              padding: "16px 0",
-              fontSize: "18px",
-              fontWeight: "bold",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer",
-              margin: "10px auto",
-              backgroundColor: "#FD7521",
-              color: "#fff",
-              textDecoration: "none",
-              transition:
-                "transform 0.2s, box-shadow 0.2s, background-color 0.2s",
-            }}
-            onMouseOver={(e) =>
-              Object.assign((e.target as HTMLButtonElement).style, {
-                transform: "translateY(-2px)",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                backgroundColor: "#ffd600",
-              })
-            }
-            onMouseOut={(e) =>
-              Object.assign((e.target as HTMLButtonElement).style, {
-                transform: "translateY(0)",
-                boxShadow: "none",
-                backgroundColor: "#FD7521",
-              })
-            }
-          >
-            ผู้เยี่ยมชม
-          </button>
-        </Link>
+              {/* แนะนำ */}
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "10px",
+                  fontSize: "16px",
+                  color: "#FD7521",
+                  fontWeight: "bold",
+                }}
+              >
+                → แนะนำ ติดต่อเจ้าหน้าที่
+              </div>
 
-
-        {/* แนะนำ */}
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "10px",
-            fontSize: "16px",
-            color: "#FD7521",
-            fontWeight: "bold",
-          }}
-        >
-          → แนะนำ ติดต่อเจ้าหน้าที่
-        </div>
-        
-        {/* ติดต่อเจ้าหน้าที่ */}
-        <Link to="/about" style={{ textDecoration: "none" }}>
-          <button
-            style={{
-              display: "block",
-              width: "260px",
-              padding: "16px 0",
-              fontSize: "18px",
-              fontWeight: "bold",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer",
-              margin: "10px auto",
-              backgroundColor: "#FD7521",
-              color: "#fff",
-              textDecoration: "none",
-              transition:
-                "transform 0.2s, box-shadow 0.2s, background-color 0.2s",
-            }}
-            onMouseOver={(e) =>
-              Object.assign((e.target as HTMLButtonElement).style, {
-                transform: "translateY(-2px)",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                backgroundColor: "#ffd600",
-              })
-            }
-            onMouseOut={(e) =>
-              Object.assign((e.target as HTMLButtonElement).style, {
-                transform: "translateY(0)",
-                boxShadow: "none",
-                backgroundColor: "#FD7521",
-              })
-            }
-          >
-            ติดต่อเจ้าหน้าที่
-          </button>
-        </Link>
+              {/* ติดต่อเจ้าหน้าที่ */}
+              <Link to="/about" style={{ textDecoration: "none" }}>
+                <button
+                  style={{
+                    display: "block",
+                    width: "260px",
+                    padding: "16px 0",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    border: "none",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    margin: "10px auto",
+                    backgroundColor: "#FD7521",
+                    color: "#fff",
+                    textDecoration: "none",
+                    transition:
+                      "transform 0.2s, box-shadow 0.2s, background-color 0.2s",
+                  }}
+                  onMouseOver={(e) =>
+                    Object.assign((e.target as HTMLButtonElement).style, {
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                      backgroundColor: "#ffd600",
+                    })
+                  }
+                  onMouseOut={(e) =>
+                    Object.assign((e.target as HTMLButtonElement).style, {
+                      transform: "translateY(0)",
+                      boxShadow: "none",
+                      backgroundColor: "#FD7521",
+                    })
+                  }
+                >
+                  ติดต่อเจ้าหน้าที่
+                </button>
+              </Link>
             </form>
           </div>
         </div>
