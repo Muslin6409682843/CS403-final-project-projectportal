@@ -150,6 +150,39 @@ function Favorite() {
     }
   };
 
+  //ผู้เยี่ยมชมไม่สามารถใช้ฟีเจอร์ได้
+
+  if (currentUser && currentUser.role === "Guest") {
+    return (
+      <div
+        style={{
+          display: "flex",
+          height: "calc(100vh - 80px)",
+          overflow: "hidden",
+        }}
+      >
+        <AccountSideBar />
+
+        <div
+          className="main-background"
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: "2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: "1.3rem",
+            fontWeight: 500,
+          }}
+        >
+          <p>ฟีเจอร์นี้ไม่สามารถใช้งานได้สำหรับผู้เยี่ยมชม</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
