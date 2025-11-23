@@ -82,7 +82,7 @@ useEffect(() => {
     if (p.keywordTh) {
       p.keywordTh.split(",").forEach((kw) => {
         const key = kw.trim();
-        if (key) {
+        if (key && key !== "-") {
           keywordCount[key] = (keywordCount[key] || 0) + 1;
         }
       });
