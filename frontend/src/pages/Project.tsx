@@ -8,71 +8,49 @@ import ProjectInfo from "../components/project/ProjectInfo";
 import ProjectActionButtons from "../components/project/ProjectActionButtons";
 
 import type { ProjectDTO } from "../dto/ProjectDTO";
-import { FaStar } from "react-icons/fa";
 
 const Project: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<ProjectDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8081/api/projects/${id}`,
-          { withCredentials: true }
+          `http://localhost:8081/api/projects/${id}`
         );
 
         const raw = response.data;
 
-        // ⭐ Map Backend → Frontend DTO
+        // ⭐ MAP backend → frontend DTO
         const mapped: ProjectDTO = {
           projectID: raw.projectID,
-          projectNameTH: raw.titleTh ?? "",
-          projectNameEN: raw.titleEn ?? "",
+          projectNameTH: raw.titleTh,
+          projectNameEN: raw.titleEn,
 
-          abstractTh: raw.abstractTh ?? "",
-          abstractEn: raw.abstractEn ?? "",
+          abstractTh: raw.abstractTh || "",
+          abstractEn: raw.abstractEn || "",
 
-          keywordsTH: raw.keywordTh ?? "",
-          keywordsEN: raw.keywordEn ?? "",
+          keywordsTH: raw.keywordTh || "",
+          keywordsEN: raw.keywordEn || "",
 
-          members: raw.member?.split(",") ?? [],
-          advisor: raw.advisor ?? "",
-          coAdvisors: raw.coAdvisor?.split(",") ?? [],
+          members: raw.member ? raw.member.split(",") : [],
+          advisor: raw.advisor || "",
+          coAdvisors: raw.coAdvisor ? raw.coAdvisor.split(",") : [],
 
-          category: raw.category ?? "",
+          category: raw.category || "",
           year: raw.year ? String(raw.year) : "",
 
-          github: raw.github ?? "",
+          github: raw.github || "",
 
-          file: raw.file ?? "",
-          slideFile: raw.slideFile ?? "",
-          zipFile: raw.zipFile ?? "",
+          file: raw.file || "",
+          slideFile: raw.slideFile || "",
+          zipFile: raw.zipFile || "",
         };
 
         setProject(mapped);
-
-        // ⭐ โหลดรายการ Favorite
-        const favRes = await axios.get(
-          "http://localhost:8081/api/bookmark",
-          { withCredentials: true }
-        );
-
-        // ⭐ แปลง response → array ของ projectId
-        let favIds: number[] = [];
-
-        if (Array.isArray(favRes.data)) {
-          // backend ส่งเป็น array ของ object
-          favIds = favRes.data.map((b: any) => Number(b.projectId));
-        } else if (Array.isArray(favRes.data.bookmarks)) {
-          // backend ส่งเป็น { bookmarks: [...] }
-          favIds = favRes.data.bookmarks.map((b: any) => Number(b.projectId));
-        }
-
-        setIsFavorite(favIds.includes(Number(raw.projectID)));
       } catch (err) {
         console.error(err);
         setError("ไม่สามารถโหลดข้อมูลโครงงานได้");
@@ -84,32 +62,6 @@ const Project: React.FC = () => {
     if (id) fetchProject();
   }, [id]);
 
-  // ⭐ Toggle Favorite
-  const toggleFavorite = async () => {
-    if (!project) return;
-
-    try {
-      if (isFavorite) {
-        await axios.delete(
-          `http://localhost:8081/api/bookmark/${project.projectID}`,
-          { withCredentials: true }
-        );
-        setIsFavorite(false);
-      } else {
-        await axios.post(
-          `http://localhost:8081/api/bookmark/${project.projectID}`,
-          {},
-          { withCredentials: true }
-        );
-        setIsFavorite(true);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("ไม่สามารถเปลี่ยนสถานะ Favorite ได้");
-    }
-  };
-
-  // Loading & Error Handling
   if (loading) return <p>กำลังโหลดข้อมูล...</p>;
   if (error || !project) return <p>{error || "ไม่พบโครงงาน"}</p>;
 
@@ -139,24 +91,6 @@ const Project: React.FC = () => {
             advisor={project.advisor}
             year={project.year ? `ปีการศึกษา: ${project.year}` : ""}
           />
-
-          {/* Favorite Button */}
-          <button
-            onClick={toggleFavorite}
-            style={{
-              position: "absolute",
-              top: "40px",
-              right: "10%",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "28px",
-              color: isFavorite ? "#FFD700" : "#ccc",
-            }}
-            title="เพิ่ม/ลบ Favorite"
-          >
-            <FaStar />
-          </button>
         </div>
       </div>
 
