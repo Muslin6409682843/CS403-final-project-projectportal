@@ -2,18 +2,16 @@ import React, { useState } from "react";
 import { FaStar } from "react-icons/fa";
 
 interface ProjectCardProps {
-  id: string | number; // ใช้สำหรับลิงก์ไปดูรายละเอียด
+  id: string | number;
   title: string;
   author: string;
   advisor: string;
   year: string | number;
   uploadedAt?: string;
-  onNavigate?: (id: string | number) => void; // callback เวลากดหัวข้อ
-
+  onNavigate?: (id: string | number) => void;
   isFavorite: boolean;
-  onToggleFavorite: (id: string | number) => void;
-
-  role: string;
+  onToggleFavorite?: (id: string | number) => void;
+  role?: string | null;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -27,7 +25,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   onToggleFavorite,
   role,
 }) => {
-  const disabled = role === "Admin" || role === "Guest";
+  // ปุ่ม favorite disabled ถ้าไม่ใช่ Student/Staff
+  const disabled =
+    !onToggleFavorite || !(role === "Student" || role === "Staff");
+
   return (
     <div
       style={{
@@ -43,7 +44,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     >
       {/* ปุ่ม Favorite */}
       <button
-        onClick={() => !disabled && onToggleFavorite(id)}
+        onClick={() => !disabled && onToggleFavorite?.(id)}
         style={{
           position: "absolute",
           top: "15px",
