@@ -269,6 +269,23 @@ function Browse() {
     currentPage * itemsPerPage
   );
 
+  const handleVisitProject = async (id: number) => {
+  try {
+    // บันทึกประวัติแบบ background
+    axios.post(
+      `http://localhost:8081/api/history/${id}`,
+      {},
+      { withCredentials: true }
+    );
+  } catch (err) {
+    console.error("History error:", err);
+  }
+
+  // ไปหน้าโปรเจกต์ทันที
+  navigate(`/project/${id}`);
+};
+
+
   return (
     <div
       style={{
@@ -339,7 +356,7 @@ function Browse() {
               author={project.member}
               advisor={project.advisor}
               year={project.year}
-              onNavigate={(id) => navigate(`/project/${id}`)}
+              onNavigate={(id) => handleVisitProject(Number(id))}
               isFavorite={favorites.includes(project.projectID)}
               onToggleFavorite={
                 ["Admin", "Student"].includes(currentUser?.role || "")

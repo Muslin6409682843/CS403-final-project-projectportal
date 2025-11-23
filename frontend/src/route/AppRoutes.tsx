@@ -43,9 +43,15 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route 
+        path="/history" element={
+        <ProtectedRoute allowedRoles={["Student", "Staff", "Guest"]}>
+        <History />
+        </ProtectedRoute>
+        } 
+      />
 
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/history" element={<History />} />
       <Route path="/project/:id" element={<Project />} />
       <Route path="/add-project" element={<AddProject />} />
       <Route path="/edit-project/:id" element={<EditProject />} />

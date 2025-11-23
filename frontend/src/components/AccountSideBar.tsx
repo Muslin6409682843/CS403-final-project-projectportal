@@ -12,6 +12,7 @@ const AccountSideBar = () => {
   const menuItems = [
     { label: "รายการโปรด", path: "/favorite" },
     { label: "เปลี่ยนรหัสผ่าน", path: "/change-password" },
+    { label: "ประวัติการเข้าชม", path: "/history" },
     { label: "ออกจากระบบ", path: "/logout" },
   ];
 
