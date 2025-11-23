@@ -228,9 +228,9 @@ const ProjectList: React.FC = () => {
             rows={filteredProjects}
             columns={columns}
             getRowId={(row) => row.projectID}
-            pageSizeOptions={[5, 10, 20]}
+            pageSizeOptions={[10, 20, 50]}
             initialState={{
-              pagination: { paginationModel: { pageSize: 5, page: 0 } },
+              pagination: { paginationModel: { pageSize: 10, page: 0 } },
             }}
           />
         </Box>
