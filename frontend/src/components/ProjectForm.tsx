@@ -121,11 +121,18 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   for (let y = currentYear + 543; y >= 2543; y--) thaiYears.push(y);
 
   const [titleFileKey, setTitleFileKey] = useState(0);
+  const [slideFileKey, setSlideFileKey] = useState(0);
 
   const handleDeleteTitleFile = () => {
     setForm({ ...form, titleFile: null, title: "" });
     setTitleFile(null);
-    setTitleFileKey((prev) => prev + 1); // เปลี่ยน key → input รีเซ็ต
+    setTitleFileKey((prev) => prev + 1);
+  };
+
+  const handleDeleteSlideFile = () => {
+    setForm({ ...form, slideFileObj: null, title: "" });
+    setSlideFileObj(null);
+    setSlideFileKey((prev) => prev + 1);
   };
 
   // ---------- Validation ----------
@@ -314,7 +321,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         อัปโหลดรูปเล่มโครงงาน (PDF)
       </label>
       <input
-        key={titleFileKey}
+        key={slideFileKey}
         type="file"
         accept=".pdf"
         onChange={(e) => handleFileUpload(e, "project")}
@@ -352,6 +359,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         ชื่อโครงงาน (ภาษาไทย)
       </label>
       <input
+        key={titleFileKey}
         type="text"
         name="projectNameTH"
         value={form.projectNameTH}
@@ -721,9 +729,26 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         style={{ padding: "0.5rem 0", fontSize: "1rem" }}
       />
       {form.slideFileObj && (
-        <p style={{ fontSize: "1rem" }}>
-          ไฟล์ที่เลือก: {form.slideFileObj.name}
-        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <p style={{ fontSize: "1rem", margin: 0 }}>
+            ไฟล์ที่เลือก: {form.slideFileObj.name}
+          </p>
+
+          <button
+            type="button"
+            onClick={handleDeleteSlideFile}
+            style={{
+              backgroundColor: "#cc0c0cff",
+              border: "none",
+              borderRadius: "6px",
+              color: "#fff",
+              padding: "4px 8px",
+              cursor: "pointer",
+            }}
+          >
+            ลบไฟล์
+          </button>
+        </div>
       )}
 
       {/* Upload Code */}
