@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -12,37 +11,45 @@ import {
   Legend,
 } from "chart.js";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement,ArcElement, Title, Tooltip, Legend);
-
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
 interface Project {
+  projectID: number;
+  titleTh: string;
   year: number;
   category: string;
   keywordTh: string;
 }
-function Overview() {
 
+interface DownloadHistory {
+  projectId: number;
+  projectTitleTh?: string;
+  project?: {
+    projectID: number;
+    titleTh: string;
+  };
+}
+
+
+function Overview() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [downloads, setDownloads] = useState<DownloadHistory[]>([]);
 
   useEffect(() => {
+    // โหลดโปรเจกต์
     fetch("http://localhost:8081/api/projects")
       .then((res) => res.json())
       .then((data) => setProjects(data))
       .catch((err) => console.error(err));
+
+    // โหลด download history (public endpoint)
+    fetch("http://localhost:8081/api/download-history", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => setDownloads(data))
+      .catch((err) => console.error(err));
   }, []);
 
-  /*
-  const [keywords, setKeywords] = useState<string[]>([]);
-
-useEffect(() => {
-  fetch("http://localhost:8081/api/keywords/popular")
-    .then((res) => res.json())
-    .then((data) => setKeywords(data))
-    .catch((err) => console.error(err));
-}, []);*/
-
-
-  // Yearly 
+  // --- จำนวนโปรเจกต์ต่อปี ---
   const years = [...new Set(projects.map((p) => p.year))];
   const projectsPerYear = years.map(
     (y) => projects.filter((p) => p.year === y).length
@@ -58,8 +65,7 @@ useEffect(() => {
     ],
   };
 
-  
-  // Category Distribution
+  // --- สัดส่วนโปรเจกต์ตามหมวดหมู่ ---
   const categories = [...new Set(projects.map((p) => p.category))];
   const projectsPerCategory = categories.map(
     (c) => projects.filter((p) => p.category === c).length
@@ -75,9 +81,8 @@ useEffect(() => {
     ],
   };
 
-  // Top Keywords (Bar chart)
+  // --- Top Keywords ---
   const keywordCount: { [key: string]: number } = {};
-
   projects.forEach((p) => {
     if (p.keywordTh) {
       p.keywordTh.split(",").forEach((kw) => {
@@ -88,10 +93,9 @@ useEffect(() => {
       });
     }
   });
-
   const topKeywords = Object.entries(keywordCount)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 5); // Top 5
+    .slice(0, 5);
   const keywordData = {
     labels: topKeywords.map((k) => k[0]),
     datasets: [
@@ -102,6 +106,53 @@ useEffect(() => {
       },
     ],
   };
+
+  // --- Top 5 Downloaded Projects ---
+  const topDownloadedData = React.useMemo(() => {
+  if (projects.length === 0 || downloads.length === 0) return { labels: [], datasets: [] };
+
+  const downloadCount: { [projectId: number]: { title: string; count: number } } = {};
+
+  downloads.forEach((d) => {
+    // projectId = undefined  d.project?.projectID มีค่า
+    const id = d.projectId ?? d.project?.projectID;
+
+    if (!id) return; // ข้ามถ้าไม่มี ID
+
+    const project = projects.find((p) => p.projectID === id);
+
+    if (!downloadCount[id]) {
+      downloadCount[id] = {
+        title: project?.titleTh || d.project?.titleTh || `ID ${id}`,
+        count: 0,
+      };
+    }
+
+    downloadCount[id].count += 1;
+  });
+
+  const topDownloaded = Object.entries(downloadCount)
+    .map(([id, { title, count }]) => ({ id, title, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  return {
+    labels: topDownloaded.map((d) => `${d.title}`),
+    datasets: [
+      {
+        label: "จำนวนครั้งดาวน์โหลด",
+        data: topDownloaded.map((d) => d.count),
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.6)",
+          "rgba(54, 162, 235, 0.6)",
+          "rgba(255, 206, 86, 0.6)",
+          "rgba(75, 192, 192, 0.6)",
+          "rgba(153, 102, 255, 0.6)",
+        ],
+      },
+    ],
+  };
+}, [projects, downloads]);
 
   return (
     <div
@@ -121,7 +172,7 @@ useEffect(() => {
         <h4>จำนวนโปรเจกต์ต่อปี</h4>
         <Bar data={yearData} />
       </div>
-    
+
       <div style={{ width: "80%", maxWidth: "600px" }}>
         <h4>สัดส่วนโปรเจกต์ตามหมวดหมู่</h4>
         <Pie data={categoryData} />
@@ -130,7 +181,12 @@ useEffect(() => {
       <div style={{ width: "80%", maxWidth: "600px" }}>
         <h4>Top 5 Keywords</h4>
         <Bar data={keywordData} />
-      </div> 
+      </div>
+
+      <div style={{ width: "80%", maxWidth: "600px" }}>
+        <h4>Top 5 โครงงานที่ถูกดาวน์โหลดมากที่สุด</h4>
+        <Bar data={topDownloadedData} />
+      </div>
     </div>
   );
 }

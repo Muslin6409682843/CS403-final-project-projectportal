@@ -12,10 +12,12 @@ import th.ac.tu.cs.projectportal.entity.Project;
 import th.ac.tu.cs.projectportal.entity.User;
 import th.ac.tu.cs.projectportal.repository.DownloadHistoryRepository;
 import th.ac.tu.cs.projectportal.repository.UserRepository;
+import th.ac.tu.cs.projectportal.service.DownloadHistoryService;
 import th.ac.tu.cs.projectportal.repository.ProjectRepository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/download-history")
@@ -30,6 +32,10 @@ public class PublicDownloadHistory {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private DownloadHistoryService service;
+
 
     // บันทึกประวัติการดาวน์โหลดโครงการ
     @PostMapping("/{projectId}")
@@ -68,5 +74,39 @@ public class PublicDownloadHistory {
 
         return ResponseEntity.ok("✅ บันทึกประวัติการดาวน์โหลดเรียบร้อยแล้ว");
     }
+
+    // ----------------------------
+    // ดึงประวัติการดาวน์โหลดทั้งหมด
+    // ----------------------------
+    @GetMapping
+    public ResponseEntity<?> getAll() {
+        try {
+            // รับประกันว่า user และ project ถูกโหลดด้วย EAGER fetch
+            List<DownloadHistory> histories = service.getAll();
+            return ResponseEntity.ok(histories);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
+    // ----------------------------
+    // ดึงประวัติตาม Project
+    // ----------------------------
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<List<DownloadHistory>> getByProject(@PathVariable Long projectId) {
+        List<DownloadHistory> histories = service.getByProjectId(projectId);
+        return ResponseEntity.ok(histories);
+    }
+
+    // ----------------------------
+    // ดึงประวัติตาม User
+    // ----------------------------
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<DownloadHistory>> getByUser(@PathVariable Integer userId) {
+        List<DownloadHistory> histories = service.getByUserId(userId);
+        return ResponseEntity.ok(histories);
+    }
+
 
 }

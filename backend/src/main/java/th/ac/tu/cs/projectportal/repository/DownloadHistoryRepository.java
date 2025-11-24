@@ -14,4 +14,11 @@ public interface DownloadHistoryRepository extends JpaRepository<DownloadHistory
            "LEFT JOIN FETCH d.project " +
            "LEFT JOIN FETCH d.user")
     List<DownloadHistory> findAllWithProjectAndUser();
+
+    // Top 5 Projects by download count
+    @Query("SELECT d.project, COUNT(d) as cnt " +
+           "FROM DownloadHistory d " +
+           "GROUP BY d.project " +
+           "ORDER BY cnt DESC")
+    List<Object[]> findTop5ByDownloadCount();
 }
