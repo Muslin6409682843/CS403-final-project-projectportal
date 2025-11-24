@@ -24,7 +24,6 @@ const Project: React.FC = () => {
 
         const raw = response.data;
 
-        // ⭐ MAP backend → frontend DTO
         const mapped: ProjectDTO = {
           projectID: raw.projectID,
           projectNameTH: raw.titleTh,
@@ -66,24 +65,22 @@ const Project: React.FC = () => {
   if (error || !project) return <p>{error || "ไม่พบโครงงาน"}</p>;
 
   return (
-    <div
-      style={{
-        backgroundColor: "#fff",
-        minHeight: "100vh",
-        position: "relative",
-      }}
-    >
+    <div style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
       {/* Header */}
       <div
         style={{
-          width: "100vw",
+          width: "100%",
           background: "linear-gradient(to bottom, #fff9f0, #ffe0b2)",
-          display: "flex",
-          justifyContent: "flex-start",
           padding: "40px 0",
         }}
       >
-        <div style={{ width: "80%", maxWidth: "1000px", marginLeft: "10%" }}>
+        <div
+          style={{
+            width: "80%",
+            maxWidth: "1000px",
+            margin: "0 auto",
+          }}
+        >
           <ProjectHeader
             titleTh={project.projectNameTH}
             titleEn={project.projectNameEN}
@@ -94,21 +91,41 @@ const Project: React.FC = () => {
         </div>
       </div>
 
-      <ProjectActionButtons project={project} />
-
-      {/* Abstract + Info */}
+      {/* Abstract + Action Buttons */}
       <div
         style={{
           width: "80%",
           maxWidth: "1000px",
-          marginLeft: "10%",
-          marginTop: "40px",
+          margin: "40px auto 0 auto",
+          position: "relative", // ทำให้ button position absolute ได้
         }}
       >
+        {/* Abstract */}
         <ProjectAbstract
           abstractTh={project.abstractTh}
           abstractEn={project.abstractEn}
         />
+
+        {/* Action Buttons */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: -350,
+          }}
+        >
+          <ProjectActionButtons project={project} />
+        </div>
+      </div>
+
+      {/* Project Info */}
+      <div
+        style={{
+          width: "80%",
+          maxWidth: "1000px",
+          margin: "20px auto 0 auto",
+        }}
+      >
         <ProjectInfo project={project} />
       </div>
     </div>

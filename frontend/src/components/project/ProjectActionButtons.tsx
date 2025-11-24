@@ -98,9 +98,6 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
   return (
     <div
       style={{
-        position: "absolute",
-        top: "350px",
-        right: "5%",
         display: "flex",
         flexDirection: "column",
         gap: "18px",
