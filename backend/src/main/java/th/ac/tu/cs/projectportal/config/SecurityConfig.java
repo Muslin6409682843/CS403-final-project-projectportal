@@ -43,15 +43,14 @@ public class SecurityConfig {
                 .cors(withDefaults()) // ✅ ใช้ configuration ด้านบน
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login", "/api/register", "/api/users/register-guest", "/api/guest-login",
-                                "/api/check-session")
+                                "/api/check-session",
+                                "/api/test-cleanup")
                         .permitAll()
                         .requestMatchers("/api/projects/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("Admin")
-                        .requestMatchers("/api/bookmark/**").hasAnyRole("Student","Staff","Guest")
+                        .requestMatchers("/api/bookmark/**").hasAnyRole("Student", "Staff", "Guest")
                         .anyRequest().authenticated());
         return http.build();
     }
-
-    
 
 }

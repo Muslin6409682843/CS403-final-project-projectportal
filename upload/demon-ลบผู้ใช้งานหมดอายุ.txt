@@ -1,0 +1,8 @@
+Demo ลบผู้ใช้งานที่หมดอายุ 
+
+2. guest_expire_at
+- DB
+UPDATE user
+SET guest_expire_at = '2024-01-01 00:00:00'
+WHERE username = 'abc';
+- api link http://localhost:8081/api/test-cleanup

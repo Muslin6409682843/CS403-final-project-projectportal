@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import jakarta.servlet.http.HttpSession;
 import th.ac.tu.cs.projectportal.repository.UserRepository;
+import th.ac.tu.cs.projectportal.service.UserCleanupService;
 
 import java.util.Optional;
 import java.time.LocalDateTime;
@@ -82,8 +83,6 @@ public class UserController {
         if (existingEmail.isPresent()) {
             return ResponseEntity.badRequest().body("❌ Email นี้ถูกใช้แล้ว");
         }
-
-        
 
         // ✅ บังคับ role เป็น Guest เสมอ
         newGuest.setRole(Role.Guest);
@@ -320,56 +319,65 @@ public class UserController {
 
     // เปลี่ยนรหัสผ่าน
     @PutMapping("/users/change-password")
-public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body) {
-    String currentPassword = body.get("currentPassword");
-    String newPassword = body.get("newPassword");
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body) {
+        String currentPassword = body.get("currentPassword");
+        String newPassword = body.get("newPassword");
 
-    System.out.println("---- Change Password Request ----");
-    System.out.println("Received currentPassword: " + currentPassword);
-    System.out.println("Received newPassword: " + newPassword);
+        System.out.println("---- Change Password Request ----");
+        System.out.println("Received currentPassword: " + currentPassword);
+        System.out.println("Received newPassword: " + newPassword);
 
-    if (currentPassword == null || newPassword == null) {
-        System.out.println("Missing passwords in request body");
-        return ResponseEntity.badRequest().body("กรุณากรอกรหัสผ่านให้ครบ");
+        if (currentPassword == null || newPassword == null) {
+            System.out.println("Missing passwords in request body");
+            return ResponseEntity.badRequest().body("กรุณากรอกรหัสผ่านให้ครบ");
+        }
+
+        // ดึง username ของผู้ใช้จาก Spring Security session
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("Principal from SecurityContext: " + principal);
+
+        if (principal == null || "anonymousUser".equals(principal)) {
+            System.out.println("User not logged in");
+            return ResponseEntity.status(401).body("ผู้ใช้ยังไม่ได้ login");
+        }
+        String username = principal.toString();
+        System.out.println("Username from session: " + username);
+
+        // หา user จาก database
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            System.out.println("User not found in database");
+            return ResponseEntity.status(404).body("ไม่พบผู้ใช้");
+        }
+
+        User user = userOpt.get();
+        System.out.println("User found: " + user.getUsername());
+
+        // ตรวจสอบรหัสผ่านปัจจุบัน
+        boolean match = passwordEncoder.matches(currentPassword, user.getPassword());
+        System.out.println("Password match: " + match);
+        if (!match) {
+            System.out.println("Current password is incorrect");
+            return ResponseEntity.status(400).body("รหัสผ่านปัจจุบันไม่ถูกต้อง");
+        }
+
+        // อัปเดตรหัสผ่านใหม่
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        System.out.println("✅ Password updated successfully for user: " + user.getUsername());
+
+        return ResponseEntity.ok("✅ เปลี่ยนรหัสผ่านเรียบร้อยแล้ว");
     }
 
-    // ดึง username ของผู้ใช้จาก Spring Security session
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    System.out.println("Principal from SecurityContext: " + principal);
+    // ทดสอบลบ Guest ที่หมดอายุ
 
-    if (principal == null || "anonymousUser".equals(principal)) {
-        System.out.println("User not logged in");
-        return ResponseEntity.status(401).body("ผู้ใช้ยังไม่ได้ login");
+    @Autowired
+    private UserCleanupService cleanupService;
+
+    @GetMapping("/test-cleanup")
+    public String testCleanup() {
+        cleanupService.removeExpiredApprovedGuests();
+        return "done";
     }
-    String username = principal.toString();
-    System.out.println("Username from session: " + username);
-
-    // หา user จาก database
-    Optional<User> userOpt = userRepository.findByUsername(username);
-    if (userOpt.isEmpty()) {
-        System.out.println("User not found in database");
-        return ResponseEntity.status(404).body("ไม่พบผู้ใช้");
-    }
-
-    User user = userOpt.get();
-    System.out.println("User found: " + user.getUsername());
-
-    // ตรวจสอบรหัสผ่านปัจจุบัน
-    boolean match = passwordEncoder.matches(currentPassword, user.getPassword());
-    System.out.println("Password match: " + match);
-    if (!match) {
-        System.out.println("Current password is incorrect");
-        return ResponseEntity.status(400).body("รหัสผ่านปัจจุบันไม่ถูกต้อง");
-    }
-
-    // อัปเดตรหัสผ่านใหม่
-    user.setPassword(passwordEncoder.encode(newPassword));
-    userRepository.save(user);
-    System.out.println("✅ Password updated successfully for user: " + user.getUsername());
-
-    return ResponseEntity.ok("✅ เปลี่ยนรหัสผ่านเรียบร้อยแล้ว");
-}
-
-
 
 }
