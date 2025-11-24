@@ -34,19 +34,25 @@ function TULogin() {
         );
 
         if (res.status === 200 && res.data.status) {
-          console.log("Login successful:", res.data);
-
-          // ✅ เก็บ role ลง localStorage สำหรับทุก role
+          // ✅ login สำเร็จ → approved = true
           localStorage.setItem("role", res.data.role);
           setAuth(true, res.data.role);
-          // navigate ตาม backend
           navigate(res.data.redirect);
         } else {
-          setApiError(res.data.error || "Login failed");
+          // ❌ ยังไม่อนุมัติ หรือ login ผิด
+          if (res.data.redirect) {
+            // backend ส่ง redirect มาหรือไม่
+            navigate(res.data.redirect);
+          }
+
+          setApiError(res.data.error || "Login ล้มเหลว");
+          // ยังไม่อนุมัติ → ไม่เปลี่ยนสถานะ login
+          setAuth(false, null);
         }
       } catch (err: any) {
         console.error("Login exception:", err);
         setApiError("เกิดข้อผิดพลาดในการเชื่อมต่อ server");
+        setAuth(false, null);
       }
     }
   };
@@ -187,7 +193,6 @@ function TULogin() {
           >
             ลืมรหัสผ่าน
           </span>
-
 
           <Link
             to="/student"

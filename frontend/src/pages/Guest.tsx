@@ -32,19 +32,30 @@ const Guest: React.FC = () => {
       const res = await axios.post(
         "http://localhost:8081/api/guest-login",
         { username, password },
-        { withCredentials: true } // ส่ง cookie/session ได้
+        { withCredentials: true }
       );
 
       if (res.data.status) {
+        // ✅ login สำเร็จ → approved = true
         localStorage.setItem("role", res.data.role);
         setAuth(true, res.data.role, res.data.guestExpireAt || null);
-        navigate(res.data.redirect); // redirect ตาม backend
+        navigate(res.data.redirect);
       } else {
-        setApiError(res.data.error);
+        // ❌ ยังไม่อนุมัติ หรือ login ผิด
+        setApiError(res.data.error || "Login ล้มเหลว");
+
+        // ถ้ามี redirect เช่น /pending-approval ให้ navigate
+        if (res.data.redirect) {
+          navigate(res.data.redirect);
+        }
+
+        // ยังไม่อนุมัติ → ไม่เปลี่ยนสถานะ login
+        setAuth(false, null, null);
       }
     } catch (err: any) {
       console.error(err);
       setApiError("เกิดข้อผิดพลาดในการเชื่อมต่อ server");
+      setAuth(false, null, null);
     }
   };
 

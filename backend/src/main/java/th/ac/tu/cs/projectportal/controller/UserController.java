@@ -146,8 +146,9 @@ public class UserController {
 
         // ตรวจสอบการอนุมัติ Student/Staff
         if ((user.getRole() == Role.Student || user.getRole() == Role.Staff) && !user.getApproved()) {
-            resp.put("status", true);
-            resp.put("redirect", "/pending-approval");
+            resp.put("status", false); // ❌ ยังไม่ login จริง
+            resp.put("error", "บัญชียังไม่ได้รับอนุมัติ");
+            resp.put("redirect", "/pending-approval"); // frontend จะ redirect ถ้าต้องการ
             return ResponseEntity.ok(resp);
         }
 
@@ -205,9 +206,10 @@ public class UserController {
         }
 
         if (!user.getApproved()) {
-            resp.put("status", true);
-            resp.put("redirect", "/pending-approval");
-            return ResponseEntity.ok(resp);
+            resp.put("status", false); // ❌ ยังไม่ login จริง
+    resp.put("error", "บัญชียังไม่ได้รับอนุมัติ");
+    resp.put("redirect", "/pending-approval"); // frontend จะ redirect ถ้าต้องการ
+    return ResponseEntity.ok(resp);
         }
 
         // login สำเร็จ
