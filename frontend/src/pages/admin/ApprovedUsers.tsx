@@ -91,7 +91,6 @@ const ApprovedUsers: React.FC = () => {
     }
   };
 
-
   useEffect(() => {
     fetchApprovedUsers();
   }, []);
@@ -101,10 +100,10 @@ const ApprovedUsers: React.FC = () => {
     const matchRole = filterRole === "All" || u.role === filterRole;
     const matchSearch =
       (u.userCode?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
-      u.username.toLowerCase().includes(search.toLowerCase()?? false) ||
-      u.email.toLowerCase().includes(search.toLowerCase()?? false) ||
-      u.nameTh.toLowerCase().includes(search.toLowerCase()?? false) ||
-      u.nameEn.toLowerCase().includes(search.toLowerCase()?? false);
+      u.username.toLowerCase().includes(search.toLowerCase() ?? false) ||
+      u.email.toLowerCase().includes(search.toLowerCase() ?? false) ||
+      u.nameTh.toLowerCase().includes(search.toLowerCase() ?? false) ||
+      u.nameEn.toLowerCase().includes(search.toLowerCase() ?? false);
     return matchRole && matchSearch;
   });
 
@@ -150,52 +149,53 @@ const ApprovedUsers: React.FC = () => {
         />
       ),
     },
+
     {
-    field: "actions",
-    headerName: "Actions",
-    width: 250,
-    sortable: false,
-    renderCell: (params) => (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 1,
-        }}
-      >
-        {/* ปุ่มเปลี่ยนรหัสผ่าน */}
-        {params.row.role !== "Admin" && (
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{ minWidth: 120 }}
-            onClick={() => {changePassword(params.row.userId);
-            }}
-          >
-            Change Password
-          </Button>
-        )}
+      field: "actions",
+      headerName: "Actions",
+      width: 250,
+      sortable: false,
+      renderCell: (params) => (
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          {/* ปุ่มเปลี่ยนรหัสผ่าน */}
+          {params.row.role !== "Admin" && (
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{ minWidth: 120 }}
+              onClick={() => {
+                changePassword(params.row.userId);
+              }}
+            >
+              เปลี่ยนรหัสผ่าน
+            </Button>
+          )}
 
-        {/* ปุ่มลบ */}
-        {params.row.role !== "Admin" && (
-          <Button
-            variant="contained"
-            color="error"
-            size="small"
-            sx={{ minWidth: 100 }}
-            onClick={() => setConfirm({ open: true, id: params.row.userId })}
-          >
-            Delete
-          </Button>
-        )}
-      </Box>
-    ),
-  },
-
+          {/* ปุ่มลบ */}
+          {params.row.role !== "Admin" && (
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              sx={{ minWidth: 100 }}
+              onClick={() => setConfirm({ open: true, id: params.row.userId })}
+            >
+              ลบ
+            </Button>
+          )}
+        </Box>
+      ),
+    },
   ];
 
   return (

@@ -150,13 +150,23 @@ const PendingUsers: React.FC = () => {
       ),
     },
     { field: "approvalExpireAt", headerName: "Approval Expire", width: 180 },
+
     {
       field: "actions",
       headerName: "Actions",
       width: 250,
       sortable: false,
       renderCell: (params) => (
-        <Stack direction="row" spacing={1}>
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
           <Button
             variant="contained"
             color="success"
@@ -169,7 +179,7 @@ const PendingUsers: React.FC = () => {
               })
             }
           >
-            Approve
+            อนุมัติ
           </Button>
           <Button
             variant="contained"
@@ -183,9 +193,9 @@ const PendingUsers: React.FC = () => {
               })
             }
           >
-            Reject
+            ปฎิเสธ
           </Button>
-        </Stack>
+        </Box>
       ),
     },
   ];

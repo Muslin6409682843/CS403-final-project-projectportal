@@ -143,7 +143,16 @@ const ProjectList: React.FC = () => {
       width: 150,
       sortable: false,
       renderCell: (params: any) => (
-        <Stack direction="row" spacing={1}>
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
           <Button
             variant="contained"
             color="info"
@@ -162,7 +171,7 @@ const ProjectList: React.FC = () => {
           >
             ลบ
           </Button>
-        </Stack>
+        </Box>
       ),
     },
   ];
