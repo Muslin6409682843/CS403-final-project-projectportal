@@ -106,7 +106,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     "อื่นๆ (ระบุ)",
   ];
 
-  const categoryOptions = ["Software", "Hardware", "AI/ML", "Research", "อื่นๆ (ระบุ)"];
+  const categoryOptions = [
+    "Software",
+    "Hardware",
+    "AI/ML",
+    "Research",
+    "อื่นๆ (ระบุ)",
+  ];
   const [category, setCategory] = useState(initialData?.category || "");
   const [customCategory, setCustomCategory] = useState("");
 
@@ -114,10 +120,17 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const thaiYears: number[] = [];
   for (let y = currentYear + 543; y >= 2543; y--) thaiYears.push(y);
 
+  const [titleFileKey, setTitleFileKey] = useState(0);
+
+  const handleDeleteTitleFile = () => {
+    setForm({ ...form, titleFile: null, title: "" });
+    setTitleFile(null);
+    setTitleFileKey((prev) => prev + 1); // เปลี่ยน key → input รีเซ็ต
+  };
+
   // ---------- Validation ----------
   useEffect(() => {
     const newErrors: { [key: string]: string } = {};
-    if (!form.title) newErrors.title = "กรุณาอัปโหลดไฟล์ PDF ของโครงงาน";
     if (!form.projectNameTH)
       newErrors.projectNameTH = "กรุณากรอกชื่อโครงงาน (ภาษาไทย)";
     if (!form.projectNameEN)
@@ -301,6 +314,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         อัปโหลดรูปเล่มโครงงาน (PDF)
       </label>
       <input
+        key={titleFileKey}
         type="file"
         accept=".pdf"
         onChange={(e) => handleFileUpload(e, "project")}
@@ -312,7 +326,25 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         </span>
       )}
       {form.title && (
-        <p style={{ fontSize: "1rem" }}>ไฟล์ที่เลือก: {form.title}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <p style={{ fontSize: "1rem", margin: 0 }}>
+            ไฟล์ที่เลือก: {form.title}
+          </p>
+          <button
+            type="button"
+            onClick={handleDeleteTitleFile}
+            style={{
+              backgroundColor: "#cc0c0cff",
+              border: "none",
+              borderRadius: "6px",
+              color: "#fff",
+              padding: "4px 8px",
+              cursor: "pointer",
+            }}
+          >
+            ลบไฟล์
+          </button>
+        </div>
       )}
 
       {/* Project Names */}
@@ -580,7 +612,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             value={customCategory}
             onChange={(e) => {
               setCustomCategory(e.target.value);
-              setForm({ ...form, category: e.target.value }); 
+              setForm({ ...form, category: e.target.value });
             }}
             style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
           />
