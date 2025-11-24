@@ -119,23 +119,44 @@ const ProjectList: React.FC = () => {
     {
       field: "zipFile",
       headerName: "ไฟล์ Code/Zip",
-      width: 125,
-      renderCell: (params: any) =>
-        params.value ? (
-          <Button
-            component="a"
-            href={`http://localhost:8081/upload/${params.value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="outlined"
-            size="small"
-          >
-            เปิดไฟล์
-          </Button>
-        ) : (
-          <Chip label="ไม่มีไฟล์" size="small" />
-        ),
+      width: 180,
+      renderCell: (params: any) => {
+        const zip = params.row.zipFile; // ไฟล์ ZIP
+        const github = params.row.github; // GitHub link 
+
+        if (zip) {
+          return (
+            <Button
+              component="a"
+              href={`http://localhost:8081/upload/${zip}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outlined"
+              size="small"
+            >
+              เปิด ZIP
+            </Button>
+          );
+        } else if (github) {
+          return (
+            <Button
+              component="a"
+              href={github}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outlined"
+              size="small"
+            >
+              เปิด Link
+            </Button>
+          );
+        } else {
+          return <Chip label="ไม่มีไฟล์" size="small" />;
+        }
+      },
     },
+
+
 
     {
       field: "actions",
