@@ -21,6 +21,7 @@ import ProtectedRoute from "../route/ProtectedRoute";
 import ProjectList from "../pages/admin/ProjectList";
 import ForgotPassword from "../pages/ForgotPassword";
 import Overview from "../pages/Overview";
+import DownloadHistoryList from "../pages/admin/DownloadHistoryList";
 
 function AppRoutes() {
   return (
@@ -95,6 +96,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["Admin"]}>
             <ProjectList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/download-history"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <DownloadHistoryList />
           </ProtectedRoute>
         }
       />

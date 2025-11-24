@@ -42,6 +42,12 @@ const AdminPanel: React.FC = () => {
       icon: <MenuBook sx={{ fontSize: 40, color: "#f57c00" }} />,
       onClick: () => navigate("/admin/projects"),
     },
+    {
+      title: "ประวัติการดาวน์โหลด",
+      description: "ดูประวัติการดาวน์โหลดโครงงาน",
+      icon: <MenuBook sx={{ fontSize: 40, color: "#f57c00" }} />,
+      onClick: () => navigate("/admin/download-history"),
+    },
   ];
 
   return (

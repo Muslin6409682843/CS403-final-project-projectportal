@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaFileAlt, FaFileCode, FaFileImage } from "react-icons/fa";
+import axios from "axios";
 
 import { useAuth } from "../../context/AuthContext";
 import type { ProjectDTO } from "../../dto/ProjectDTO";
@@ -38,17 +39,35 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
     cursor: file ? "pointer" : "not-allowed",
   });
 
-  /** คลิกแล้วทำอะไร */
-  const handleClick = (fileUrl?: string) => {
-    if (!fileUrl) return; // ปุ่มเทา → ไม่ทำอะไร
+  /** บันทึกประวัติการดาวน์โหลด */
+const recordDownload = async () => {
+  try {
+    if (!role) return; // ถ้าไม่ได้ login ก็ไม่ต้องบันทึก
 
-    // role ไม่มี → ไป login
+    await axios.post(
+      `http://localhost:8081/api/download-history/${project.projectID}`,
+      {}, // body ว่างได้
+      { withCredentials: true }
+    );
+  } catch (err) {
+    console.error("บันทึกประวัติดาวน์โหลดไม่สำเร็จ:", err);
+  }
+};
+
+
+  /** คลิกแล้วทำอะไร */
+  const handleClick = async (fileUrl?: string) => {
+    if (!fileUrl) return;
+
     if (!role || !allowedRoles.includes(role)) {
       navigate("/login");
       return;
     }
 
-    // role ถูกต้อง → ดาวน์โหลด
+    // ✅ บันทึกประวัติ
+    await recordDownload();
+
+    // ดาวน์โหลดไฟล์จริง
     const link = document.createElement("a");
     link.href = fileUrl.startsWith("http") ? fileUrl : `/upload/${fileUrl}`;
     link.download = fileUrl.split("/").pop() || "file";
@@ -67,26 +86,24 @@ const ProjectActionButtons: React.FC<ProjectActionButtonsProps> = ({
     };
   };
 
-  const handleCodeClick = () => {
+  const handleCodeClick = async () => {
     const zip = project.zipFile;
     const github = project.github;
 
-    // 1) ไม่มี zip + ไม่มี github = ปุ่มเทา → ไม่ทำอะไร
     if (!zip && !github) return;
-
-    // 2) ไม่ได้ role ที่กำหนด → ไป login
     if (!role || !allowedRoles.includes(role)) {
       navigate("/login");
       return;
     }
 
-    // 3) เปิด github (ถ้ามี)
+    // ✅ บันทึกประวัติ
+    await recordDownload();
+
     if (github) {
       window.open(github, "_blank");
       return;
     }
 
-    // 4) ดาวน์โหลด zip (ถ้ามี)
     if (zip) {
       const link = document.createElement("a");
       link.href = zip.startsWith("http") ? zip : `/upload/${zip}`;
