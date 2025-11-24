@@ -51,7 +51,13 @@ function TULogin() {
         }
       } catch (err: any) {
         console.error("Login exception:", err);
-        setApiError("เกิดข้อผิดพลาดในการเชื่อมต่อ server");
+
+        if (err.response && err.response.data && err.response.data.error) {
+          setApiError(err.response.data.error);
+        } else {
+          setApiError("Username หรือ Password ไม่ถูกต้อง");
+        }
+
         setAuth(false, null);
       }
     }

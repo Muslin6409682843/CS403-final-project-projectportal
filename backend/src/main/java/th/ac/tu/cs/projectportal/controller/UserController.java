@@ -207,9 +207,9 @@ public class UserController {
 
         if (!user.getApproved()) {
             resp.put("status", false); // ❌ ยังไม่ login จริง
-    resp.put("error", "บัญชียังไม่ได้รับอนุมัติ");
-    resp.put("redirect", "/pending-approval"); // frontend จะ redirect ถ้าต้องการ
-    return ResponseEntity.ok(resp);
+            resp.put("error", "บัญชียังไม่ได้รับอนุมัติ");
+            resp.put("redirect", "/pending-approval"); // frontend จะ redirect ถ้าต้องการ
+            return ResponseEntity.ok(resp);
         }
 
         // login สำเร็จ
