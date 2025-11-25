@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../App.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation  } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 interface NavItem {
@@ -19,7 +19,7 @@ const navItems: NavItem[] = [
 ];
 
 function NavBar({ logoSrcPath }: NavBarProps) {
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const location = useLocation();
   const navigate = useNavigate();
   const { isLoggedIn, role, guestExpireAt } = useAuth();
 
@@ -62,21 +62,12 @@ function NavBar({ logoSrcPath }: NavBarProps) {
         </Link>
 
         {/* รายการเมนูที่รับมาจาก navItems */}
-        <ul
-          className="navbar-nav d-flex gap-4 mb-0 ms-4"
-          style={{ listStyleType: "none" }}
-        >
-          {navItems.map((item, index) => (
-            <li
-              key={item.label}
-              className="nav-item"
-              onClick={() => setSelectedIndex(index)}
-            >
+        <ul className="navbar-nav ms-4">
+          {navItems.map((item) => (
+            <li key={item.label}>
               <Link
                 className={
-                  selectedIndex === index
-                    ? "nav-link active fw-bold"
-                    : "nav-link"
+                  location.pathname === item.path ? "nav-link active fw-bold" : "nav-link"
                 }
                 to={item.path}
               >
@@ -85,6 +76,7 @@ function NavBar({ logoSrcPath }: NavBarProps) {
             </li>
           ))}
         </ul>
+
 
         {/* ✅ ส่วนแสดงวันหมดอายุ Guest */}
         {role === "Guest" && guestExpireAt && (
