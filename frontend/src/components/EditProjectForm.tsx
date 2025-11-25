@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 export interface ProjectData {
-  title: string;
   projectNameTH: string;
   projectNameEN: string;
   members: string[];
@@ -45,7 +44,6 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
   onChangeDirty,
 }) => {
   const [form, setForm] = useState<ProjectData>({
-    title: initialData?.title || "",
     projectNameTH: initialData?.projectNameTH || "",
     projectNameEN: initialData?.projectNameEN || "",
     members: initialData?.members || [""],
@@ -58,9 +56,9 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     keywordsTH: initialData?.keywordsTH || "",
     keywordsEN: initialData?.keywordsEN || "",
     github: initialData?.github || "",
-    titleFile: initialData?.titleFile || null,
-    slideFileObj: initialData?.slideFileObj || null,
-    zipFileObj: initialData?.zipFileObj || null,
+    titleFile: initialData?.titleFile ?? null,
+    slideFileObj: initialData?.slideFileObj ?? null,
+    zipFileObj: initialData?.zipFileObj ?? null,
     oldTitleFile: initialData?.oldTitleFile || "",
     oldSlideFile: initialData?.oldSlideFile || "",
     oldZipFile: initialData?.oldZipFile || "",
@@ -153,8 +151,6 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
   // ---------- Validation ----------
   useEffect(() => {
     const newErrors: { [key: string]: string } = {};
-    if (!form.title && !form.oldTitleFile)
-      newErrors.title = "กรุณาอัปโหลดไฟล์ PDF ของโครงงาน";
     if (!form.projectNameTH)
       newErrors.projectNameTH = "กรุณากรอกชื่อโครงงาน (ภาษาไทย)";
     if (!form.projectNameEN)
@@ -229,7 +225,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     const file = e.target.files?.[0];
     if (!file) {
       if (type === "project") {
-        setForm({ ...form, title: "" });
+        setForm({ ...form, titleFile: null });
         setTitleFile(null);
       }
       if (type === "slide") {
@@ -252,7 +248,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     }
 
     if (type === "project") {
-      setForm({ ...form, title: file.name, oldTitleFile: "" });
+      setForm({ ...form, titleFile: file, oldTitleFile: "" });
       setTitleFile(file);
     } else if (type === "slide") {
       setForm({ ...form, slideFileObj: file, oldSlideFile: "" });

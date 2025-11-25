@@ -123,7 +123,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   // ---------- Validation ----------
   useEffect(() => {
     const newErrors: { [key: string]: string } = {};
-    if (!form.title) newErrors.title = "กรุณาอัปโหลดไฟล์ PDF ของโครงงาน";
     if (!form.projectNameTH)
       newErrors.projectNameTH = "กรุณากรอกชื่อโครงงาน (ภาษาไทย)";
     if (!form.projectNameEN)
@@ -283,7 +282,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         coAdvisors: coAdvisorFull,
         keywordsTH: keywordsTH.trim(),
         keywordsEN: keywordsEN.trim(),
-        titleFile,
+        titleFile: titleFile || null,
         slideFileObj,
         zipFileObj,
         github: form.github?.trim() || "",

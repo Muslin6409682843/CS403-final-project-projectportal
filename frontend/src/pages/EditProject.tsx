@@ -25,12 +25,15 @@ const EditProject: React.FC = () => {
 
         const data: ProjectData = {
           // ใช้ title เป็น "ชื่อไฟล์ PDF" ตามระบบเดิม
-          title: res.data.file || "",
           projectNameTH: res.data.titleTh,
           projectNameEN: res.data.titleEn,
-          members: res.data.member ? res.data.member.split(",").map((m: string) => m.trim()) : [],
+          members: res.data.member
+            ? res.data.member.split(",").map((m: string) => m.trim())
+            : [],
           advisor: res.data.advisor || "",
-          coAdvisors: res.data.coAdvisor ? res.data.coAdvisor.split(",").map((c: string) => c.trim()) : [],
+          coAdvisors: res.data.coAdvisor
+            ? res.data.coAdvisor.split(",").map((c: string) => c.trim())
+            : [],
           year: res.data.year || "",
           category: res.data.category || "",
           abstractTh: res.data.abstractTh || "",
@@ -77,10 +80,7 @@ const EditProject: React.FC = () => {
       if (!id) return;
 
       const formData = new FormData();
-
-      // Title = ชื่อไฟล์ PDF 
-      formData.append("title", data.title);
-
+      formData.append("title", data.projectNameTH);
       formData.append("projectNameTH", data.projectNameTH);
       formData.append("projectNameEN", data.projectNameEN);
       formData.append("members", JSON.stringify(data.members));
@@ -109,10 +109,7 @@ const EditProject: React.FC = () => {
       navigate("/admin/projects");
     } catch (err: any) {
       console.error(err);
-      alert(
-        "ไม่สามารถแก้ไขโครงงานได้: " +
-          (err.response?.data || err.message)
-      );
+      alert("ไม่สามารถแก้ไขโครงงานได้: " + (err.response?.data || err.message));
     }
   };
 
