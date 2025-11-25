@@ -61,7 +61,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     form.slideFileObj || null
   );
   const [zipFileObj, setZipFileObj] = useState<File | null>(
-    initialData?.zipFileObj || null
+    form.zipFileObj || null
   );
 
   const [advisorPosition, setAdvisorPosition] = useState(
@@ -90,8 +90,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const [keywordsTH, setKeywordsTH] = useState(initialData?.keywordsTH || "");
   const [keywordsEN, setKeywordsEN] = useState(initialData?.keywordsEN || "");
 
-  const [codeUploadType, setCodeUploadType] = useState<"" | "github" | "zip">(
-    initialData?.codeUploadType || ""
+  const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">(
+    ""
   );
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSubmitAlertModal, setShowSubmitAlertModal] = useState(false);
@@ -106,13 +106,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     "อื่นๆ (ระบุ)",
   ];
 
-  const categoryOptions = [
-    "Software",
-    "Hardware",
-    "AI/ML",
-    "Research",
-    "อื่นๆ (ระบุ)",
-  ];
+  const categoryOptions = ["Software", "Hardware", "AI/ML", "Research", "อื่นๆ (ระบุ)"];
   const [category, setCategory] = useState(initialData?.category || "");
   const [customCategory, setCustomCategory] = useState("");
 
@@ -120,45 +114,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const thaiYears: number[] = [];
   for (let y = currentYear + 543; y >= 2543; y--) thaiYears.push(y);
 
-  const [titleFileKey, setTitleFileKey] = useState(0);
-  const [slideFileKey, setSlideFileKey] = useState(0);
-
-  const handleDeleteTitleFile = () => {
-    setForm({ ...form, titleFile: null, title: "" });
-    setTitleFile(null);
-    setTitleFileKey((prev) => prev + 1);
-  };
-
-  const handleDeleteSlideFile = () => {
-    setForm({ ...form, slideFileObj: null, title: "" });
-    setSlideFileObj(null);
-    setSlideFileKey((prev) => prev + 1);
-  };
-
-  const handleDeleteCode = () => {
-    setCodeUploadType(""); // ยกเลิก radio
-    setZipFileObj(null); // ลบไฟล์ zip
-    setForm({
-      ...form,
-      github: "", // ลบลิงก์
-      zipFileObj: null, // ลบไฟล์ใน form
-    });
-  };
-
-  const handleSelectGithub = () => {
-    setCodeUploadType("github");
-    setZipFileObj(null);
-    setForm({ ...form, zipFileObj: null });
-  };
-
-  const handleSelectZip = () => {
-    setCodeUploadType("zip");
-    setForm({ ...form, github: "" });
-  };
-
   // ---------- Validation ----------
   useEffect(() => {
     const newErrors: { [key: string]: string } = {};
+    if (!form.title) newErrors.title = "กรุณาอัปโหลดไฟล์ PDF ของโครงงาน";
     if (!form.projectNameTH)
       newErrors.projectNameTH = "กรุณากรอกชื่อโครงงาน (ภาษาไทย)";
     if (!form.projectNameEN)
@@ -335,7 +294,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         flexDirection: "column",
         gap: "0.75rem",
         maxWidth: "500px",
-        margin: "0 auto",
       }}
     >
       {/* Upload PDF Project */}
@@ -343,7 +301,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         อัปโหลดรูปเล่มโครงงาน (PDF)
       </label>
       <input
-        key={slideFileKey}
         type="file"
         accept=".pdf"
         onChange={(e) => handleFileUpload(e, "project")}
@@ -355,25 +312,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         </span>
       )}
       {form.title && (
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <p style={{ fontSize: "1rem", margin: 0 }}>
-            ไฟล์ที่เลือก: {form.title}
-          </p>
-          <button
-            type="button"
-            onClick={handleDeleteTitleFile}
-            style={{
-              backgroundColor: "#cc0c0cff",
-              border: "none",
-              borderRadius: "6px",
-              color: "#fff",
-              padding: "4px 8px",
-              cursor: "pointer",
-            }}
-          >
-            ลบไฟล์
-          </button>
-        </div>
+        <p style={{ fontSize: "1rem" }}>ไฟล์ที่เลือก: {form.title}</p>
       )}
 
       {/* Project Names */}
@@ -381,7 +320,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         ชื่อโครงงาน (ภาษาไทย)
       </label>
       <input
-        key={titleFileKey}
         type="text"
         name="projectNameTH"
         value={form.projectNameTH}
@@ -642,7 +580,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             value={customCategory}
             onChange={(e) => {
               setCustomCategory(e.target.value);
-              setForm({ ...form, category: e.target.value });
+              setForm({ ...form, category: e.target.value }); 
             }}
             style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
           />
@@ -751,45 +689,26 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         style={{ padding: "0.5rem 0", fontSize: "1rem" }}
       />
       {form.slideFileObj && (
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <p style={{ fontSize: "1rem", margin: 0 }}>
-            ไฟล์ที่เลือก: {form.slideFileObj.name}
-          </p>
-
-          <button
-            type="button"
-            onClick={handleDeleteSlideFile}
-            style={{
-              backgroundColor: "#cc0c0cff",
-              border: "none",
-              borderRadius: "6px",
-              color: "#fff",
-              padding: "4px 8px",
-              cursor: "pointer",
-            }}
-          >
-            ลบไฟล์
-          </button>
-        </div>
+        <p style={{ fontSize: "1rem" }}>
+          ไฟล์ที่เลือก: {form.slideFileObj.name}
+        </p>
       )}
 
       {/* Upload Code */}
+      <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
+        อัปโหลดโค้ด (ไม่บังคับ)
+      </label>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
-          อัปโหลดโค้ด (ไม่บังคับ)
-        </label>
-
-        {/* GitHub Option */}
         <label>
           <input
             type="radio"
             name="codeUploadType"
+            value="github"
             checked={codeUploadType === "github"}
-            onChange={handleSelectGithub}
-          />
+            onChange={() => setCodeUploadType("github")}
+          />{" "}
           GitHub Link
         </label>
-
         {codeUploadType === "github" && (
           <input
             type="text"
@@ -801,56 +720,30 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           />
         )}
 
-        {/* Zip Option */}
         <label>
           <input
             type="radio"
             name="codeUploadType"
+            value="zip"
             checked={codeUploadType === "zip"}
-            onChange={handleSelectZip}
-          />
+            onChange={() => setCodeUploadType("zip")}
+          />{" "}
           Zip File
         </label>
-
         {codeUploadType === "zip" && (
           <>
             <input
               type="file"
               accept=".zip"
-              onChange={(e) => {
-                const file = e.target.files?.[0] || null;
-                setZipFileObj(file);
-                setForm({ ...form, zipFileObj: file });
-              }}
+              onChange={(e) => handleFileUpload(e, "zip")}
               style={{ padding: "0.5rem 0", fontSize: "1rem" }}
             />
-
             {form.zipFileObj && (
               <p style={{ fontSize: "1rem" }}>
                 ไฟล์ที่เลือก: {form.zipFileObj.name}
               </p>
             )}
           </>
-        )}
-
-        {/* ปุ่มลบทั้งหมด */}
-        {(codeUploadType || form.github || form.zipFileObj) && (
-          <button
-            type="button"
-            onClick={handleDeleteCode}
-            style={{
-              backgroundColor: "#cc0c0c",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              padding: "6px 12px",
-              cursor: "pointer",
-              width: "120px",
-              marginTop: "0.5rem",
-            }}
-          >
-            ลบโค้ด
-          </button>
         )}
       </div>
 
