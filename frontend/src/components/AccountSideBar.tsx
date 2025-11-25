@@ -57,7 +57,7 @@ const AccountSideBar = () => {
         }}
       >
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = location.pathname.startsWith(item.path);
           return (
             <li key={item.path}>
               <button
