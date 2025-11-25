@@ -301,6 +301,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         display: "flex",
         flexDirection: "column",
         gap: "0.75rem",
+        width: "100%",
         maxWidth: "500px",
         margin: "0 auto",
       }}
