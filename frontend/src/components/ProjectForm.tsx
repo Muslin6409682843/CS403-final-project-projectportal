@@ -61,7 +61,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     form.slideFileObj || null
   );
   const [zipFileObj, setZipFileObj] = useState<File | null>(
-    form.zipFileObj || null
+    initialData?.zipFileObj || null
   );
 
   const [advisorPosition, setAdvisorPosition] = useState(
@@ -90,8 +90,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const [keywordsTH, setKeywordsTH] = useState(initialData?.keywordsTH || "");
   const [keywordsEN, setKeywordsEN] = useState(initialData?.keywordsEN || "");
 
-  const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">(
-    ""
+  const [codeUploadType, setCodeUploadType] = useState<"" | "github" | "zip">(
+    initialData?.codeUploadType || ""
   );
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSubmitAlertModal, setShowSubmitAlertModal] = useState(false);
@@ -133,6 +133,27 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     setForm({ ...form, slideFileObj: null, title: "" });
     setSlideFileObj(null);
     setSlideFileKey((prev) => prev + 1);
+  };
+
+  const handleDeleteCode = () => {
+    setCodeUploadType(""); // ยกเลิก radio
+    setZipFileObj(null); // ลบไฟล์ zip
+    setForm({
+      ...form,
+      github: "", // ลบลิงก์
+      zipFileObj: null, // ลบไฟล์ใน form
+    });
+  };
+
+  const handleSelectGithub = () => {
+    setCodeUploadType("github");
+    setZipFileObj(null);
+    setForm({ ...form, zipFileObj: null });
+  };
+
+  const handleSelectZip = () => {
+    setCodeUploadType("zip");
+    setForm({ ...form, github: "" });
   };
 
   // ---------- Validation ----------
@@ -314,6 +335,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         flexDirection: "column",
         gap: "0.75rem",
         maxWidth: "500px",
+        margin: "0 auto",
       }}
     >
       {/* Upload PDF Project */}
@@ -752,20 +774,22 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       )}
 
       {/* Upload Code */}
-      <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
-        อัปโหลดโค้ด (ไม่บังคับ)
-      </label>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
+          อัปโหลดโค้ด (ไม่บังคับ)
+        </label>
+
+        {/* GitHub Option */}
         <label>
           <input
             type="radio"
             name="codeUploadType"
-            value="github"
             checked={codeUploadType === "github"}
-            onChange={() => setCodeUploadType("github")}
-          />{" "}
+            onChange={handleSelectGithub}
+          />
           GitHub Link
         </label>
+
         {codeUploadType === "github" && (
           <input
             type="text"
@@ -777,30 +801,56 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           />
         )}
 
+        {/* Zip Option */}
         <label>
           <input
             type="radio"
             name="codeUploadType"
-            value="zip"
             checked={codeUploadType === "zip"}
-            onChange={() => setCodeUploadType("zip")}
-          />{" "}
+            onChange={handleSelectZip}
+          />
           Zip File
         </label>
+
         {codeUploadType === "zip" && (
           <>
             <input
               type="file"
               accept=".zip"
-              onChange={(e) => handleFileUpload(e, "zip")}
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setZipFileObj(file);
+                setForm({ ...form, zipFileObj: file });
+              }}
               style={{ padding: "0.5rem 0", fontSize: "1rem" }}
             />
+
             {form.zipFileObj && (
               <p style={{ fontSize: "1rem" }}>
                 ไฟล์ที่เลือก: {form.zipFileObj.name}
               </p>
             )}
           </>
+        )}
+
+        {/* ปุ่มลบทั้งหมด */}
+        {(codeUploadType || form.github || form.zipFileObj) && (
+          <button
+            type="button"
+            onClick={handleDeleteCode}
+            style={{
+              backgroundColor: "#cc0c0c",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              padding: "6px 12px",
+              cursor: "pointer",
+              width: "120px",
+              marginTop: "0.5rem",
+            }}
+          >
+            ลบโค้ด
+          </button>
         )}
       </div>
 
