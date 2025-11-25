@@ -106,7 +106,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     "อื่นๆ (ระบุ)",
   ];
 
-  const categoryOptions = ["Software", "Hardware", "AI/ML", "Research", "อื่นๆ (ระบุ)"];
+  const categoryOptions = [
+    "Software",
+    "Hardware",
+    "AI/ML",
+    "Research",
+    "อื่นๆ (ระบุ)",
+  ];
   const [category, setCategory] = useState(initialData?.category || "");
   const [customCategory, setCustomCategory] = useState("");
 
@@ -268,8 +274,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       const finalCategory =
         category === "อื่นๆ (ระบุ)" ? customCategory.trim() : category;
 
+      const membersFiltered = form.members.filter((m) => m.trim() !== "");
+
       onSubmit({
         ...form,
+        members: membersFiltered,
         advisor: advisorFull,
         coAdvisors: coAdvisorFull,
         keywordsTH: keywordsTH.trim(),
@@ -580,7 +589,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             value={customCategory}
             onChange={(e) => {
               setCustomCategory(e.target.value);
-              setForm({ ...form, category: e.target.value }); 
+              setForm({ ...form, category: e.target.value });
             }}
             style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
           />

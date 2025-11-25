@@ -41,24 +41,25 @@ const AddProject: React.FC = () => {
       formData.append("abstractTh", data.abstractTh || "");
       formData.append("abstractEn", data.abstractEn || "");
 
+
       formData.append("keywordsTH", data.keywordsTH || "");
       formData.append("keywordsEN", data.keywordsEN || "");
 
-      // GitHub Link / Zip File
-      if (data.github && data.codeUploadType === "github") {
-        formData.append("github", data.github.trim());
-      } else if (data.zipFileObj && data.codeUploadType === "zip") {
-        formData.append("zipFile", data.zipFileObj);
+      formData.append("githubLink", data.github || "");
+
+      // ไฟล์ PDF (ชื่อ file)
+      if ((data as any).titleFile) {
+        formData.append("file", (data as any).titleFile);
       }
 
-      // ไฟล์ PDF ของโครงงาน
-      if (data.titleFile) {
-        formData.append("file", data.titleFile);
+      // SlideFile
+      if ((data as any).slideFileObj) {
+        formData.append("slideFile", (data as any).slideFileObj);
       }
 
-      // Slide PDF
-      if (data.slideFileObj) {
-        formData.append("slideFile", data.slideFileObj);
+      // ZipFile
+      if ((data as any).zipFileObj) {
+        formData.append("zipFile", (data as any).zipFileObj);
       }
 
       // Debug FormData
@@ -87,21 +88,9 @@ const AddProject: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "calc(100vh - 80px)",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          flex: 1,
-          padding: "2rem",
-          overflowY: "auto",
-          backgroundColor: "#f8f9fa",
-        }}
-      >
+    <div style={{ display: "flex", height: "calc(100vh - 80px)", overflow: "hidden" }}>
+      <div style={{ flex: 1, padding: "2rem", overflowY: "auto", backgroundColor: "#f8f9fa" }}>
+        
         <button
           onClick={handleBackClick}
           style={{
@@ -117,29 +106,7 @@ const AddProject: React.FC = () => {
           ← กลับไปหน้าโครงงานของฉัน
         </button>
 
-        <div
-          style={{
-            maxWidth: "600px",
-            margin: "0 auto 2rem auto",
-            padding: "1rem 1.5rem",
-            background: "white",
-            borderRadius: "12px",
-            border: "1px solid #ddd",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-            textAlign: "center",
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "1.8rem",
-              fontWeight: 700,
-              color: "#333",
-            }}
-          >
-            เพิ่มโครงงานใหม่
-          </h1>
-        </div>
+        <h2>เพิ่มโครงงานใหม่</h2>
 
         <div style={{ marginTop: "2rem" }}>
           <ProjectForm
