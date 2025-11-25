@@ -44,10 +44,11 @@ function Browse() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchParam = queryParams.get("search") || "";
+  const pageParam = parseInt(queryParams.get("page") || "1", 10);
 
   const [searchQuery, setSearchQuery] = useState(searchParam);
   const [sortOption, setSortOption] = useState("newest");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pageParam);
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
 
@@ -66,6 +67,15 @@ function Browse() {
     username: string;
     role: string;
   } | null>(null);
+
+  // ---- update URL เมื่อเปลี่ยน page ----
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    queryParams.set("page", page.toString());
+    navigate(`${location.pathname}?${queryParams.toString()}`, {
+      replace: true,
+    });
+  };
 
   useEffect(() => {
     setSearchQuery(searchParam);
@@ -90,8 +100,10 @@ function Browse() {
   }, [searchQuery]);
 
   const handleSearch = (query: string) => {
-    navigate(`/browse?search=${encodeURIComponent(query)}`);
-    setCurrentPage(1);
+    queryParams.set("search", query);
+    queryParams.set("page", "1"); // รีเซ็ตหน้าใหม่เมื่อค้นหา
+    navigate(`${location.pathname}?${queryParams.toString()}`);
+    setSearchQuery(query);
   };
 
   const handleSortChange = (value: string) => {
@@ -375,7 +387,7 @@ function Browse() {
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={(page) => setCurrentPage(page)}
+              onPageChange={handlePageChange}
             />
           </div>
         )}
