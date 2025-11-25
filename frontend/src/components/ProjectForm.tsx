@@ -302,6 +302,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         flexDirection: "column",
         gap: "0.75rem",
         maxWidth: "500px",
+        margin: "0 auto",
       }}
     >
       {/* Upload PDF Project */}
