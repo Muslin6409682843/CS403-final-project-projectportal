@@ -74,23 +74,40 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     form.zipFileObj || null
   );
 
-  const [advisorPosition, setAdvisorPosition] = useState(
-    initialData?.advisor ? initialData.advisor.split(" ")[0] : ""
-  );
-  const [advisorName, setAdvisorName] = useState(
-    initialData?.advisor
-      ? initialData.advisor.split(" ").slice(1).join(" ")
-      : ""
-  );
-  const [customAdvisorPosition, setCustomAdvisorPosition] = useState("");
+
+  const positions = [
+    "",
+    "อ.",
+    "ดร.",
+    "ผศ.ดร.",
+    "รศ.ดร.",
+    "ศ.ดร.",
+    "อื่นๆ (ระบุ)",
+  ];
+
+  const [advisorPosition, setAdvisorPosition] = useState(() => {
+    if (!initialData?.advisor) return "";
+    const [pos, ...nameParts] = initialData.advisor.split(" ");
+    return positions.includes(pos) ? pos : "อื่นๆ (ระบุ)";
+  });
+  const [advisorName, setAdvisorName] = useState(() => {
+    if (!initialData?.advisor) return "";
+    const [pos, ...nameParts] = initialData.advisor.split(" ");
+    return nameParts.join(" ");
+  });
+  const [customAdvisorPosition, setCustomAdvisorPosition] = useState(() => {
+    if (!initialData?.advisor) return "";
+    const [pos, ...nameParts] = initialData.advisor.split(" ");
+    return positions.includes(pos) ? "" : pos;
+  });
 
   const [coAdvisors, setCoAdvisors] = useState(
     initialData?.coAdvisors
       ? initialData.coAdvisors.map((c) => {
           const [pos, ...nameParts] = c.split(" ");
           return {
-            position: pos,
-            customPosition: "",
+            position: positions.includes(pos) ? pos : "อื่นๆ (ระบุ)",
+            customPosition: positions.includes(pos) ? "" : pos,
             name: nameParts.join(" "),
           };
         })
@@ -111,16 +128,6 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSubmitAlertModal, setShowSubmitAlertModal] = useState(false);
 
-  const positions = [
-    "",
-    "อ.",
-    "ดร.",
-    "ผศ.ดร.",
-    "รศ.ดร.",
-    "ศ.ดร.",
-    "อื่นๆ (ระบุ)",
-  ];
-
   const categoryOptions = [
     "Software",
     "Hardware",
@@ -128,8 +135,18 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     "Research",
     "อื่นๆ (ระบุ)",
   ];
-  const [category, setCategory] = useState(initialData?.category || "");
-  const [customCategory, setCustomCategory] = useState("");
+  const [category, setCategory] = useState(() => {                               
+    if (!initialData?.category) return "";
+    return categoryOptions.includes(initialData.category)
+      ? initialData.category
+      : "อื่นๆ (ระบุ)";
+  });
+
+  const [customCategory, setCustomCategory] = useState(() => {                
+    if (!initialData?.category) return "";
+    return categoryOptions.includes(initialData.category) ? "" : initialData.category;
+  });
+
 
   const currentYear = new Date().getFullYear();
   const thaiYears: number[] = [];
@@ -298,8 +315,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
             ? c.customPosition + " " + c.name.trim()
             : c.position + " " + c.name.trim()
         );
-      const finalCategory =
-        category === "อื่นๆ (ระบุ)" ? customCategory.trim() : category;
+      const finalCategory = category === "อื่นๆ (ระบุ)" ? customCategory.trim() : category;
       const filteredMembers = form.members.filter((m) => m.trim() !== "");
 
       onSubmit({
@@ -396,8 +412,10 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
       {/* Members */}
       <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>ผู้จัดทำ</label>
       {form.members.map((member, idx) => (
-        <input
+        <div
           key={idx}
+          style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.25rem" }}>
+        <input
           type="text"
           name="members"
           value={member}
@@ -408,6 +426,28 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
             marginBottom: "0.25rem",
           }}
         />
+         {/* ปุ่มลบผู้จัดทำ */}
+        {form.members.length > 1 && (
+          <button
+            type="button"
+            onClick={() => {
+              const newMembers = form.members.filter((_, i) => i !== idx);
+              setForm({ ...form, members: newMembers });
+              onChangeDirty?.(); // แจ้งว่า form dirty
+            }}
+            style={{
+              padding: "6px 12px",
+              backgroundColor: "#e63946",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
+            ❌ ลบ
+          </button>
+        )}
+        </div>
       ))}
       {form.members.length < 2 && (
         <button
@@ -565,6 +605,26 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
               placeholder="ชื่ออาจารย์ที่ปรึกษาร่วม"
               style={{ fontSize: "1rem", padding: "0.4rem", flex: 2 }}
             />
+            {/* ปุ่มลบอาจารย์ */}
+            {coAdvisors.length > 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  const newCoAdvisors = coAdvisors.filter((_, i) => i !== idx);
+                  setCoAdvisors(newCoAdvisors);
+                }}
+                style={{
+                  padding: "6px 12px",
+                  backgroundColor: "#e63946",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                ❌ ลบ
+              </button>
+            )}
           </div>
 
           {/* ใส่ Error Message ตรงนี้ */}

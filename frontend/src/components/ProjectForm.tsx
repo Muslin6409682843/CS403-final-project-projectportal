@@ -360,18 +360,40 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       {/* Members */}
       <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>ผู้จัดทำ</label>
       {form.members.map((member, idx) => (
-        <input
+        <div
           key={idx}
-          type="text"
-          name="members"
-          value={member}
-          onChange={(e) => handleChange(e, idx)}
-          style={{
-            fontSize: "1rem",
-            padding: "0.4rem",
-            marginBottom: "0.25rem",
-          }}
-        />
+          style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.25rem" }}
+        >
+          <input
+            type="text"
+            name="members"
+            value={member}
+            onChange={(e) => handleChange(e, idx)}
+            style={{ fontSize: "1rem", padding: "0.4rem", flex: 1 }}
+          />
+
+          {/* ปุ่มลบผู้จัดทำ */}
+          {form.members.length > 1 && (
+            <button
+              type="button"
+              onClick={() => {
+                const newMembers = form.members.filter((_, i) => i !== idx);
+                setForm({ ...form, members: newMembers });
+                onChangeDirty?.(); // แจ้งว่า form dirty
+              }}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: "#e63946",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+              }}
+            >
+              ❌ ลบ
+            </button>
+          )}
+        </div>
       ))}
       {form.members.length < 2 && (
         <button
@@ -392,6 +414,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           + เพิ่มผู้จัดทำ
         </button>
       )}
+      
       {errors.members && (
         <span style={{ color: "red", fontSize: "0.95rem" }}>
           {errors.members}
@@ -529,6 +552,27 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               placeholder="ชื่ออาจารย์ที่ปรึกษาร่วม"
               style={{ fontSize: "1rem", padding: "0.4rem", flex: 2 }}
             />
+
+            {/* ปุ่มลบอาจารย์ */}
+            {coAdvisors.length > 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  const newCoAdvisors = coAdvisors.filter((_, i) => i !== idx);
+                  setCoAdvisors(newCoAdvisors);
+                }}
+                style={{
+                  padding: "6px 12px",
+                  backgroundColor: "#e63946",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                ❌ ลบ
+              </button>
+            )}
           </div>
 
           {/* ใส่ Error Message ตรงนี้ */}
