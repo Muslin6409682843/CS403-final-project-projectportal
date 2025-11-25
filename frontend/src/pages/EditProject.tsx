@@ -155,7 +155,29 @@ const EditProject: React.FC = () => {
           ← กลับไปหน้าโครงงานของฉัน
         </button>
 
-        <h2>แก้ไขโครงงาน</h2>
+        <div
+          style={{
+            maxWidth: "600px",
+            margin: "0 auto 2rem auto",
+            padding: "1rem 1.5rem",
+            background: "white",
+            borderRadius: "12px",
+            border: "1px solid #ddd",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            textAlign: "center",
+          }}
+        >
+          <h2
+            style={{
+              margin: 0,
+              fontSize: "1.8rem",
+              fontWeight: 700,
+              color: "#333",
+            }}
+          >
+            แก้ไขโครงงาน
+          </h2>
+        </div>
 
         <div style={{ marginTop: "2rem" }}>
           <ProjectForm

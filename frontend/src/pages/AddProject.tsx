@@ -41,7 +41,6 @@ const AddProject: React.FC = () => {
       formData.append("abstractTh", data.abstractTh || "");
       formData.append("abstractEn", data.abstractEn || "");
 
-
       formData.append("keywordsTH", data.keywordsTH || "");
       formData.append("keywordsEN", data.keywordsEN || "");
 
@@ -88,9 +87,21 @@ const AddProject: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 80px)", overflow: "hidden" }}>
-      <div style={{ flex: 1, padding: "2rem", overflowY: "auto", backgroundColor: "#f8f9fa" }}>
-        
+    <div
+      style={{
+        display: "flex",
+        height: "calc(100vh - 80px)",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          padding: "2rem",
+          overflowY: "auto",
+          backgroundColor: "#f8f9fa",
+        }}
+      >
         <button
           onClick={handleBackClick}
           style={{
@@ -106,7 +117,29 @@ const AddProject: React.FC = () => {
           ← กลับไปหน้าโครงงานของฉัน
         </button>
 
-        <h2>เพิ่มโครงงานใหม่</h2>
+        <div
+          style={{
+            maxWidth: "600px",
+            margin: "0 auto 2rem auto",
+            padding: "1rem 1.5rem",
+            background: "white",
+            borderRadius: "12px",
+            border: "1px solid #ddd",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            textAlign: "center",
+          }}
+        >
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "1.8rem",
+              fontWeight: 700,
+              color: "#333",
+            }}
+          >
+            เพิ่มโครงงานใหม่
+          </h1>
+        </div>
 
         <div style={{ marginTop: "2rem" }}>
           <ProjectForm
