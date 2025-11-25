@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FilterDropMenu from "./FilterDropMenu";
 import FilterSingleSelect from "./FilterSingleSelect";
 import FilterMultiChoice from "./FilterMultiChoice";
@@ -6,6 +6,13 @@ import FilterMultiChoice from "./FilterMultiChoice";
 interface SideBarProps {
   onFilterChange: (filters: any) => void;
   onResetFilters: () => void;
+  initialFilters: {
+    programPath?: string | null;
+    researchYear?: string | null;
+    researchYearSub?: [number, number];
+    searchField?: string | null;
+    searchKeyword?: string[];
+  };
 }
 
 type FilterKey =
@@ -17,13 +24,13 @@ type FilterKey =
   | "topic"
   | "searchKeyword";
 
-const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
-  const [filters, setFilters] = useState<Record<FilterKey, any>>({
-    programPath: null,
-    researchYear: null,
-    researchYearSub: [2000, new Date().getFullYear()], // <<-- เก็บเป็น array จริง
-    searchField: null,
-    searchKeyword: [],
+const SideBar = ({ onFilterChange, onResetFilters, initialFilters }: SideBarProps) => {
+  const [filters, setFilters] = useState({
+    programPath: initialFilters.programPath || null,
+    researchYear: initialFilters.researchYear || null,
+    researchYearSub: initialFilters.researchYearSub || [2000, new Date().getFullYear()],
+    searchField: initialFilters.searchField || null,
+    searchKeyword: initialFilters.searchKeyword || [],
     topic: null,
   });
 
@@ -73,6 +80,17 @@ const SideBar = ({ onFilterChange, onResetFilters }: SideBarProps) => {
       searchKeyword: [],
     });
   };
+
+  useEffect(() => {
+    setFilters({
+      programPath: initialFilters.programPath || null,
+      researchYear: initialFilters.researchYear || null,
+      researchYearSub: initialFilters.researchYearSub || [2000, new Date().getFullYear()],
+      searchField: initialFilters.searchField || null,
+      searchKeyword: initialFilters.searchKeyword || [],
+      topic: null,
+    });
+  }, [initialFilters]);
 
   return (
     <div style={{ width: "400px", paddingLeft: "2rem" }}>

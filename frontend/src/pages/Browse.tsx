@@ -54,19 +54,30 @@ function Browse() {
 
   const itemsPerPage = 10;
 
-  const [programFilter, setProgramFilter] = useState<string>("");
-  const [yearFilterType, setYearFilterType] = useState<string>("");
-  const [yearSubOption, setYearSubOption] = useState<string>("");
-  const [yearRange, setYearRange] = useState<[number, number]>([
-    2000,
-    new Date().getFullYear(),
-  ]);
-  const [searchField, setSearchField] = useState<string>("");
-  const [documentFilter, setDocumentFilter] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<{
     username: string;
     role: string;
   } | null>(null);
+
+  const programParam = queryParams.get("program") || "";
+  const yearTypeParam = queryParams.get("yearType") || "";
+  const yearSubParam = queryParams.get("yearSub") || "";
+  const yearRangeParam = queryParams.get("yearRange"); // "2020,2023"
+  const searchFieldParam = queryParams.get("searchField") || "";
+  const documentParam = queryParams.get("document"); // "file,slide"
+
+  const [programFilter, setProgramFilter] = useState(programParam);
+  const [yearFilterType, setYearFilterType] = useState(yearTypeParam);
+  const [yearSubOption, setYearSubOption] = useState(yearSubParam);
+  const [yearRange, setYearRange] = useState<[number, number]>(
+    yearRangeParam
+      ? (yearRangeParam.split(",").map(Number) as [number, number])
+      : [2000, new Date().getFullYear()]
+  );
+  const [searchField, setSearchField] = useState(searchFieldParam);
+  const [documentFilter, setDocumentFilter] = useState<string[]>(
+    documentParam ? documentParam.split(",") : []
+  );
 
   // ---- update URL เมื่อเปลี่ยน page ----
   const handlePageChange = (page: number) => {
@@ -78,26 +89,59 @@ function Browse() {
   };
 
   useEffect(() => {
-    setSearchQuery(searchParam);
-  }, [searchParam]);
+    const queryParams = new URLSearchParams(location.search);
+
+    setSearchQuery(queryParams.get("search") || "");
+    setCurrentPage(parseInt(queryParams.get("page") || "1", 10));
+    setProgramFilter(queryParams.get("program") || "");
+    setYearFilterType(queryParams.get("yearType") || "");
+    setYearSubOption(queryParams.get("yearSub") || "");
+    setYearRange(
+      queryParams.get("yearRange")
+        ? (queryParams.get("yearRange")!.split(",").map(Number) as [
+            number,
+            number
+          ])
+        : [2000, new Date().getFullYear()]
+    );
+    setSearchField(queryParams.get("searchField") || "");
+    setDocumentFilter(
+      queryParams.get("document") ? queryParams.get("document")!.split(",") : []
+    );
+  }, [location.search]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const url = searchQuery
-          ? `http://localhost:8081/api/projects/search?q=${encodeURIComponent(
-              searchQuery
-            )}`
-          : "http://localhost:8081/api/projects";
+        // ส่ง filter เป็น query string ด้วย
+        const params = new URLSearchParams();
+        if (searchQuery) params.append("search", searchQuery);
+        if (programFilter) params.append("program", programFilter);
+        if (yearFilterType) params.append("yearType", yearFilterType);
+        if (yearSubOption) params.append("yearSub", yearSubOption);
+        if (yearRange) params.append("yearRange", yearRange.join(","));
+        if (searchField) params.append("searchField", searchField);
+        if (documentFilter.length > 0)
+          params.append("document", documentFilter.join(","));
 
+        const url = `http://localhost:8081/api/projects?${params.toString()}`;
         const res = await axios.get<Project[]>(url, { withCredentials: true });
         setProjects(res.data);
       } catch (err) {
         console.error("ไม่สามารถโหลดข้อมูลโครงงาน:", err);
       }
     };
+
     fetchProjects();
-  }, [searchQuery]);
+  }, [
+    searchQuery,
+    programFilter,
+    yearFilterType,
+    yearSubOption,
+    yearRange,
+    searchField,
+    documentFilter,
+  ]);
 
   const handleSearch = (query: string) => {
     queryParams.set("search", query);
@@ -182,6 +226,21 @@ function Browse() {
     setSearchField(filters.searchField || "");
     setDocumentFilter(filters.searchKeyword || []);
     setCurrentPage(1);
+
+    // อัปเดต URL
+    queryParams.set("program", filters.program || "");
+    queryParams.set("yearType", filters.yearType || "");
+    queryParams.set("yearSub", filters.yearSub || "");
+    queryParams.set(
+      "yearRange",
+      (filters.yearRange || [2000, new Date().getFullYear()]).join(",")
+    );
+    queryParams.set("searchField", filters.searchField || "");
+    queryParams.set("document", (filters.searchKeyword || []).join(","));
+    queryParams.set("page", "1");
+    navigate(`${location.pathname}?${queryParams.toString()}`, {
+      replace: true,
+    });
   };
 
   const filteredProjects = projects.filter((p) => {
@@ -276,6 +335,7 @@ function Browse() {
   );
 
   const totalPages = Math.ceil(sortedProjects.length / itemsPerPage);
+
   const displayedProjects = sortedProjects.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -322,6 +382,13 @@ function Browse() {
             setYearFilterType("");
             setYearSubOption("");
             setYearRange([2000, new Date().getFullYear()]);
+          }}
+          initialFilters={{
+            programPath: programFilter || null,
+            researchYear: yearFilterType || null,
+            researchYearSub: yearRange,
+            searchField: searchField || null,
+            searchKeyword: documentFilter || [],
           }}
         />
       </div>
