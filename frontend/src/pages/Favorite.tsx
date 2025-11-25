@@ -21,7 +21,6 @@ interface Project {
 function Favorite() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("newest");
-  const [currentPage, setCurrentPage] = useState(1);
 
   const [favoriteIDs, setFavoriteIDs] = useState<number[]>([]);
   const [favoriteProjects, setFavoriteProjects] = useState<Project[]>([]);
@@ -30,8 +29,6 @@ function Favorite() {
     username: string;
     role: string;
   } | null>(null);
-
-  const itemsPerPage = 10;
 
   // โหลด session
   useEffect(() => {
@@ -116,12 +113,7 @@ function Favorite() {
     sortOption === "newest" ? b.year - a.year : a.year - b.year
   );
 
-  // ---- Pagination ----
-  const totalPages = Math.ceil(sorted.length / itemsPerPage);
-  const displayed = sorted.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const displayed = sorted;
 
   const toggleFavorite = async (projectId: number) => {
     if (!currentUser) return;
@@ -168,7 +160,7 @@ function Favorite() {
           style={{
             flex: 1,
             overflowY: "auto",
-            padding: "2rem",
+            padding: "1rem 2rem",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -207,7 +199,6 @@ function Favorite() {
           value={searchQuery}
           onSearch={(q) => {
             setSearchQuery(q);
-            setCurrentPage(1);
           }}
         />
 
@@ -225,7 +216,14 @@ function Favorite() {
         </div>
 
         {/* Project List */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            paddingBottom: "6rem",
+          }}
+        >
           {displayed.map((p) => (
             <ProjectCard
               key={p.projectID}
@@ -245,15 +243,6 @@ function Favorite() {
             <p>คุณยังไม่มีโครงงานที่บันทึกไว้ในรายการโปรด</p>
           )}
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        )}
       </div>
     </div>
   );

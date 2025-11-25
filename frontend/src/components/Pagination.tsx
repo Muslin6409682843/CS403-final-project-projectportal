@@ -13,19 +13,40 @@ const Pagination: React.FC<PaginationProps> = ({
 }) => {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
+  // แสดงแค่ 1, last, และรอบ currentPage ±2
+  const visiblePages: (number | string)[] = [];
+  pages.forEach((p, _idx) => {
+    if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2) {
+      visiblePages.push(p);
+    } else if (
+      // เพิ่ม ... เมื่อข้ามช่วง
+      visiblePages[visiblePages.length - 1] !== "..."
+    ) {
+      visiblePages.push("...");
+    }
+  });
+
   return (
-    <div style={{ display: "flex", gap: "0.5rem" }}>
-      {pages.map((page) => {
+    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+      {visiblePages.map((page, idx) => {
+        if (page === "...") {
+          return (
+            <span key={`dots-${idx}`} style={{ padding: "0.5rem 1rem" }}>
+              ...
+            </span>
+          );
+        }
+
         const isActive = page === currentPage;
 
         return (
           <button
             key={page}
-            onClick={() => onPageChange(page)}
+            onClick={() => onPageChange(Number(page))}
             style={{
               padding: "0.5rem 1rem",
-              backgroundColor: isActive ? "#ccc" : "#fff", // ปกติ = ขาว, active = เทา
-              color: isActive ? "#000" : "#333", // active = ดำ, ปกติ = เทาเข้ม
+              backgroundColor: isActive ? "#ccc" : "#fff",
+              color: isActive ? "#000" : "#333",
               border: "1px solid #ccc",
               borderRadius: "5px",
               cursor: "pointer",

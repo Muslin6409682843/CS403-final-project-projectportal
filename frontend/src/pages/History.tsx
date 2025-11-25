@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 import AccountSideBar from "../components/AccountSideBar";
 import TextSearch from "../components/TextSearch";
 import ProjectCard from "../components/ProjectCard";
-import Pagination from "../components/Pagination";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "../assets/background.css";
@@ -26,16 +25,20 @@ function History() {
   const [historyIDs, setHistoryIDs] = useState<number[]>([]);
   const [historyProjects, setHistoryProjects] = useState<Project[]>([]);
 
-  const [currentUser, setCurrentUser] = useState<{ username: string; role: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{
+    username: string;
+    role: string;
+  } | null>(null);
 
-  const itemsPerPage = 10;
   const navigate = useNavigate();
 
   // โหลด session ผู้ใช้
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const res = await axios.get("http://localhost:8081/api/check-session", { withCredentials: true });
+        const res = await axios.get("http://localhost:8081/api/check-session", {
+          withCredentials: true,
+        });
         if (res.data.status) {
           setCurrentUser({
             username: res.data.username,
@@ -58,7 +61,10 @@ function History() {
 
     const fetchHistory = async () => {
       try {
-        const res = await axios.get<number[]>("http://localhost:8081/api/history", { withCredentials: true });
+        const res = await axios.get<number[]>(
+          "http://localhost:8081/api/history",
+          { withCredentials: true }
+        );
         setHistoryIDs(res.data);
       } catch (err) {
         console.error("Load history failed:", err);
@@ -77,11 +83,15 @@ function History() {
           return;
         }
 
-        const res = await axios.get<Project[]>("http://localhost:8081/api/projects/list", {
-          params: { ids: historyIDs },
-          paramsSerializer: (params) => params.ids.map((id: number) => `ids=${id}`).join("&"),
-          withCredentials: true,
-        });
+        const res = await axios.get<Project[]>(
+          "http://localhost:8081/api/projects/list",
+          {
+            params: { ids: historyIDs },
+            paramsSerializer: (params) =>
+              params.ids.map((id: number) => `ids=${id}`).join("&"),
+            withCredentials: true,
+          }
+        );
 
         const projectsMap = new Map<number, Project>();
         res.data.forEach((p) => projectsMap.set(p.projectID, p));
@@ -102,16 +112,22 @@ function History() {
   }, [historyIDs]);
 
   // ---- Search ----
-  const filtered = historyProjects.filter((p) => p.titleTh.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filtered = historyProjects.filter((p) =>
+    p.titleTh.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  // ---- Pagination ----
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const displayed = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const displayed = filtered;
 
   // Guest ไม่ให้ใช้
   if (currentUser && currentUser.role === "Guest") {
     return (
-      <div style={{ display: "flex", height: "calc(100vh - 80px)", overflow: "hidden" }}>
+      <div
+        style={{
+          display: "flex",
+          height: "calc(100vh - 80px)",
+          overflow: "hidden",
+        }}
+      >
         <AccountSideBar />
         <div
           className="main-background"
@@ -133,25 +149,30 @@ function History() {
     );
   }
 
-  
   const handleVisitProject = async (id: number) => {
-  try {
-    // บันทึกประวัติแบบ background
-    axios.post(
-      `http://localhost:8081/api/history/${id}`,
-      {},
-      { withCredentials: true }
-    );
-  } catch (err) {
-    console.error("History error:", err);
-  }
+    try {
+      // บันทึกประวัติแบบ background
+      axios.post(
+        `http://localhost:8081/api/history/${id}`,
+        {},
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.error("History error:", err);
+    }
 
-  // ไปหน้าโปรเจกต์ทันที
-  navigate(`/project/${id}`);
-};
+    // ไปหน้าโปรเจกต์ทันที
+    navigate(`/project/${id}`);
+  };
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 80px)", overflow: "hidden" }}>
+    <div
+      style={{
+        display: "flex",
+        height: "calc(100vh - 80px)",
+        overflow: "hidden",
+      }}
+    >
       <AccountSideBar />
       <div
         className="main-background"
@@ -174,7 +195,14 @@ function History() {
         <h2 style={{ margin: "1rem 0" }}>ประวัติการเข้าชม</h2>
 
         {/* Project List */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            paddingBottom: "6rem",
+          }}
+        >
           {displayed.map((p) => (
             <ProjectCard
               key={p.projectID}
@@ -192,9 +220,6 @@ function History() {
 
           {displayed.length === 0 && <p>ยังไม่มีประวัติการเข้าชม</p>}
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
       </div>
     </div>
   );
