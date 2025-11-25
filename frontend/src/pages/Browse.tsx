@@ -128,8 +128,8 @@ function Browse() {
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (!currentUser || !["Admin", "Student"].includes(currentUser.role)) {
-        setFavorites([]); // Guest หรือ user ที่ไม่ใช่ Admin/Student → favorites ว่าง
+      if (!currentUser || currentUser.role !== "Student") {
+        setFavorites([]);
         return;
       }
 
@@ -270,21 +270,20 @@ function Browse() {
   );
 
   const handleVisitProject = async (id: number) => {
-  try {
-    // บันทึกประวัติแบบ background
-    axios.post(
-      `http://localhost:8081/api/history/${id}`,
-      {},
-      { withCredentials: true }
-    );
-  } catch (err) {
-    console.error("History error:", err);
-  }
+    try {
+      // บันทึกประวัติแบบ background
+      axios.post(
+        `http://localhost:8081/api/history/${id}`,
+        {},
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.error("History error:", err);
+    }
 
-  // ไปหน้าโปรเจกต์ทันที
-  navigate(`/project/${id}`);
-};
-
+    // ไปหน้าโปรเจกต์ทันที
+    navigate(`/project/${id}`);
+  };
 
   return (
     <div
