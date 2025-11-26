@@ -114,7 +114,7 @@ function Overview() {
   const downloadCount: { [projectId: number]: { title: string; count: number } } = {};
 
   downloads.forEach((d) => {
-    // projectId = undefined  d.project?.projectID มีค่า
+    // เช็ค projectId ได้ undefined  d.project?.projectID มีค่า
     const id = d.projectId ?? d.project?.projectID;
 
     if (!id) return; // ข้ามถ้าไม่มี ID

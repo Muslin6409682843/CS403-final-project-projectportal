@@ -81,7 +81,6 @@ public class PublicDownloadHistory {
     @GetMapping
     public ResponseEntity<?> getAll() {
         try {
-            // รับประกันว่า user และ project ถูกโหลดด้วย EAGER fetch
             List<DownloadHistory> histories = service.getAll();
             return ResponseEntity.ok(histories);
         } catch (Exception e) {

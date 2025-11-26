@@ -46,7 +46,7 @@ const recordDownload = async () => {
 
     await axios.post(
       `http://localhost:8081/api/download-history/${project.projectID}`,
-      {}, // body ว่างได้
+      {}, 
       { withCredentials: true }
     );
   } catch (err) {
@@ -55,7 +55,7 @@ const recordDownload = async () => {
 };
 
 
-  /** คลิกแล้วทำอะไร */
+  /** คลิกโหลดไฟล์ */
   const handleClick = async (fileUrl?: string) => {
     if (!fileUrl) return;
 
@@ -68,7 +68,7 @@ const recordDownload = async () => {
 
     try {
       const response = await axios.get(`/upload/${fileUrl}`, {
-        responseType: "blob",        // ✅ สำคัญมาก
+        responseType: "blob",     
         withCredentials: true
       });
 
@@ -102,6 +102,7 @@ const recordDownload = async () => {
     };
   };
 
+  /** คลิกดาวน์โหลดzip */
   const handleCodeClick = async () => {
     const zip = project.zipFile;
     const github = project.github;
@@ -122,7 +123,7 @@ const recordDownload = async () => {
 
     try {
       const response = await axios.get(`/upload/${zip}`, {
-        responseType: "blob",      // ✅ สำคัญมาก
+        responseType: "blob",      
         withCredentials: true
       });
 

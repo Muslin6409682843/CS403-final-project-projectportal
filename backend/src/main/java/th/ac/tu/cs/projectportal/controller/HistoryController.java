@@ -93,7 +93,7 @@ public class HistoryController {
 
         List<History> histories = historyRepository.findByUserUserIdOrderByViewDateTimeDesc(user.getUserId());
 
-        // ส่ง projectIds กลับ (Long)
+        // ส่ง projectIds ชนิด Long
         List<Long> projectIds = histories.stream()
                 .map(h -> h.getProject().getProjectID())
                 .toList();

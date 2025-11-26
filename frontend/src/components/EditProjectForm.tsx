@@ -13,7 +13,7 @@ export interface ProjectData {
   keywordsTH?: string;
   keywordsEN?: string;
 
-  // fallback ชื่อจาก backend
+  // ทำให้ชื่อตรงกับ backend
   keywordTh?: string;
   keywordsEn?: string;
 
@@ -37,6 +37,7 @@ interface ProjectFormProps {
   onChangeDirty?: () => void;
 }
 
+// ฟอร์มแก้ไขโครงงาน
 const EditProjectForm: React.FC<ProjectFormProps> = ({
   initialData,
   onSubmit,
@@ -74,7 +75,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     form.zipFileObj || null
   );
 
-
+  // Advisor, Co-Advisors
   const positions = [
     "",
     "อ.",
@@ -114,6 +115,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
       : [{ position: "", customPosition: "", name: "" }]
   );
 
+  // Keywords
   const [keywordsTH, setKeywordsTH] = useState(
     initialData?.keywordsTH ?? initialData?.keywordTh ?? ""
   );
@@ -121,6 +123,8 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     initialData?.keywordsEN ?? initialData?.keywordsEn ?? ""
   );
 
+
+  // Code upload type
   const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">(
     ""
   );
@@ -128,6 +132,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSubmitAlertModal, setShowSubmitAlertModal] = useState(false);
 
+  // Category
   const categoryOptions = [
     "Software",
     "Hardware",
@@ -148,6 +153,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
   });
 
 
+  // Year options (พ.ศ. 2543 - ปัจจุบัน)
   const currentYear = new Date().getFullYear();
   const thaiYears: number[] = [];
   for (let y = currentYear + 543; y >= 2543; y--) thaiYears.push(y);
@@ -218,6 +224,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     customCategory,
   ]);
 
+  // ---------- Handlers ----------
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -235,6 +242,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     onChangeDirty?.();
   };
 
+  // File upload handler
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     type: "project" | "slide" | "zip"
@@ -278,11 +286,13 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     onChangeDirty?.();
   };
 
+  // เพิ่มผู้จัดทำ
   const handleAddMember = () => {
     if (form.members.length < 2)
       setForm({ ...form, members: [...form.members, ""] });
   };
 
+  // เพิ่มอาจารย์ที่ปรึกษาร่วม
   const handleAddCoAdvisor = () => {
     if (coAdvisors.length < 5)
       setCoAdvisors([
@@ -291,6 +301,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
       ]);
   };
 
+  // เปลี่ยนแปลงอาจารย์ที่ปรึกษาร่วม
   const handleCoAdvisorChange = (
     idx: number,
     field: "position" | "name" | "customPosition",
@@ -301,6 +312,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     setCoAdvisors(newCoAdvisors);
   };
 
+  // Submit form
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errors).length === 0) {

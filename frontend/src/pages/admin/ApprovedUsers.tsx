@@ -58,6 +58,7 @@ const ApprovedUsers: React.FC = () => {
     }
   };
 
+  // ลบผู้ใช้
   const deleteUser = async (id: number) => {
     if (!id) return;
 
@@ -74,6 +75,7 @@ const ApprovedUsers: React.FC = () => {
     }
   };
 
+  // เปลี่ยนรหัสผ่านผู้ใช้เป็น 1234
   const changePassword = async (id: number) => {
     if (!id) return;
 
@@ -91,6 +93,7 @@ const ApprovedUsers: React.FC = () => {
     }
   };
 
+  // โหลดข้อมูลตอนเปิดหน้า
   useEffect(() => {
     fetchApprovedUsers();
   }, []);

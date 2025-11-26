@@ -53,6 +53,7 @@ const ProjectList: React.FC = () => {
     fetchProjects();
   }, []);
 
+  // ลบโครงงาน
   const handleDelete = async (id: number) => {
     if (!window.confirm("คุณต้องการลบโครงงานนี้หรือไม่?")) return;
     try {
@@ -70,6 +71,7 @@ const ProjectList: React.FC = () => {
     }
   };
 
+  // กรองโครงงานตามคำค้นหา
   const filteredProjects = projects.filter((p) => {
     const query = search.trim().toLowerCase();
     return (

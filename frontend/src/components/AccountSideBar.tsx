@@ -28,7 +28,7 @@ const AccountSideBar = () => {
 
   const handleLogoutConfirm = async () => {
     setShowLogoutModal(false);
-    await logout(); // ✅ context จะ reset state ให้เอง
+    await logout(); //  context จะ reset state ให้เอง
     navigate("/login"); // เปลี่ยนหน้าไป login
   };
 

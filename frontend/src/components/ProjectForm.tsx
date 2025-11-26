@@ -29,6 +29,7 @@ interface ProjectFormProps {
   onChangeDirty?: () => void;
 }
 
+// ฟอร์มเพิ่มโครงงาน
 const ProjectForm: React.FC<ProjectFormProps> = ({
   initialData,
   onSubmit,
@@ -64,6 +65,17 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     form.zipFileObj || null
   );
 
+  // Advisor, Co-Advisors 
+  const positions = [
+    "",
+    "อ.",
+    "ดร.",
+    "ผศ.ดร.",
+    "รศ.ดร.",
+    "ศ.ดร.",
+    "อื่นๆ (ระบุ)",
+  ];
+
   const [advisorPosition, setAdvisorPosition] = useState(
     initialData?.advisor ? initialData.advisor.split(" ")[0] : ""
   );
@@ -87,25 +99,18 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       : [{ position: "", customPosition: "", name: "" }]
   );
 
+  // Keywords
   const [keywordsTH, setKeywordsTH] = useState(initialData?.keywordsTH || "");
   const [keywordsEN, setKeywordsEN] = useState(initialData?.keywordsEN || "");
 
+  // Code upload type
   const [codeUploadType, setCodeUploadType] = useState<"github" | "zip" | "">(
     ""
   );
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSubmitAlertModal, setShowSubmitAlertModal] = useState(false);
 
-  const positions = [
-    "",
-    "อ.",
-    "ดร.",
-    "ผศ.ดร.",
-    "รศ.ดร.",
-    "ศ.ดร.",
-    "อื่นๆ (ระบุ)",
-  ];
-
+  // Category
   const categoryOptions = [
     "Software",
     "Hardware",
@@ -116,6 +121,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   const [category, setCategory] = useState(initialData?.category || "");
   const [customCategory, setCustomCategory] = useState("");
 
+  // Years
   const currentYear = new Date().getFullYear();
   const thaiYears: number[] = [];
   for (let y = currentYear + 543; y >= 2543; y--) thaiYears.push(y);
@@ -190,6 +196,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     onChangeDirty?.();
   };
 
+  // File upload 
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     type: "project" | "slide" | "zip"
@@ -233,11 +240,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     onChangeDirty?.();
   };
 
+  // เพิ่มผู้จัดทำ
   const handleAddMember = () => {
     if (form.members.length < 2)
       setForm({ ...form, members: [...form.members, ""] });
   };
 
+  // เพิ่มอาจารย์ที่ปรึกษาร่วม
   const handleAddCoAdvisor = () => {
     if (coAdvisors.length < 5)
       setCoAdvisors([
@@ -246,6 +255,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       ]);
   };
 
+  // เปลี่ยนแปลงอาจารย์ที่ปรึกษาร่วม
   const handleCoAdvisorChange = (
     idx: number,
     field: "position" | "name" | "customPosition",
@@ -256,6 +266,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     setCoAdvisors(newCoAdvisors);
   };
 
+  // Submit form
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errors).length === 0) {

@@ -6,7 +6,7 @@ import java.util.List;
 @Data
 public class ProjectDTO {
 
-    private String title;           // ไม่ได้ใช้ใน DB แต่ frontend ส่งมา
+    private String title;         
     private String projectNameTH;
     private String projectNameEN;
 
@@ -22,10 +22,10 @@ public class ProjectDTO {
     private String keywordsTH;
     private String keywordsEN;
 
-    private String github;      // แก้ githubLink → github (ตรงกับ DB)
+    private String github;     
 
-    // ชื่อไฟล์ (หลัง upload)
+    // ชื่อไฟล์ 
     private String file;        // PDF
-    private String slideFile;   // slide = SildeFile ใน DB
+    private String slideFile;   // SildeFile 
     private String zipFile;     // ZipFile
 }

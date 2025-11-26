@@ -37,7 +37,7 @@ function ChangePassword() {
         }
       );
 
-      const data = await res.text(); // หรือ .json() ถ้า backend ส่ง JSON
+      const data = await res.text(); // .json() ถ้า backend ส่ง JSON
       if (res.ok) {
         setMessage("✅ เปลี่ยนรหัสผ่านสำเร็จ");
         setIsError(false);

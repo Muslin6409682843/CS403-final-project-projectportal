@@ -78,7 +78,6 @@ public class PublicProjectController {
 
     // -----------------------------------------------
     // 📌 ดึงโครงงานหลายตัวจาก list ของ ID
-    // GET /api/projects/list?ids=2&ids=5&ids=9
     // -----------------------------------------------
     @GetMapping("/list")
     public ResponseEntity<List<Project>> getProjectsByIds(@RequestParam List<Long> ids) {

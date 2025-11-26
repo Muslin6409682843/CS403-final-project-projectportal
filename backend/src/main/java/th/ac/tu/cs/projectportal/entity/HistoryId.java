@@ -7,8 +7,8 @@ import java.util.Objects;
 @Embeddable
 public class HistoryId implements Serializable {
 
-    private Integer userId;  // ตรงกับ User.userId
-    private Long projectId;   // ตรงกับ Project.projectID
+    private Integer userId;  // User.userId
+    private Long projectId;   // Project.projectID
 
     public HistoryId() {}
 
