@@ -64,15 +64,31 @@ const recordDownload = async () => {
       return;
     }
 
-    // ✅ บันทึกประวัติ
     await recordDownload();
 
-    // ดาวน์โหลดไฟล์จริง
-    const link = document.createElement("a");
-    link.href = fileUrl.startsWith("http") ? fileUrl : `/upload/${fileUrl}`;
-    link.download = fileUrl.split("/").pop() || "file";
-    link.click();
+    try {
+      const response = await axios.get(`/upload/${fileUrl}`, {
+        responseType: "blob",        // ✅ สำคัญมาก
+        withCredentials: true
+      });
+
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileUrl;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("ดาวน์โหลดไฟล์ไม่สำเร็จ:", err);
+      alert("ไม่สามารถดาวน์โหลดไฟล์ได้");
+    }
   };
+
 
   /** ปุ่มดาวน์โหลดโค้ด — มี 3 กรณีพิเศษ */
   const getCodeButtonStyle = () => {
@@ -91,12 +107,12 @@ const recordDownload = async () => {
     const github = project.github;
 
     if (!zip && !github) return;
+
     if (!role || !allowedRoles.includes(role)) {
       navigate("/login");
       return;
     }
 
-    // ✅ บันทึกประวัติ
     await recordDownload();
 
     if (github) {
@@ -104,13 +120,29 @@ const recordDownload = async () => {
       return;
     }
 
-    if (zip) {
+    try {
+      const response = await axios.get(`/upload/${zip}`, {
+        responseType: "blob",      // ✅ สำคัญมาก
+        withCredentials: true
+      });
+
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
       const link = document.createElement("a");
-      link.href = zip.startsWith("http") ? zip : `/upload/${zip}`;
-      link.download = zip.split("/").pop() || "code.zip";
+      link.href = url;
+      link.download = zip!;
+      document.body.appendChild(link);
       link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("ดาวน์โหลดโค้ดไม่สำเร็จ:", err);
+      alert("ไม่สามารถดาวน์โหลดโค้ดได้");
     }
   };
+
 
   return (
     <div
