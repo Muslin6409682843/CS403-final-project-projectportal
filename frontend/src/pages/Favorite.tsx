@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import AccountSideBar from "../components/AccountSideBar";
 import TextSearch from "../components/TextSearch";
@@ -19,6 +20,7 @@ interface Project {
 }
 
 function Favorite() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("newest");
 
@@ -234,7 +236,7 @@ function Favorite() {
               year={p.year}
               isFavorite={favoriteIDs.includes(p.projectID)}
               onToggleFavorite={(id) => toggleFavorite(Number(id))}
-              onNavigate={(id) => (window.location.href = `/project/${id}`)}
+              onNavigate={(id) => navigate(`/project/${id}`)}
               role={currentUser?.role || "Guest"}
             />
           ))}
