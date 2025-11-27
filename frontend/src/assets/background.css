@@ -5,10 +5,3 @@
   box-sizing: border-box;
   padding: 1rem;
 }
-
-html, body, #root {
-  height: 100%;      /* เต็มหน้าจอแนวตั้ง */
-  margin: 0;         /* ลบ margin */
-  padding: 0;        /* ลบ padding */
-  overflow: hidden;  /* ป้องกัน scroll */
-}

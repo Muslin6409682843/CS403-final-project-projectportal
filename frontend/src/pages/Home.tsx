@@ -18,6 +18,7 @@ function Home() {
     <div
       className="main-background"
       style={{
+        position: "fixed",  
         width: "100%",
         minHeight: "100vh",
         boxSizing: "border-box",
