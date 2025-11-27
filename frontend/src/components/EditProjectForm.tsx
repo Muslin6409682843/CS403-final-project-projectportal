@@ -339,8 +339,6 @@ const handleDeleteOldFile = async (type: "project" | "slide" | "zip") => {
   }
 };
 
-
-
   // เพิ่มผู้จัดทำ
   const handleAddMember = () => {
     if (form.members.length < 2)
@@ -385,28 +383,28 @@ const handleDeleteOldFile = async (type: "project" | "slide" | "zip") => {
       const finalCategory = category === "อื่นๆ (ระบุ)" ? customCategory.trim() : category;
       const filteredMembers = form.members.filter((m) => m.trim() !== "");
 
-      let titleFileToSend = titleFile;
-    let slideFileToSend = slideFileObj;
-    let zipFileToSend = zipFileObj;
-    let githubToSend = form.github?.trim() || "";
+     /* let titleFileToSend = titleFile; ยังไม่ได้ใช้
+      let slideFileToSend = slideFileObj; */
+      let zipFileToSend = zipFileObj;
+      let githubToSend = form.github?.trim() || "";
 
-    // ---------- ถ้า checkbox ไม่เลือกอะไร ----------
-    if (codeUploadType === "") {
-      // Zip file
-      if (form.oldZipFile) {
-        try {
-          await fetch(`/api/admin/projects/file/${form.projectID}/zip`, {
-            method: "DELETE",
-            credentials: "include",
-          });
-          console.log("ลบไฟล์ zip เก่าที่ server เรียบร้อย");
-        } catch (err) {
-          console.error("ลบไฟล์ zip ไม่สำเร็จ:", err);
+      // ---------- ถ้า checkbox ไม่เลือกอะไร ----------
+      if (codeUploadType === "") {
+        // Zip file
+        if (form.oldZipFile) {
+          try {
+            await fetch(`/api/admin/projects/file/${form.projectID}/zip`, {
+              method: "DELETE",
+              credentials: "include",
+            });
+            console.log("ลบไฟล์ zip เก่าที่ server เรียบร้อย");
+          } catch (err) {
+            console.error("ลบไฟล์ zip ไม่สำเร็จ:", err);
+          }
         }
+        zipFileToSend = null;
+        githubToSend = "";
       }
-      zipFileToSend = null;
-      githubToSend = "";
-    }
     
       onSubmit({
         ...form,
