@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Pie } from "react-chartjs-2";
+import "../assets/background.css";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -156,6 +157,7 @@ function Overview() {
 
   return (
     <div
+      className="main-background"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -168,22 +170,22 @@ function Overview() {
     >
       <h2>ภาพรวมโปรเจกต์</h2>
 
-      <div style={{ width: "80%", maxWidth: "600px" }}>
+      <div style={{ width: "80%", maxWidth: "600px",backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
         <h4>จำนวนโปรเจกต์ต่อปี</h4>
         <Bar data={yearData} />
       </div>
 
-      <div style={{ width: "80%", maxWidth: "600px" }}>
+      <div style={{ width: "80%", maxWidth: "600px", backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
         <h4>สัดส่วนโปรเจกต์ตามหมวดหมู่</h4>
         <Pie data={categoryData} />
       </div>
 
-      <div style={{ width: "80%", maxWidth: "600px" }}>
+      <div style={{ width: "80%", maxWidth: "600px", backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
         <h4>Top 5 Keywords</h4>
         <Bar data={keywordData} />
       </div>
 
-      <div style={{ width: "80%", maxWidth: "600px" }}>
+      <div style={{ width: "80%", maxWidth: "600px", backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
         <h4>Top 5 โครงงานที่ถูกดาวน์โหลดมากที่สุด</h4>
         <Bar data={topDownloadedData} />
       </div>
