@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 export interface ProjectData {
+  projectID?: number;
   projectNameTH: string;
   projectNameEN: string;
   members: string[];
@@ -45,6 +46,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
   onChangeDirty,
 }) => {
   const [form, setForm] = useState<ProjectData>({
+    projectID: initialData?.projectID,
     projectNameTH: initialData?.projectNameTH || "",
     projectNameEN: initialData?.projectNameEN || "",
     members: initialData?.members || [""],
@@ -286,6 +288,59 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
     onChangeDirty?.();
   };
 
+// ลบไฟล์เก่า
+const handleDeleteOldFile = async (type: "project" | "slide" | "zip") => {
+  if (!form.projectID) {
+    alert("ไม่พบ Project ID");
+    return;
+  }
+
+  let fileType: string;
+  if (type === "project") fileType = "file";
+  else if (type === "slide") fileType = "slide";
+  else fileType = "zip";
+
+  const confirmDelete = window.confirm("คุณต้องการลบไฟล์นี้จริงหรือไม่?");
+  if (!confirmDelete) return;
+
+  try {
+    console.log(
+      "Deleting file:",
+      `http://localhost:8081/file/${form.projectID}/${fileType}`
+    );
+    const res = await fetch(
+  `/api/admin/projects/file/${form.projectID}/${fileType}`,
+  {
+    method: "DELETE", 
+    credentials: "include" // รวมคุกกี้สำหรับการยืนยันตัวตน
+  }
+);
+
+    if (!res.ok) throw new Error("Server returned " + res.status);
+
+    alert("ลบไฟล์เรียบร้อย");
+
+    // ล้าง state ทั้งเก่าและไฟล์ใหม่
+    if (type === "project") {
+      setForm({ ...form, oldTitleFile: "", titleFile: null });
+      setTitleFile(null);
+    }
+    if (type === "slide") {
+      setForm({ ...form, oldSlideFile: "", slideFileObj: null });
+      setSlideFileObj(null);
+    }
+    if (type === "zip") {
+      setForm({ ...form, oldZipFile: "", zipFileObj: null });
+      setZipFileObj(null);
+    }
+  } catch (error) {
+    console.error(error);
+    alert("ลบไฟล์ไม่สำเร็จ: " + error);
+  }
+};
+
+
+
   // เพิ่มผู้จัดทำ
   const handleAddMember = () => {
     if (form.members.length < 2)
@@ -313,7 +368,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
   };
 
   // Submit form
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errors).length === 0) {
       const advisorFull =
@@ -330,6 +385,29 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
       const finalCategory = category === "อื่นๆ (ระบุ)" ? customCategory.trim() : category;
       const filteredMembers = form.members.filter((m) => m.trim() !== "");
 
+      let titleFileToSend = titleFile;
+    let slideFileToSend = slideFileObj;
+    let zipFileToSend = zipFileObj;
+    let githubToSend = form.github?.trim() || "";
+
+    // ---------- ถ้า checkbox ไม่เลือกอะไร ----------
+    if (codeUploadType === "") {
+      // Zip file
+      if (form.oldZipFile) {
+        try {
+          await fetch(`/api/admin/projects/file/${form.projectID}/zip`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+          console.log("ลบไฟล์ zip เก่าที่ server เรียบร้อย");
+        } catch (err) {
+          console.error("ลบไฟล์ zip ไม่สำเร็จ:", err);
+        }
+      }
+      zipFileToSend = null;
+      githubToSend = "";
+    }
+    
       onSubmit({
         ...form,
         members: filteredMembers,
@@ -340,7 +418,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
         titleFile,
         slideFileObj,
         zipFileObj,
-        github: form.github?.trim() || "",
+        github: githubToSend,
         category: finalCategory,
         codeUploadType,
       });
@@ -366,7 +444,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
       </label>
 
       {form.oldTitleFile && !titleFile && (
-        <p style={{ fontSize: "1rem" }}>
+        <p style={{ fontSize: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
           ไฟล์เดิม:{" "}
           <a
             href={`http://localhost:8081/upload/${form.oldTitleFile}`}
@@ -375,6 +453,21 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
           >
             {form.oldTitleFile}
           </a>
+          <button
+            type="button"
+            onClick={() => handleDeleteOldFile("project")}
+            style={{
+              padding: "2px 6px",
+              backgroundColor: "#e63946",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "0.85rem",
+            }}
+          >
+            ❌ ลบไฟล์
+          </button>
         </p>
       )}
 
@@ -797,7 +890,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
       </label>
 
       {form.oldSlideFile && !slideFileObj && (
-        <p style={{ fontSize: "1rem" }}>
+        <p style={{ fontSize: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
           ไฟล์เดิม:{" "}
           <a
             href={`http://localhost:8081/upload/${form.oldSlideFile}`}
@@ -806,6 +899,21 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
           >
             {form.oldSlideFile}
           </a>
+          <button
+            type="button"
+            onClick={() => handleDeleteOldFile("slide")}
+            style={{
+              padding: "2px 6px",
+              backgroundColor: "#e63946",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "0.85rem",
+            }}
+          >
+            ❌ ลบไฟล์
+          </button>
         </p>
       )}
 
@@ -823,14 +931,14 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
       <label style={{ fontSize: "1.1rem", fontWeight: 600 }}>
         อัปโหลดโค้ด (ไม่บังคับ)
       </label>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <label>
           <input
-            type="radio"
+            type="checkbox"
             name="codeUploadType"
             value="github"
             checked={codeUploadType === "github"}
-            onChange={() => setCodeUploadType("github")}
+            onChange={() => setCodeUploadType((prev) => (prev === "github" ? "" : "github"))}
           />{" "}
           GitHub Link
         </label>
@@ -847,11 +955,11 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
 
         <label>
           <input
-            type="radio"
+            type="checkbox"
             name="codeUploadType"
             value="zip"
             checked={codeUploadType === "zip"}
-            onChange={() => setCodeUploadType("zip")}
+            onChange={() => setCodeUploadType((prev) => (prev === "zip" ? "" : "zip"))}
           />{" "}
           Zip File
         </label>
@@ -869,7 +977,7 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
               </p>
             )}
             {!form.zipFileObj && form.oldZipFile && (
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
                 ไฟล์เดิม:{" "}
                 <a
                   href={`http://localhost:8081/upload/${form.oldZipFile}`}
@@ -878,6 +986,21 @@ const EditProjectForm: React.FC<ProjectFormProps> = ({
                 >
                   {form.oldZipFile}
                 </a>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteOldFile("zip")}
+                  style={{
+                    padding: "2px 6px",
+                    backgroundColor: "#e63946",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  ❌ ลบไฟล์
+                </button>
               </p>
             )}
           </>

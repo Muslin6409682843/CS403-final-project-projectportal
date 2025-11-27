@@ -766,11 +766,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <label>
           <input
-            type="radio"
+            type="checkbox"
             name="codeUploadType"
             value="github"
             checked={codeUploadType === "github"}
-            onChange={() => setCodeUploadType("github")}
+            onChange={() => setCodeUploadType((prev) => (prev === "github" ? "" : "github"))}
           />{" "}
           GitHub Link
         </label>
@@ -787,11 +787,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 
         <label>
           <input
-            type="radio"
+            type="checkbox"
             name="codeUploadType"
             value="zip"
             checked={codeUploadType === "zip"}
-            onChange={() => setCodeUploadType("zip")}
+            onChange={() => setCodeUploadType((prev) => (prev === "zip" ? "" : "zip"))}
           />{" "}
           Zip File
         </label>

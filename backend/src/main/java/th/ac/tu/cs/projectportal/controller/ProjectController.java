@@ -111,6 +111,8 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("ERROR: " + e.getMessage());
         }
+
+        
     }
 
     // ----------------------------
@@ -152,6 +154,35 @@ public class ProjectController {
                     .body("ลบโครงงานล้มเหลว: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/file/{id}/{type}")
+    public ResponseEntity<?> deleteProjectFile(@PathVariable Long id, @PathVariable String type) {
+        Project project = projectService.getProjectById(id);
+        if (project == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ไม่พบโครงงาน");
+
+        String uploadDir = "upload";
+        try {
+            String fileName = switch(type) {
+                case "file" -> project.getFile();
+                case "slide" -> project.getSlideFile();
+                case "zip" -> project.getZipFile();
+                default -> null;
+            };
+            if(fileName != null) Files.deleteIfExists(Paths.get(uploadDir, fileName));
+
+            // ล้าง field ใน DB ด้วย
+            switch(type) {
+                case "file" -> project.setFile(null);
+                case "slide" -> project.setSlideFile(null);
+                case "zip" -> project.setZipFile(null);
+            }
+            projectService.saveProject(project);
+            return ResponseEntity.ok("ลบไฟล์เรียบร้อย");
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ลบไฟล์ล้มเหลว: " + e.getMessage());
+        }
+    }
+
 
     // ----------------------------
     // ดึงข้อมูลตาม ID

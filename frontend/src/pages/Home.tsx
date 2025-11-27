@@ -24,6 +24,7 @@ function Home() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        paddingBottom: "140px",
       }}
     >
       {/* ⭐ ส่วนที่ต้องตรงกลางจอ ⭐ */}
@@ -114,15 +115,17 @@ function Home() {
       </div>
 
       {/* ⭐ กล่อง Keyword อยู่ด้านล่าง ⭐ */}
-      <div
+      <footer
         style={{
+          position: "fixed",  
+          bottom: 0,
+          left: 0,
+          width: "100%",
           backgroundColor: "white",
           padding: "20px 40px",
-          width: "100%", // ⭐ เต็มหน้าจอ
-          marginTop: "-40px",
-          boxSizing: "border-box", // ⭐ ป้องกันล้นขอบ
+          boxSizing: "border-box",
           borderTop: "1px solid #eee",
-          borderBottom: "1px solid #eee",
+          zIndex: 1000,        
         }}
       >
         <h2
@@ -135,7 +138,7 @@ function Home() {
         </h2>
 
         <FooterKeywords />
-      </div>
+      </footer>
     </div>
   );
 }

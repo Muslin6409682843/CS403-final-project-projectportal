@@ -25,6 +25,7 @@ const EditProject: React.FC = () => {
 
         const data: ProjectData = {
           // ใช้ title เป็น "ชื่อไฟล์ PDF" ตามระบบเดิม
+          projectID: res.data.projectID,
           projectNameTH: res.data.titleTh,
           projectNameEN: res.data.titleEn,
           members: res.data.member
