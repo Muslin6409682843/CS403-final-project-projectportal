@@ -77,7 +77,7 @@ public class PublicProjectController {
     }
 
     // -----------------------------------------------
-    // 📌 ดึงโครงงานหลายตัวจาก list ของ ID
+    // ดึงโครงงานหลายตัวจาก list ของ ID
     // -----------------------------------------------
     @GetMapping("/list")
     public ResponseEntity<List<Project>> getProjectsByIds(@RequestParam List<Long> ids) {

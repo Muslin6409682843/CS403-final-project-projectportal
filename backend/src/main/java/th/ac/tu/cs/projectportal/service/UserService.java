@@ -18,15 +18,18 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ตรวจสอบรหัสผ่านปัจจุบัน
     public boolean checkCurrentPassword(User user, String currentPassword) {
         return passwordEncoder.matches(currentPassword, user.getPassword());
     }
 
+    // เปลี่ยนรหัสผ่านใหม่
     public User changePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }
 
+    // ค้นหาผู้ใช้ตามชื่อผู้ใช้
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }

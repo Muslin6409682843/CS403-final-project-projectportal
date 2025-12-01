@@ -72,7 +72,7 @@ public class PublicDownloadHistory {
         // บันทึก
         downloadHistoryRepository.save(history);
 
-        return ResponseEntity.ok("✅ บันทึกประวัติการดาวน์โหลดเรียบร้อยแล้ว");
+        return ResponseEntity.ok("บันทึกประวัติการดาวน์โหลดเรียบร้อยแล้ว");
     }
 
     // ----------------------------

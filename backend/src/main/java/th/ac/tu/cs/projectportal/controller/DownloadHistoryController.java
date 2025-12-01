@@ -22,7 +22,7 @@ public class DownloadHistoryController {
     @GetMapping
     public ResponseEntity<?> getAll() {
         try {
-            // รับประกันว่า user และ project ถูกโหลดด้วย EAGER fetch
+            // ดึงข้อมูลทั้งหมดจาก service
             List<DownloadHistory> histories = service.getAll();
             return ResponseEntity.ok(histories);
         } catch (Exception e) {

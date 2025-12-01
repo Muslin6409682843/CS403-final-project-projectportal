@@ -37,6 +37,7 @@ public class ProjectService {
         return projectRepository.findById(id).orElse(null);
     }
 
+    // ค้นหาโครงงานตามคำค้นหา
     public List<Project> searchProjects(String q) {
         return projectRepository.searchProjects(q.toLowerCase());
     }

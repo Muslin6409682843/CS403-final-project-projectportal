@@ -341,9 +341,10 @@ function Browse() {
     currentPage * itemsPerPage
   );
 
+  // บันทึกประวัติการเข้าชมและไปหน้าโปรเจกต์
   const handleVisitProject = async (id: number) => {
     try {
-      // บันทึกประวัติแบบ background
+      // บันทึกประวัติการเข้าชม
       axios.post(
         `http://localhost:8081/api/history/${id}`,
         {},
@@ -353,7 +354,7 @@ function Browse() {
       console.error("History error:", err);
     }
 
-    // ไปหน้าโปรเจกต์ทันที
+    // ไปหน้าโปรเจกต์
     navigate(`/project/${id}`);
   };
 

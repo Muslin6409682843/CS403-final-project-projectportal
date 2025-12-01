@@ -160,6 +160,7 @@ public class ProjectController {
         Project project = projectService.getProjectById(id);
         if (project == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ไม่พบโครงงาน");
 
+        // ลบไฟล์ใน upload และ ลบค่าในฐานข้อมูล
         String uploadDir = "upload";
         try {
             String fileName = switch(type) {
@@ -170,7 +171,7 @@ public class ProjectController {
             };
             if(fileName != null) Files.deleteIfExists(Paths.get(uploadDir, fileName));
 
-            // ล้าง field ใน DB ด้วย
+            // ลบค่าในฐานข้อมูล
             switch(type) {
                 case "file" -> project.setFile(null);
                 case "slide" -> project.setSlideFile(null);

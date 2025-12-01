@@ -29,12 +29,14 @@ public class DownloadHistoryService {
         return repository.findAllWithProjectAndUser();
     }
 
+    // ดึงประวัติตาม Project
     public List<DownloadHistory> getByProjectId(Long projectId) {
         return getAll().stream()
                 .filter(h -> h.getProject().getProjectID().equals(projectId))
                 .toList();
     }
 
+    // ดึงประวัติตาม User
     public List<DownloadHistory> getByUserId(Integer userId) {
         return getAll().stream()
                 .filter(h -> h.getUser().getUserId().equals(userId))

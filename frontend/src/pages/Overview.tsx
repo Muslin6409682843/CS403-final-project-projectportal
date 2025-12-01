@@ -43,7 +43,7 @@ function Overview() {
       .then((data) => setProjects(data))
       .catch((err) => console.error(err));
 
-    // โหลด download history (public endpoint)
+    // โหลด download history 
     fetch("http://localhost:8081/api/download-history", { credentials: "include" })
       .then((res) => res.json())
       .then((data) => setDownloads(data))
