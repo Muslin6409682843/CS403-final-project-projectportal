@@ -76,6 +76,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     "อื่นๆ (ระบุ)",
   ];
 
+  // เก็บตำแหน่งและชื่ออาจารย์ที่ปรึกษาหลัก แยกกัน
   const [advisorPosition, setAdvisorPosition] = useState(
     initialData?.advisor ? initialData.advisor.split(" ")[0] : ""
   );
@@ -84,8 +85,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       ? initialData.advisor.split(" ").slice(1).join(" ")
       : ""
   );
+  // เก็บตำแหน่งอื่นๆ ที่พิมเอง
   const [customAdvisorPosition, setCustomAdvisorPosition] = useState("");
 
+  // แยกตำแหน่งกับชื่ออาจารย์ที่ปรึกษาร่วม
   const [coAdvisors, setCoAdvisors] = useState(
     initialData?.coAdvisors
       ? initialData.coAdvisors.map((c) => {
@@ -179,6 +182,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     customCategory,
   ]);
 
+  // เปลี่ยนแปลงฟิลด์ต่างๆ
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
