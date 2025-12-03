@@ -64,6 +64,7 @@ const FooterKeywords: React.FC = () => {
             borderRadius: "15px",
             cursor: "pointer",
             transition: "all 0.2s",
+            fontSize: "18px",
           }}
           onMouseEnter={(e) =>
             (e.currentTarget.style.backgroundColor = "#ffb300")
