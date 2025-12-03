@@ -11,9 +11,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import type { ChartOptions as ChartOptionsBar } from "chart.js";
-
-
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -121,53 +118,6 @@ function Overview() {
     ],
   };
 
-  /*
-  const topDownloadedData = React.useMemo(() => {
-    if (projects.length === 0 || downloads.length === 0) return { labels: [], datasets: [] };
-
-    const downloadCount: { [projectId: number]: { title: string; count: number } } = {};
-
-    downloads.forEach((d) => {
-      // เช็ค projectId ได้ undefined  d.project?.projectID มีค่า
-      const id = d.projectId ?? d.project?.projectID;
-
-      if (!id) return; // ข้ามถ้าไม่มี ID
-
-      const project = projects.find((p) => p.projectID === id);
-
-      if (!downloadCount[id]) {
-        downloadCount[id] = {
-          title: project?.titleTh || d.project?.titleTh || `ID ${id}`,
-          count: 0,
-        };
-      }
-
-      downloadCount[id].count += 1;
-    });
-
-    const topDownloaded = Object.entries(downloadCount)
-      .map(([id, { title, count }]) => ({ id, title, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-
-    return {
-      labels: topDownloaded.map((d) => `${d.title}`),
-      datasets: [
-        {
-          label: "จำนวนครั้งดาวน์โหลด",
-          data: topDownloaded.map((d) => d.count),
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.6)",
-            "rgba(54, 162, 235, 0.6)",
-            "rgba(255, 206, 86, 0.6)",
-            "rgba(75, 192, 192, 0.6)",
-            "rgba(153, 102, 255, 0.6)",
-          ],
-        },
-      ],
-    };
-  }, [projects, downloads]);*/
-
   // --- Top 5 Downloaded Projects ---
   const MAX_LABEL_LENGTH = 18;
 
@@ -201,18 +151,19 @@ function Overview() {
       .slice(0, 5);
 
     return {
-      // ✅ ตัดชื่อให้สั้น
+      //  ตัดชื่อให้สั้น
       labels: topDownloaded.map((d) =>
         d.title.length > MAX_LABEL_LENGTH
           ? d.title.slice(0, MAX_LABEL_LENGTH) + "..."
           : d.title
       ),
 
-      // ✅ เก็บชื่อเต็มไว้ใช้ใน tooltip
+      // เก็บชื่อเต็มเพื่อ tooltip
       fullTitles: topDownloaded.map((d) => d.title),
 
       datasets: [
         {
+          
           label: "จำนวนครั้งดาวน์โหลด",
           data: topDownloaded.map((d) => d.count),
           backgroundColor: [
@@ -227,47 +178,19 @@ function Overview() {
     };
   }, [projects, downloads]);
 
-  const maxY =
-  topDownloadedData.datasets.length > 0 &&
-  topDownloadedData.datasets[0].data.length > 0
-    ? Math.max(...topDownloadedData.datasets[0].data) + 2
-    : 5;
-
-  const topDownloadedOptions: ChartOptionsBar<'bar'> = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    tooltip: {
-      backgroundColor: "#ffffff", // สีพื้นหลังของ tooltip
-      titleColor: "#000000",      // สีชื่อด้านบน
-      bodyColor: "#000000",       // สีข้อความใน tooltip
-      borderColor: "#cccccc",     // ขอบ
-      borderWidth: 1,
-      callbacks: {
-        title: (tooltipItems) => {
-          const index = tooltipItems[0].dataIndex;
-          return topDownloadedData.fullTitles?.[index] || "";
+  // Minimal options แค่ tooltip
+  const topDownloadedOptions = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          title: (tooltipItems: any) => {
+            const index = tooltipItems[0].dataIndex;
+            return topDownloadedData.fullTitles[index]; // ใช้ชื่อเต็ม
+          },
         },
       },
     },
-  },
-  scales: {
-    x: {
-      ticks: {
-        autoSkip: false,
-        maxRotation: 30,
-        minRotation: 0,
-      },
-    },
-    y: {
-      beginAtZero: true,
-      ticks: {
-        stepSize: 1,
-      },
-      suggestedMax: maxY,
-    },
-  },
-};
+  };
 
 
 
@@ -301,11 +224,9 @@ function Overview() {
         <Bar data={keywordData} />
       </div>
 
-      <div style={{ width: "80%", maxWidth: "600px", height: "350px", backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
+      <div style={{ width: "80%", maxWidth: "600px", backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
         <h4>Top 5 โครงงานที่ถูกดาวน์โหลดมากที่สุด</h4>
-        {topDownloadedData.datasets?.length > 0 && (
-          <Bar data={topDownloadedData} options={topDownloadedOptions} />
-        )}
+        <Bar data={topDownloadedData} options={topDownloadedOptions} />
       </div>
     </div>
   );
