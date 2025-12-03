@@ -11,6 +11,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import type { ChartOptions as ChartOptionsBar } from "chart.js";
+
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -164,7 +167,7 @@ function Overview() {
       ],
     };
   }, [projects, downloads]);*/
-  
+
   // --- Top 5 Downloaded Projects ---
   const MAX_LABEL_LENGTH = 18;
 
@@ -224,29 +227,48 @@ function Overview() {
     };
   }, [projects, downloads]);
 
-  const topDownloadedOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      tooltip: {
-        callbacks: {
-          title: (tooltipItems: any) => {
-            const index = tooltipItems[0].dataIndex;
-            return topDownloadedData.fullTitles[index]; // ✅ ชื่อเต็มตอน hover
-          },
+  const maxY =
+  topDownloadedData.datasets.length > 0 &&
+  topDownloadedData.datasets[0].data.length > 0
+    ? Math.max(...topDownloadedData.datasets[0].data) + 2
+    : 5;
+
+  const topDownloadedOptions: ChartOptionsBar<'bar'> = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    tooltip: {
+      backgroundColor: "#ffffff", // สีพื้นหลังของ tooltip
+      titleColor: "#000000",      // สีชื่อด้านบน
+      bodyColor: "#000000",       // สีข้อความใน tooltip
+      borderColor: "#cccccc",     // ขอบ
+      borderWidth: 1,
+      callbacks: {
+        title: (tooltipItems) => {
+          const index = tooltipItems[0].dataIndex;
+          return topDownloadedData.fullTitles?.[index] || "";
         },
       },
     },
-    scales: {
-      x: {
-        ticks: {
-          autoSkip: false,
-          maxRotation: 30,
-          minRotation: 0,
-        },
+  },
+  scales: {
+    x: {
+      ticks: {
+        autoSkip: false,
+        maxRotation: 30,
+        minRotation: 0,
       },
     },
-  };
+    y: {
+      beginAtZero: true,
+      ticks: {
+        stepSize: 1,
+      },
+      suggestedMax: maxY,
+    },
+  },
+};
+
 
 
   return (
@@ -279,9 +301,11 @@ function Overview() {
         <Bar data={keywordData} />
       </div>
 
-      <div style={{ width: "80%", maxWidth: "600px", backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
+      <div style={{ width: "80%", maxWidth: "600px", height: "350px", backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
         <h4>Top 5 โครงงานที่ถูกดาวน์โหลดมากที่สุด</h4>
-        <Bar data={topDownloadedData} options={topDownloadedOptions} />
+        {topDownloadedData.datasets?.length > 0 && (
+          <Bar data={topDownloadedData} options={topDownloadedOptions} />
+        )}
       </div>
     </div>
   );
