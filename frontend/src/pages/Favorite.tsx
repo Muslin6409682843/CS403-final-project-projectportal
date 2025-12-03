@@ -14,9 +14,14 @@ import "../assets/background.css";
 interface Project {
   projectID: number;
   titleTh: string;
+  titleEn: string;
   member: string;
   advisor: string;
   year: number;
+  file?: string;
+  slideFile?: string;
+  zipFile?: string;
+  github?: string;
 }
 
 function Favorite() {
@@ -231,6 +236,7 @@ function Favorite() {
               key={p.projectID}
               id={p.projectID}
               title={p.titleTh}
+              titleEn={p.titleEn}
               author={p.member}
               advisor={p.advisor}
               year={p.year}
@@ -238,6 +244,12 @@ function Favorite() {
               onToggleFavorite={(id) => toggleFavorite(Number(id))}
               onNavigate={(id) => navigate(`/project/${id}`)}
               role={currentUser?.role || "Guest"}
+              //ไอคอนแสดงไฟล์แนบที่มี
+              files={{
+                book: p.file,
+                slide: p.slideFile,
+                source: p.zipFile || p.github,
+              }}
             />
           ))}
 

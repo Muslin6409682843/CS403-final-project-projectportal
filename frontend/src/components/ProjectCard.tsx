@@ -4,6 +4,7 @@ import { FaStar, FaFileAlt, FaFileImage, FaFileCode } from "react-icons/fa";
 interface ProjectCardProps {
   id: string | number;
   title: string;
+  titleEn: string;
   author: string;
   advisor: string;
   year: string | number;
@@ -24,6 +25,7 @@ interface ProjectCardProps {
 const ProjectCard: React.FC<ProjectCardProps> = ({
   id,
   title,
+  titleEn,
   author,
   advisor,
   year,
@@ -100,12 +102,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
       {/* หัวข้อโปรเจกต์ (ลิงก์กดได้) */}
       <h2 style={{ marginBottom: "1rem", paddingRight: "2rem" }}>
-        <span
+        <div
           onClick={() => onNavigate?.(id)}
           style={{
-            color: "#33469A",
             cursor: "pointer",
+            color: "#33469A",
             textDecoration: "none",
+            display: "inline-block",
           }}
           onMouseOver={(e) => {
             e.currentTarget.style.color = "#22306D";
@@ -116,8 +119,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             e.currentTarget.style.textDecoration = "none";
           }}
         >
-          {title}
-        </span>
+          {/* Title TH */}
+          <span style={{ display: "block" }}>{title}</span>
+
+          {/* Title EN (ขึ้นบรรทัดใหม่ + มีวงเล็บครอบ) */}
+          {titleEn && (
+            <span
+              style={{
+                display: "block",
+                marginTop: "4px",
+                fontSize: "20px",
+              }}
+            >
+              ({titleEn})
+            </span>
+          )}
+        </div>
       </h2>
 
       {/* รายละเอียด */}

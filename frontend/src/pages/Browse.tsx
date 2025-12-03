@@ -432,6 +432,7 @@ function Browse() {
               key={project.projectID}
               id={project.projectID}
               title={project.titleTh}
+              titleEn={project.titleEn}
               author={project.member}
               advisor={project.advisor}
               year={project.year}
