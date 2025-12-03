@@ -68,19 +68,29 @@ function Overview() {
 
   // --- สัดส่วนโปรเจกต์ตามหมวดหมู่ ---
   const categories = [...new Set(projects.map((p) => p.category))];
+
   const projectsPerCategory = categories.map(
     (c) => projects.filter((p) => p.category === c).length
   );
+
+  // สร้างสีอัตโนมัติตามจำนวน category ที่มี
+  const generateColors = (count: number) =>
+    Array.from({ length: count }, (_, i) => {
+      const hue = Math.floor((360 / count) * i); // กระจายสีรอบวงสี
+      return `hsl(${hue}, 70%, 60%)`;
+    });
+
   const categoryData = {
     labels: categories,
     datasets: [
       {
         label: "หมวดหมู่โปรเจกต์",
         data: projectsPerCategory,
-        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#8A2BE2"],
+        backgroundColor: generateColors(categories.length),
       },
     ],
   };
+
 
   // --- Top Keywords ---
   const keywordCount: { [key: string]: number } = {};
@@ -108,52 +118,136 @@ function Overview() {
     ],
   };
 
-  // --- Top 5 Downloaded Projects ---
+  /*
   const topDownloadedData = React.useMemo(() => {
-  if (projects.length === 0 || downloads.length === 0) return { labels: [], datasets: [] };
+    if (projects.length === 0 || downloads.length === 0) return { labels: [], datasets: [] };
 
-  const downloadCount: { [projectId: number]: { title: string; count: number } } = {};
+    const downloadCount: { [projectId: number]: { title: string; count: number } } = {};
 
-  downloads.forEach((d) => {
-    // เช็ค projectId ได้ undefined  d.project?.projectID มีค่า
-    const id = d.projectId ?? d.project?.projectID;
+    downloads.forEach((d) => {
+      // เช็ค projectId ได้ undefined  d.project?.projectID มีค่า
+      const id = d.projectId ?? d.project?.projectID;
 
-    if (!id) return; // ข้ามถ้าไม่มี ID
+      if (!id) return; // ข้ามถ้าไม่มี ID
 
-    const project = projects.find((p) => p.projectID === id);
+      const project = projects.find((p) => p.projectID === id);
 
-    if (!downloadCount[id]) {
-      downloadCount[id] = {
-        title: project?.titleTh || d.project?.titleTh || `ID ${id}`,
-        count: 0,
-      };
-    }
+      if (!downloadCount[id]) {
+        downloadCount[id] = {
+          title: project?.titleTh || d.project?.titleTh || `ID ${id}`,
+          count: 0,
+        };
+      }
 
-    downloadCount[id].count += 1;
-  });
+      downloadCount[id].count += 1;
+    });
 
-  const topDownloaded = Object.entries(downloadCount)
-    .map(([id, { title, count }]) => ({ id, title, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
+    const topDownloaded = Object.entries(downloadCount)
+      .map(([id, { title, count }]) => ({ id, title, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
 
-  return {
-    labels: topDownloaded.map((d) => `${d.title}`),
-    datasets: [
-      {
-        label: "จำนวนครั้งดาวน์โหลด",
-        data: topDownloaded.map((d) => d.count),
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
-          "rgba(75, 192, 192, 0.6)",
-          "rgba(153, 102, 255, 0.6)",
-        ],
+    return {
+      labels: topDownloaded.map((d) => `${d.title}`),
+      datasets: [
+        {
+          label: "จำนวนครั้งดาวน์โหลด",
+          data: topDownloaded.map((d) => d.count),
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.6)",
+            "rgba(54, 162, 235, 0.6)",
+            "rgba(255, 206, 86, 0.6)",
+            "rgba(75, 192, 192, 0.6)",
+            "rgba(153, 102, 255, 0.6)",
+          ],
+        },
+      ],
+    };
+  }, [projects, downloads]);*/
+  
+  // --- Top 5 Downloaded Projects ---
+  const MAX_LABEL_LENGTH = 18;
+
+  const topDownloadedData = React.useMemo(() => {
+    if (projects.length === 0 || downloads.length === 0)
+      return { labels: [], datasets: [], fullTitles: [] };
+
+    const downloadCount: {
+      [projectId: number]: { title: string; count: number };
+    } = {};
+
+    downloads.forEach((d) => {
+      const id = d.projectId ?? d.project?.projectID;
+      if (!id) return;
+
+      const project = projects.find((p) => p.projectID === id);
+
+      if (!downloadCount[id]) {
+        downloadCount[id] = {
+          title: project?.titleTh || d.project?.titleTh || `ID ${id}`,
+          count: 0,
+        };
+      }
+
+      downloadCount[id].count += 1;
+    });
+
+    const topDownloaded = Object.entries(downloadCount)
+      .map(([id, { title, count }]) => ({ id, title, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    return {
+      // ✅ ตัดชื่อให้สั้น
+      labels: topDownloaded.map((d) =>
+        d.title.length > MAX_LABEL_LENGTH
+          ? d.title.slice(0, MAX_LABEL_LENGTH) + "..."
+          : d.title
+      ),
+
+      // ✅ เก็บชื่อเต็มไว้ใช้ใน tooltip
+      fullTitles: topDownloaded.map((d) => d.title),
+
+      datasets: [
+        {
+          label: "จำนวนครั้งดาวน์โหลด",
+          data: topDownloaded.map((d) => d.count),
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.6)",
+            "rgba(54, 162, 235, 0.6)",
+            "rgba(255, 206, 86, 0.6)",
+            "rgba(75, 192, 192, 0.6)",
+            "rgba(153, 102, 255, 0.6)",
+          ],
+        },
+      ],
+    };
+  }, [projects, downloads]);
+
+  const topDownloadedOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          title: (tooltipItems: any) => {
+            const index = tooltipItems[0].dataIndex;
+            return topDownloadedData.fullTitles[index]; // ✅ ชื่อเต็มตอน hover
+          },
+        },
       },
-    ],
+    },
+    scales: {
+      x: {
+        ticks: {
+          autoSkip: false,
+          maxRotation: 30,
+          minRotation: 0,
+        },
+      },
+    },
   };
-}, [projects, downloads]);
+
 
   return (
     <div
@@ -187,7 +281,7 @@ function Overview() {
 
       <div style={{ width: "80%", maxWidth: "600px", backgroundColor: "#f0f2f5", padding: "1rem", borderRadius: "8px" }}>
         <h4>Top 5 โครงงานที่ถูกดาวน์โหลดมากที่สุด</h4>
-        <Bar data={topDownloadedData} />
+        <Bar data={topDownloadedData} options={topDownloadedOptions} />
       </div>
     </div>
   );
