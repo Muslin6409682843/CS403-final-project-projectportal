@@ -443,6 +443,12 @@ function Browse() {
                   : undefined
               }
               role={currentUser?.role || "Guest"}
+              //ไอคอนแสดงไฟล์แนบที่มี
+              files={{
+                book: project.file,
+                slide: project.slideFile,
+                source: project.zipFile || project.github,
+              }}
             />
           ))}
           {displayedProjects.length === 0 && (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaFileAlt, FaFileImage, FaFileCode } from "react-icons/fa";
 
 interface ProjectCardProps {
   id: string | number;
@@ -12,6 +12,13 @@ interface ProjectCardProps {
   isFavorite: boolean;
   onToggleFavorite?: (id: string | number) => void;
   role?: string | null;
+
+  //ไอคอนแสดงไฟล์แนบ
+  files?: {
+    book?: string | null;
+    slide?: string | null;
+    source?: string | null;
+  };
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -24,6 +31,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   isFavorite,
   onToggleFavorite,
   role,
+
+  files,
 }) => {
   // ปุ่ม favorite disabled ถ้าไม่ใช่ Student/Staff
   const disabled =
@@ -65,6 +74,29 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           }}
         />
       </button>
+
+      {/* ไอคอนไฟล์แนบ — วางขวาล่าง */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "15px",
+          right: "20px",
+          display: "flex",
+          gap: "12px",
+        }}
+      >
+        {files?.book && files.book.trim() !== "" && (
+          <FaFileAlt size={20} color="#33469A" title="รูปเล่มโครงงาน" />
+        )}
+
+        {files?.slide && files.slide.trim() !== "" && (
+          <FaFileImage size={20} color="#33469A" title="สไลด์นำเสนอ" />
+        )}
+
+        {files?.source && files.source.trim() !== "" && (
+          <FaFileCode size={20} color="#33469A" title="Source Code" />
+        )}
+      </div>
 
       {/* หัวข้อโปรเจกต์ (ลิงก์กดได้) */}
       <h2 style={{ marginBottom: "1rem", paddingRight: "2rem" }}>
