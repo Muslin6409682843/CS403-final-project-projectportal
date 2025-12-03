@@ -536,7 +536,7 @@ const handleDeleteOldFile = async (type: "project" | "slide" | "zip") => {
             onClick={() => {
               const newMembers = form.members.filter((_, i) => i !== idx);
               setForm({ ...form, members: newMembers });
-              onChangeDirty?.(); // แจ้งว่า form dirty
+              onChangeDirty?.();
             }}
             style={{
               padding: "6px 12px",
@@ -593,7 +593,7 @@ const handleDeleteOldFile = async (type: "project" | "slide" | "zip") => {
             />
             <button
               type="button"
-              onClick={() => setAdvisorPosition("")} // กลับไป dropdown
+              onClick={() => setAdvisorPosition("")} 
               style={{
                 fontSize: "0.9rem",
                 padding: "0.4rem 0.8rem",

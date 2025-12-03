@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../assets/background.css"; // ใช้ background จาก main-background
+import "../assets/background.css"; 
 
 function Login() {
   return (
@@ -17,12 +17,12 @@ function Login() {
       <div
         style={{
           backgroundColor: "#ffffff",
-          padding: "50px 50px", // เพิ่ม padding แนวนอนอีกเล็กน้อย
+          padding: "50px 50px", 
           borderRadius: "12px",
           textAlign: "center",
           boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15)",
-          minWidth: "320px", // กว้างขึ้นจาก 280px
-          maxWidth: "380px", // กว้างขึ้นจาก 300px
+          minWidth: "320px", 
+          maxWidth: "380px", 
           width: "100%",
         }}
       >

@@ -5,7 +5,7 @@ interface FilterDropMenuProps {
   options: string[];
   selected?: string;
   onSelect: (value: string) => void;
-  allowNone?: boolean; // ควบคุมว่าจะแสดงตัวเลือก "ไม่เลือก" หรือไม่
+  allowNone?: boolean; 
 }
 
 const FilterDropMenu = ({

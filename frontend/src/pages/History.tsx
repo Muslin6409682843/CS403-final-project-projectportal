@@ -15,7 +15,7 @@ interface Project {
   member: string;
   advisor: string;
   year: number;
-  viewDateTime: string; // เวลาเข้าชม
+  viewDateTime: string; 
 }
 
 function History() {

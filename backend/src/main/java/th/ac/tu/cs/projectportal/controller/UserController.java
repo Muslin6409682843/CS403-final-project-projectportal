@@ -376,9 +376,23 @@ public class UserController {
     @Autowired
     private UserCleanupService cleanupService;
 
-    @GetMapping("/test-cleanup")
+    @GetMapping("/test-cleanup-expired-guest")
     public String testCleanup() {
         cleanupService.removeExpiredApprovedGuests();
+        return "done";
+    }
+
+    // ทดสอบลบ Pending users ที่หมดอายุการอนุมัติ
+    @GetMapping("/test-cleanup-expired-pending")
+    public String testCleanupExpiredPending() {
+        // หา user ที่ยังไม่อนุมัติ และ approvalExpireAt < now
+        List<User> expiredPendingUsers = userRepository.findAll().stream()
+                .filter(u -> !u.getApproved() && u.getApprovalExpireAt() != null
+                        && u.getApprovalExpireAt().isBefore(LocalDateTime.now()))
+                .toList();
+
+        expiredPendingUsers.forEach(u -> userRepository.delete(u));
+
         return "done";
     }
 

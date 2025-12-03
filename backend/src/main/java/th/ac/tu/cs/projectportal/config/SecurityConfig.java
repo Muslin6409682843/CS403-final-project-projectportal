@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login", "/api/register", "/api/users/register-guest", "/api/guest-login",
                                 "/api/check-session",
-                                "/api/test-cleanup",
+                                "/api/test-cleanup-expired-guest", "/api/test-cleanup-expired-pending",
                                 "/upload/**",
                                 "/api/download-history/**" )
                         .permitAll()

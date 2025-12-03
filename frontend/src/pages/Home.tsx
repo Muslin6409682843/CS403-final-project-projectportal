@@ -31,11 +31,11 @@ function Home() {
       {/* ⭐ ส่วนที่ต้องตรงกลางจอ ⭐ */}
       <div
         style={{
-          height: "70vh", // คุมพื้นที่ให้กลางจอ
+          height: "70vh", 
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", // กลางแนวตั้ง
-          alignItems: "center", // กลางแนวนอน
+          justifyContent: "center", 
+          alignItems: "center", 
           textAlign: "center",
           width: "100%",
         }}
@@ -53,7 +53,7 @@ function Home() {
 
         {/* Search Box */}
         <form
-          onSubmit={handleSubmit} // ← เพิ่มตรงนี้
+          onSubmit={handleSubmit} 
           style={{
             display: "flex",
             justifyContent: "center",
@@ -65,8 +65,8 @@ function Home() {
           <input
             type="text"
             placeholder="ค้นหา..."
-            value={query} // ← เพิ่ม
-            onChange={(e) => setQuery(e.target.value)} // ← เพิ่ม
+            value={query} 
+            onChange={(e) => setQuery(e.target.value)} 
             style={{
               padding: "15px 20px",
               fontSize: "18px",

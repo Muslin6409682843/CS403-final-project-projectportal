@@ -1,10 +1,9 @@
-// TextSearch.tsx
 import React, { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa"; // ใช้ไอคอนแว่นขยายจาก react-icons
+import { FaSearch } from "react-icons/fa"; 
 
 interface TextSearchProps {
   placeholder?: string;
-  value?: string; // <-- เพิ่ม
+  value?: string; 
   onSearch?: (query: string) => void;
 }
 
@@ -15,7 +14,6 @@ const TextSearch: React.FC<TextSearchProps> = ({
 }) => {
   const [query, setQuery] = useState(value);
 
-  // ซิงค์กับ prop value ถ้ามีการเปลี่ยนจากภายนอก
   useEffect(() => {
     setQuery(value);
   }, [value]);

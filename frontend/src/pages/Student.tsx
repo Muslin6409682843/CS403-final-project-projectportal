@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../assets/background.css"; // ใช้ background เดียวกับ Login
+import "../assets/background.css"; 
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 

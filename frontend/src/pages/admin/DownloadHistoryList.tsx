@@ -10,7 +10,7 @@ interface DownloadHistory {
   downloadDateTime: string;
   projectTitleTh?: string;
   projectTitleEn?: string;
-  count?: number; // จำนวนครั้งดาวน์โหลด
+  count?: number; 
 }
 
 const DownloadHistoryList: React.FC = () => {

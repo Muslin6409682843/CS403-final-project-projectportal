@@ -20,7 +20,7 @@ const AccountSideBar = () => {
     if (item.path === "/logout") {
       setShowLogoutModal(true);
     } else if (item.external) {
-      window.open(item.path, "_blank"); // เปิดเว็บภายนอก
+      window.open(item.path, "_blank");
     } else {
       navigate(item.path);
     }

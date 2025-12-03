@@ -51,7 +51,7 @@ const PendingUsers: React.FC = () => {
         "http://localhost:8081/api/admin/pending-users",
         { withCredentials: true }
       );
-      console.log("📦 Pending Users Response:", response.data); // ✅ เพิ่มบรรทัดนี้
+      console.log("📦 Pending Users Response:", response.data); 
       setUsers(response.data);
     } catch (err) {
       console.error("❌ Fetch Pending Users Error:", err);
@@ -69,7 +69,7 @@ const PendingUsers: React.FC = () => {
         { withCredentials: true }
       );
       alert("✅ Approve สำเร็จ");
-      fetchPendingUsers(); // refresh list
+      fetchPendingUsers(); 
     } catch (err) {
       console.error("❌ Approve Error:", err);
     }
@@ -81,7 +81,7 @@ const PendingUsers: React.FC = () => {
       await axios.delete(`http://localhost:8081/api/admin/reject/${id}`, {
         withCredentials: true,
       });
-      fetchPendingUsers(); // refresh ตาราง
+      fetchPendingUsers(); 
     } catch (err) {
       console.error("❌ Reject Error:", err);
     }

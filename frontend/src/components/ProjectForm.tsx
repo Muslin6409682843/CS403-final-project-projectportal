@@ -655,7 +655,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           />
           <button
             type="button"
-            onClick={() => setCategory("")} // กลับไป dropdown
+            onClick={() => setCategory("")}
             style={{
               fontSize: "0.9rem",
               padding: "0.4rem 0.8rem",

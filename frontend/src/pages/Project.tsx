@@ -97,7 +97,7 @@ const Project: React.FC = () => {
           width: "80%",
           maxWidth: "1000px",
           margin: "40px auto 0 auto",
-          position: "relative", // ทำให้ button position absolute ได้
+          position: "relative", 
         }}
       >
         {/* Abstract */}

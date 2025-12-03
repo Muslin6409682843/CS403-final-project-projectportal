@@ -109,8 +109,8 @@ function TULogin() {
           <input
             id="username"
             type="text"
-            value={username} // <-- เพิ่มตรงนี้
-            onChange={(e) => setUsername(e.target.value)} // <-- เพิ่มตรงนี้
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             style={{
               padding: "12px 15px",
               fontSize: "16px",
