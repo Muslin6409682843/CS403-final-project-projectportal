@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaFileAlt, FaFileCode, FaFileImage } from "react-icons/fa";
+import { FaFileAlt, FaFileCode, FaFileImage, FaLock } from "react-icons/fa";
 import axios from "axios";
 
 import { useAuth } from "../../context/AuthContext";
@@ -159,7 +159,17 @@ const recordDownload = async () => {
         onClick={() => handleClick(project.file)}
         disabled={!project.file}
       >
-        <FaFileAlt style={{ marginRight: "10px" }} /> ดาวน์โหลดเล่มโครงงาน
+        {isLoggedIn ? (
+          <>
+            <FaFileAlt style={{ marginRight: "10px" }} />
+            ดาวน์โหลดเล่มโครงงาน
+          </>
+        ) : (
+          <>
+            <FaLock style={{ marginRight: "10px" }} />
+            สมัครสมาชิกเพื่อดาวน์โหลดเล่มโครงงาน
+          </>
+        )}
       </button>
 
       {/* 🖼 ดาวน์โหลดสไลด์ */}
@@ -168,7 +178,17 @@ const recordDownload = async () => {
         onClick={() => handleClick(project.slideFile)}
         disabled={!project.slideFile}
       >
-        <FaFileImage style={{ marginRight: "10px" }} /> ดาวน์โหลดสไลด์
+        {isLoggedIn ? (
+          <>
+            <FaFileAlt style={{ marginRight: "10px" }} />
+            ดาวน์โหลดสไลด์
+          </>
+        ) : (
+          <>
+            <FaLock style={{ marginRight: "10px" }} />
+            สมัครสมาชิกเพื่อดาวน์โหลดสไลด์
+          </>
+        )}
       </button>
 
       {/* 🧩 ดาวน์โหลดโค้ด (zip หรือ github) */}
@@ -177,7 +197,17 @@ const recordDownload = async () => {
         onClick={handleCodeClick}
         disabled={!project.zipFile && !project.github}
       >
-        <FaFileCode style={{ marginRight: "10px" }} /> ดาวน์โหลดโค้ด
+        {isLoggedIn ? (
+          <>
+            <FaFileAlt style={{ marginRight: "10px" }} />
+            ดาวน์โหลดโค้ด
+          </>
+        ) : (
+          <>
+            <FaLock style={{ marginRight: "10px" }} />
+            สมัครสมาชิกเพื่อดาวน์โหลดโค้ด
+          </>
+        )}
       </button>
     </div>
   );
